@@ -174,6 +174,84 @@ class TavilyClient:
         )
 
     def _translate(self, operation: str, exc: BaseException) -> Exception:
+        """Translate any Tavily SDK exception into our hierarchy.
+
+        Order of preference:
+          1. Structured exception type from the ``tavily`` SDK.
+          2. HTTP status information if present on the exception.
+          3. Message inspection as a last resort.
+        """
+        exc_type = type(exc)
+        name = exc_type.__name__.lower()
+        module = (exc_type.__module__ or "").lower()
+
+        # --- 1. structured exceptions from tavily.errors.* -----------------
+        if "tavily" in module:
+            if "invalidapikey" in name or "missingapikey" in name or "authentication" in name:
+                return SourceAuthenticationError(
+                    "Tavily authentication failed",
+                    source="tavily",
+                    operation=operation,
+                    credential_name="TAVILY_API_KEY",
+                    cause=exc,
+                )
+            if "usagelimit" in name or "ratelimit" in name or "quota" in name:
+                return SourceRateLimitError(
+                    "Tavily rate/usage limit exceeded",
+                    source="tavily",
+                    operation=operation,
+                    cause=exc,
+                )
+            if "timeout" in name:
+                return SourceTimeoutError(
+                    "Tavily request timed out",
+                    source="tavily",
+                    operation=operation,
+                    timeout=self.timeout,
+                    cause=exc,
+                )
+            if "forbidden" in name or "unauthorized" in name:
+                return SourceAuthenticationError(
+                    "Tavily forbidden",
+                    source="tavily",
+                    operation=operation,
+                    credential_name="TAVILY_API_KEY",
+                    cause=exc,
+                )
+            if "notfound" in name or "badrequest" in name or "invalid" in name:
+                return SourceConnectionError(
+                    f"Tavily {operation} rejected the request: {exc}",
+                    source="tavily",
+                    operation=operation,
+                    cause=exc,
+                )
+            # Any other tavily-module exception.
+            return SourceConnectionError(
+                f"Tavily {operation} failed: {exc}",
+                source="tavily",
+                operation=operation,
+                cause=exc,
+            )
+
+        # --- 2. status information on the exception ------------------------
+        status = getattr(exc, "status_code", None) or getattr(exc, "status", None)
+        if status in (401, 403):
+            return SourceAuthenticationError(
+                "Tavily authentication failed",
+                source="tavily",
+                operation=operation,
+                credential_name="TAVILY_API_KEY",
+                cause=exc,
+            )
+        if status == 429:
+            return SourceRateLimitError(
+                "Tavily rate limit exceeded",
+                source="tavily",
+                operation=operation,
+                cause=exc,
+            )
+
+        # --- 3. message inspection — last resort ---------------------------
         message = str(exc).lower()
         if "unauthorized" in message or "api key" in message or "401" in message:
             return SourceAuthenticationError(

@@ -1,6 +1,6 @@
 """Generic RSS/Atom parser using feedparser."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
 import feedparser
@@ -10,11 +10,24 @@ from extraction.canonicalization.url import canonicalize_url
 from schemas.sources import NewsItem
 
 
+def _struct_to_utc(struct) -> datetime | None:
+    """Convert a feedparser time.struct_time (UTC) to aware UTC datetime."""
+    if not struct:
+        return None
+    try:
+        return datetime(*struct[:6], tzinfo=timezone.utc)
+    except Exception:
+        return None
+
+
 def parse_feed(content: bytes, source_name: str = "rss") -> List[NewsItem]:
-    """Parse RSS/Atom bytes into a list of NewsItem objects."""
+    """Parse RSS/Atom bytes into a list of NewsItem objects.
+
+    A single malformed entry is skipped, not fatal: only a completely
+    unparseable feed raises ``SourceParseError``.
+    """
     feed = feedparser.parse(content)
 
-    # feedparser sets bozo=1 on error but may still have entries.
     if feed.bozo and not feed.entries:
         raise SourceParseError(
             f"Feed parsing failed for {source_name}: {feed.bozo_exception}"
@@ -29,11 +42,11 @@ def parse_feed(content: bytes, source_name: str = "rss") -> List[NewsItem]:
                 continue
 
             description = entry.get("description") or entry.get("summary")
-            published_at = None
-            if getattr(entry, "published_parsed", None):
-                published_at = datetime(*entry.published_parsed[:6])
-            elif getattr(entry, "updated_parsed", None):
-                published_at = datetime(*entry.updated_parsed[:6])
+
+            published_at = (
+                _struct_to_utc(getattr(entry, "published_parsed", None))
+                or _struct_to_utc(getattr(entry, "updated_parsed", None))
+            )
 
             author = entry.get("author")
             guid = entry.get("id") or entry.get("guid")
@@ -57,9 +70,8 @@ def parse_feed(content: bytes, source_name: str = "rss") -> List[NewsItem]:
                 metadata={"feed_entry": dict(entry)},
             )
             items.append(item)
-        except Exception as exc:
-            raise SourceParseError(
-                f"Failed to parse entry from {source_name}: {exc}"
-            ) from exc
+        except Exception:
+            # One bad entry must not abort the entire feed.
+            continue
 
     return items

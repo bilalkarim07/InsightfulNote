@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any, List, Optional
 
 from core.exceptions import (
@@ -20,6 +21,50 @@ except Exception as exc:  # pragma: no cover
     raise ImportError(
         "The 'ddgs' package is required. Install with: pip install ddgs"
     ) from exc
+
+
+def _parse_date(value: Any) -> Optional[datetime]:
+    """Best-effort parse of DDGS date strings to timezone-aware UTC.
+
+    DDGS providers return dates in several formats (ISO 8601, date-only,
+    occasionally relative). We accept what we can and return ``None`` for
+    anything unparseable. Never fabricate a timestamp.
+    """
+    if value is None:
+        return None
+
+    # Already a datetime.
+    if isinstance(value, datetime):
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+
+    if not isinstance(value, str):
+        return None
+
+    s = value.strip()
+    if not s:
+        return None
+
+    # ISO 8601, with or without offset / Z.
+    try:
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+    except Exception:
+        pass
+
+    # Common date-only and human-readable formats.
+    for fmt in (
+        "%Y-%m-%d",
+        "%Y/%m/%d",
+        "%d %b %Y",
+        "%b %d, %Y",
+        "%B %d, %Y",
+    ):
+        try:
+            return datetime.strptime(s, fmt).replace(tzinfo=timezone.utc)
+        except Exception:
+            continue
+
+    return None
 
 
 def _translate_exception(exc: BaseException, operation: str) -> Exception:
@@ -47,14 +92,26 @@ def _translate_exception(exc: BaseException, operation: str) -> Exception:
 
 
 class DDGSClient:
-    """Thin wrapper around the ``ddgs`` package."""
+    """Thin wrapper around the ``ddgs`` package.
 
-    def __init__(self) -> None:
+    The backend rotates between third-party search providers (Brave, Bing,
+    etc.). Under transient congestion any of them can be slow; the
+    ``timeout`` parameter lets the caller tune how long to wait before the
+    client fails with a structured ``SourceTimeoutError``.
+    """
+
+    def __init__(self, timeout: float = 20.0) -> None:
+        self.timeout = timeout
         self._ddgs: Optional[DDGS] = None
 
     def _backend(self) -> DDGS:
         if self._ddgs is None:
-            self._ddgs = DDGS()
+            try:
+                # Recent ddgs versions accept ``timeout`` in the constructor.
+                self._ddgs = DDGS(timeout=self.timeout)
+            except TypeError:
+                # Older versions do not; fall back to default behaviour.
+                self._ddgs = DDGS()
         return self._ddgs
 
     # --- text -----------------------------------------------------------
@@ -162,7 +219,9 @@ class DDGSClient:
                     f"Malformed DDGS {kind} result",
                     source="ddgs",
                     operation=kind,
-                    context={"raw_keys": list(raw.keys()) if isinstance(raw, dict) else None},
+                    context={
+                        "raw_keys": list(raw.keys()) if isinstance(raw, dict) else None,
+                    },
                     cause=exc,
                 ) from exc
 
@@ -183,7 +242,8 @@ class DDGSClient:
             title = raw.get("title") or ""
             snippet = raw.get("body") or raw.get("excerpt")
             source_name = raw.get("source")
-            published_at = raw.get("date")
+            # Parse the date; never pass a raw string into published_at.
+            published_at = _parse_date(raw.get("date"))
 
         if not url or not title:
             raise ValueError("result missing url or title")

@@ -234,11 +234,17 @@ class GDELTClient:
             if not link or not title:
                 continue
             domain = raw.get("domain") or urlparse(link).netloc
+
+            # NOTE: GDELT's artlist mode does not return a description field.
+            # The previous implementation incorrectly mapped `socialimage`
+            # (an image URL) into `description`. That is a semantic error:
+            # an image URL is not a description. `description` is left as
+            # None, and the image URL is preserved inside metadata instead.
             item = NewsItem(
                 title=title,
                 url=link,
                 canonical_url=canonicalize_url(link),
-                description=raw.get("socialimage"),
+                description=None,
                 snippet=None,
                 source_name=domain,
                 source_domain=domain,

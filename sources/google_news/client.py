@@ -13,7 +13,18 @@ GOOGLE_NEWS_RSS = "https://news.google.com/rss/search"
 
 
 class GoogleNewsClient:
-    """Search Google News via its RSS endpoint."""
+    """Search Google News via its RSS endpoint.
+
+    Google News RSS is a discovery mechanism: the items returned are
+    wrappers around publisher articles (``news.google.com/rss/articles/...``)
+    plus title, publisher, and publish date metadata. Resolving the wrapper
+    to the real publisher URL is the job of the extraction layer, not this
+    client.
+
+    The ``timeout`` parameter is forwarded to the underlying ``RSSClient``.
+    The default is 30 seconds. Under transient congestion the initial
+    Google News fetch can be slow; callers may raise this if needed.
+    """
 
     def __init__(
         self,

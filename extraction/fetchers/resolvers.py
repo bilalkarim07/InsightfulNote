@@ -8,10 +8,15 @@ Order of attempts (fast → slow):
   2. Offline base64/protobuf decode (legacy formats).
   3. HTTP redirect (follow_redirects=True).
   4. <meta http-equiv="refresh" content="0; url=...">.
-  5. First non-Google <a href="..."> in the returned HTML.
 
-If all five fail, the original URL is returned unchanged. Callers must
+If all four fail, the original URL is returned unchanged. Callers must
 tolerate that — extraction will simply yield no content.
+
+Note: an earlier version included a fifth attempt that returned the first
+non-Google anchor found in the response HTML. That fallback has been
+removed because it could not distinguish the article link from
+advertisements, navigation, social widgets, or unrelated articles. Failing
+closed is preferable to producing a wrong evidence URL.
 """
 
 from __future__ import annotations
@@ -159,25 +164,8 @@ def _decode_google_news_id(url: str) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# attempts 3-5: HTTP-based fallbacks
+# attempts 3-4: HTTP-based fallbacks
 # ---------------------------------------------------------------------------
-
-
-def _extract_offsite_href(html: str) -> str | None:
-    try:
-        from bs4 import BeautifulSoup  # bs4 is already a project dependency
-    except Exception:
-        return None
-
-    soup = BeautifulSoup(html or "", "lxml")
-    for a in soup.find_all("a", href=True):
-        href = a["href"].strip()
-        if not href.startswith(("http://", "https://")):
-            continue
-        host = urlparse(href).netloc.lower()
-        if host and host != GOOGLE_NEWS_HOST and not host.endswith(".google.com"):
-            return href
-    return None
 
 
 def _resolve_via_http(url: str, timeout: float) -> str | None:
@@ -201,7 +189,7 @@ def _resolve_via_http(url: str, timeout: float) -> str | None:
             cause=exc,
         ) from exc
 
-    # Redirect already landed off-google.
+    # Attempt 3: redirect already landed off-google.
     final_host = urlparse(str(response.url)).netloc.lower()
     if (
         final_host
@@ -210,7 +198,7 @@ def _resolve_via_http(url: str, timeout: float) -> str | None:
     ):
         return str(response.url)
 
-    # <meta http-equiv="refresh">
+    # Attempt 4: <meta http-equiv="refresh">
     match = _META_REFRESH_RE.search(response.text or "")
     if match:
         candidate = match.group(1)
@@ -218,8 +206,9 @@ def _resolve_via_http(url: str, timeout: float) -> str | None:
         if host and host != GOOGLE_NEWS_HOST:
             return candidate
 
-    # First off-google anchor.
-    return _extract_offsite_href(response.text or "")
+    # No confident answer. Fail closed — the caller handles this as
+    # "unresolved wrapper" and continues without fabricating a URL.
+    return None
 
 
 def resolve_google_news_url(url: str, timeout: float = 20.0) -> str:
@@ -237,7 +226,7 @@ def resolve_google_news_url(url: str, timeout: float = 20.0) -> str:
     if decoded:
         return decoded
 
-    # Attempts 3-5: HTTP fallbacks.
+    # Attempts 3-4: HTTP fallbacks.
     resolved = _resolve_via_http(url, timeout)
     if resolved:
         return resolved
