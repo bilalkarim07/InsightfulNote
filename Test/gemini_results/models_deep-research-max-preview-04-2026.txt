@@ -1,0 +1,263 @@
+================================================================================
+NEWSROOM GEMINI MODEL EVALUATION
+================================================================================
+
+Model: models/deep-research-max-preview-04-2026
+Display Name: Deep Research Max Preview (Apr-21-2026)
+Description: Preview release (April 21st, 2026) of Deep Research Max
+Started: 2026-09-22 09:55:42
+Questions: 10
+
+################################################################################
+TEST 1: News Understanding
+################################################################################
+
+QUESTION:
+You are the AI content engine for my Newsroom project.
+
+A technology company has announced a new AI model. The company claims
+that the model is significantly better than its previous model at
+coding, reasoning, and mathematics.
+
+However, independent benchmark results have not yet been published,
+and journalists are currently reporting only the company's claims.
+
+Explain:
+
+1. Which parts of this information are confirmed facts?
+2. Which parts are claims?
+3. What information should be verified before publishing?
+4. How should Newsroom report this story without presenting
+   unverified claims as established facts?
+
+ERROR:
+400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'This model only supports Interactions API.', 'status': 'INVALID_ARGUMENT'}}
+
+RESPONSE TIME: 0.49 seconds
+
+################################################################################
+TEST 2: News Post Generation
+################################################################################
+
+QUESTION:
+Using the following scenario, create a short Newsroom-style post
+for X and Threads.
+
+Scenario:
+
+A technology company has announced a new AI model. The company says
+the model is significantly better than its previous model at coding,
+reasoning, and mathematics. Independent benchmark results have not
+yet been published.
+
+Write a concise, informative post under 80 words.
+
+Do not invent benchmark numbers or present the company's claims
+as independently verified facts.
+
+ERROR:
+400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'This model only supports Interactions API.', 'status': 'INVALID_ARGUMENT'}}
+
+RESPONSE TIME: 0.39 seconds
+
+################################################################################
+TEST 3: Breaking News
+################################################################################
+
+QUESTION:
+Newsroom receives the following breaking-news information:
+
+"OpenAI has released a new AI model today. The company says the model
+is faster and more capable than its previous generation and is now
+available to developers."
+
+Create a breaking-news style post suitable for X.
+
+Rules:
+
+- Keep it under 60 words.
+- Do not invent technical specifications.
+- Clearly attribute claims to the company.
+- Do not use exaggerated language.
+- Make it informative and engaging.
+
+ERROR:
+400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'This model only supports Interactions API.', 'status': 'INVALID_ARGUMENT'}}
+
+RESPONSE TIME: 0.37 seconds
+
+################################################################################
+TEST 4: Fact vs Claim
+################################################################################
+
+QUESTION:
+Newsroom is processing this information:
+
+"Company X says its new AI model is the world's most powerful model,
+beats every competitor on reasoning benchmarks, and will transform
+software development."
+
+Classify each statement as one of:
+
+FACT
+COMPANY CLAIM
+REQUIRES VERIFICATION
+
+Then explain briefly why you classified each statement that way.
+
+Do not perform external research.
+
+ERROR:
+400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'This model only supports Interactions API.', 'status': 'INVALID_ARGUMENT'}}
+
+RESPONSE TIME: 0.67 seconds
+
+################################################################################
+TEST 5: Headline Generation
+################################################################################
+
+QUESTION:
+Generate 5 possible headlines for a Newsroom post about this story:
+
+"A new open-source AI model has been released. Its developers report
+strong performance on several coding and reasoning benchmarks."
+
+Requirements:
+
+- Headlines should be concise.
+- Avoid clickbait.
+- Do not invent benchmark scores.
+- Clearly communicate that the model has been released.
+- Make them suitable for a technology news account.
+
+ERROR:
+400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'This model only supports Interactions API.', 'status': 'INVALID_ARGUMENT'}}
+
+RESPONSE TIME: 0.40 seconds
+
+################################################################################
+TEST 6: Social Media Rewrite
+################################################################################
+
+QUESTION:
+Rewrite the following news information into a concise social media
+post for Newsroom:
+
+"Google announced a new AI model. According to Google, the model
+improves performance across several tasks and is designed for
+developers building AI applications."
+
+Requirements:
+
+- Under 70 words.
+- Neutral news tone.
+- Preserve the important information.
+- Do not add facts that are not provided.
+- Do not exaggerate Google's claims.
+
+ERROR:
+400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'This model only supports Interactions API.', 'status': 'INVALID_ARGUMENT'}}
+
+RESPONSE TIME: 0.42 seconds
+
+################################################################################
+TEST 7: Incomplete Information
+################################################################################
+
+QUESTION:
+Newsroom receives this incomplete report:
+
+"Several users are reporting that a major AI service is currently
+unavailable. The company's official account has not yet confirmed
+an outage."
+
+What should Newsroom do?
+
+Explain:
+
+1. Whether the story should immediately be presented as a confirmed
+   outage.
+2. What should be verified.
+3. How the story could be reported while information is still developing.
+4. Provide an example post under 60 words.
+
+ERROR:
+400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'This model only supports Interactions API.', 'status': 'INVALID_ARGUMENT'}}
+
+RESPONSE TIME: 0.51 seconds
+
+################################################################################
+TEST 8: Conflicting Reports
+################################################################################
+
+QUESTION:
+Newsroom receives two reports about an AI product launch.
+
+Report A says the product launched today.
+
+Report B, published by another technology publication, says the launch
+has been delayed until next month.
+
+Neither report provides an official announcement.
+
+Explain how Newsroom should handle the conflicting information.
+
+Then write a short post that communicates the situation without
+pretending that either report has been confirmed.
+
+ERROR:
+400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'This model only supports Interactions API.', 'status': 'INVALID_ARGUMENT'}}
+
+RESPONSE TIME: 0.41 seconds
+
+################################################################################
+TEST 9: AI Technology Explanation
+################################################################################
+
+QUESTION:
+Write a short Newsroom post explaining why AI agents are becoming
+important for software development.
+
+Requirements:
+
+- Under 80 words.
+- Explain the concept simply.
+- Mention that agents can perform multi-step tasks.
+- Avoid hype.
+- Make it understandable to someone who is not an AI engineer.
+
+ERROR:
+400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'This model only supports Interactions API.', 'status': 'INVALID_ARGUMENT'}}
+
+RESPONSE TIME: 0.39 seconds
+
+################################################################################
+TEST 10: Newsroom Editorial Judgment
+################################################################################
+
+QUESTION:
+Newsroom has this information:
+
+"An AI startup claims its new model is 10x better than GPT-class
+models, but provides no benchmark methodology, independent testing,
+or detailed results."
+
+Explain how Newsroom should approach this story.
+
+Then write a responsible social media post about it.
+
+The goal is to inform readers without amplifying an unsupported claim.
+
+ERROR:
+400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'This model only supports Interactions API.', 'status': 'INVALID_ARGUMENT'}}
+
+RESPONSE TIME: 0.42 seconds
+
+================================================================================
+TEST SUMMARY
+================================================================================
+
+Model: models/deep-research-max-preview-04-2026
+Successful: 0
+Failed: 10
+Total: 10

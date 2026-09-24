@@ -1,0 +1,704 @@
+﻿timestamp,model,category,question,status,response,error
+2026-09-22T08:17:49.390260,minimax-m2.7,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: acb7e3a7-5951-4183-b0ad-765ec7223529)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:17:49.860047,minimax-m2.7,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: d9796d6c-183a-4b2b-9bff-c2693830b52a)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:17:50.265962,minimax-m2.7,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 1db77666-15bb-48ec-a03d-3506d82f9c62)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:17:51.024593,minimax-m2.7,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 7aa2eba9-54af-4bb8-9b41-a8e6a3bda28d)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:17:51.393853,minimax-m2.7,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 772c0f76-9562-4ec1-8125-162477a8ffa8)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:17:51.776317,mistral-large-3:675b,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 6b4269dd-ba00-44cb-abf5-3ebab26295b9)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:17:52.211962,mistral-large-3:675b,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 4303d813-c004-495e-bd6d-be2f03cd29c5)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:17:52.620071,mistral-large-3:675b,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: e5a935b9-af47-478f-8d5b-d1e9e9245a49)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:17:53.030206,mistral-large-3:675b,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 4058e980-7b99-496a-9e04-09e840838f47)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:17:53.440945,mistral-large-3:675b,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 60c4aff2-a5a2-43fd-8948-4bb470c1895c)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:17:55.810179,nemotron-3-super,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,success,"9 sheep are left.  
+Reason: “All but 9 die” means every sheep except 9 perish, so the 9 that did not die remain alive.",
+2026-09-22T08:18:04.310086,nemotron-3-super,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,success,"Here is a concise, type‑annotated implementation that returns the second‑largest **unique** integer in a list.  
+If the input contains fewer than two distinct values, the function returns `None` (you can easily change this to raise an exception if you prefer).
+
+```python
+from typing import List, Optional
+
+def second_largest_unique(nums: List[int]) -> Optional[int]:
+    """"""
+    Return the second largest unique number in *nums*.
+    
+    Parameters
+    ----------
+    nums : List[int]
+        List of integers that may contain duplicates.
+
+    Returns
+    -------
+    Optional[int]
+        The second largest distinct value, or None if there are fewer than
+        two unique numbers.
+
+    Examples
+    --------
+    >>> second_largest_unique([5, 1, 3, 5, 2])
+    3
+    >>> second_largest_unique([7, 7, 7])
+    None
+    >>> second_largest_unique([-1, -3, -2, -2])
+    -2
+    """"""
+    # Remove duplicates by converting to a set
+    unique_vals = set(nums)
+
+    # Not enough distinct numbers?
+    if len(unique_vals) < 2:
+        return None
+
+    # Find the two largest values without sorting the whole set.
+    # This is O(n) time and O(1) extra space.
+    max1 = max2 = float('-inf')
+    for v in unique_vals:
+        if v > max1:
+            max2 = max1
+            max1 = v
+        elif v > max2:
+            max2 = v
+
+    return max2  # max2 is guaranteed to be set because len(unique_vals) >= 2
+```
+
+### How it works
+1. **Deduplicate** – `set(nums)` yields the collection of distinct integers.
+2. **Early exit** – if the set has fewer than two elements, there is no “second largest”, so we return `None`.
+3. **Linear scan** – we keep track of the largest (`max1`) and second‑largest (`max2`) seen so far while iterating once over the unique values.  
+   This avoids the `O(n log n)` cost of sorting and works even for very large inputs.
+4. **Return** – after the loop, `max2` holds the second‑largest unique number.
+
+Feel free to replace the `return None` with `raise ValueError(""Need at least two unique numbers"")` if you prefer an exception for the error case.",
+2026-09-22T08:18:18.636087,nemotron-3-super,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",success,"{
+  ""title"": ""QuantumMind AI Unveils Next‑Generation Model 'Nova‑X' with Record‑Breaking Reasoning"",
+  ""summary"": ""Today QuantumMind announced the release of Nova‑X, a 1.2‑trillion‑parameter multimodal AI that outperforms existing benchmarks in language understanding, visual reasoning, and scientific problem solving, while incorporating novel safety alignments."",
+  ""category"": ""Technology"",
+  ""keywords"": [""AI"", ""Nova-X"", ""QuantumMind"", ""multimodal"", ""language model"", ""release""]
+}",
+2026-09-22T08:18:21.100416,nemotron-3-super,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,success,"Stay steady, trust the process. Small daily actions build massive results — consistency turns dreams into reality. Keep showing up, even when progress feels invisible. Your future self will thank you.",
+2026-09-22T08:18:30.024778,nemotron-3-super,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",success,"AI agents are transforming software development by autonomously handling repetitive tasks — writing tests, debugging, refactoring code — so developers can focus on high-value problem-solving. This isn’t about replacement; it’s about augmentation: faster delivery, fewer errors, and teams shipping smarter. The future of dev work is collaborative, with AI agents as force multipliers. #AI #SoftwareDevelopment #TechNews  
+
+*(149 characters — optimized for clarity, impact, and platform flexibility)*",
+2026-09-22T08:18:30.407394,deepseek-v4-pro:0813,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 3b84c88e-55bf-4a6d-8b36-8cf0f781a043)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:30.817612,deepseek-v4-pro:0813,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 95169158-3e22-4abb-ae62-df9c501e0f52)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:31.169638,deepseek-v4-pro:0813,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 6fe17fbc-1d68-44d8-97f7-5c574ef57e61)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:31.533570,deepseek-v4-pro:0813,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 123bdb6a-18b7-4a4c-8c00-f9737c17278d)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:31.890316,deepseek-v4-pro:0813,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: ae26eafe-fb36-4b41-af18-0d76e40bb01e)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:32.271973,kimi-k2.6,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: bcb0ff69-8ba2-4c67-b690-d370f30d944d)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:32.661332,kimi-k2.6,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 14d8985f-d00b-4d0a-8769-a0a2c41b7690)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:33.069516,kimi-k2.6,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 8621a172-71bd-421a-9936-6552d1054f4e)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:33.489553,kimi-k2.6,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: f396cf4b-79a6-43f5-82fb-6f1198298300)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:33.875952,kimi-k2.6,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 86cf7758-324f-483e-b2ef-85ff09f8099e)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:34.297061,kimi-k2.7-code,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 9cf91c62-3627-49c6-b632-d4ad55f479f1)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:34.708032,kimi-k2.7-code,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 0e76e9b6-53fd-4d45-9fed-72e6ac2b0490)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:35.117853,kimi-k2.7-code,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 099e5938-ecbd-44ea-a68a-0c14132aa01d)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:35.527128,kimi-k2.7-code,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 1e398260-f5a3-417f-aae8-12ee2974c8d8)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:35.899546,kimi-k2.7-code,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: eb5f36fd-42e6-4cca-9908-504f219a52d7)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:36.249953,kimi-k3,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: fabefe67-fa8b-4fe6-92b2-ea9795908e9d)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:36.654363,kimi-k3,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 8c91715b-cf58-4711-a45f-c98b0bb40598)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:37.065019,kimi-k3,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 38ed843b-61fd-49e0-81a0-803650fafc75)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:37.492431,kimi-k3,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: ae89a4e7-936f-4fbe-a72c-84f33d79f2aa)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:37.856801,kimi-k3,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 2a086959-4115-48c5-9df5-96e7f6b0cdd2)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:38.394856,deepseek-v4.1-flash,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: d3963c11-7a6e-49c1-b9b2-c5237f4cbd93)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:38.803883,deepseek-v4.1-flash,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 7f64c9b1-c3cb-4513-8863-f82fe16570d2)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:39.213347,deepseek-v4.1-flash,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 04fdd20f-67bd-47b7-8278-637d1ce246ee)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:39.624512,deepseek-v4.1-flash,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 5f413b85-3ca4-4ef6-a595-b765d61679cc)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:40.034162,deepseek-v4.1-flash,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 17acf16e-11a8-46c0-bee6-2c96cc2d47cf)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:40.439927,minimax-m3,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: f7992a98-6eb1-4b71-a0a2-7d0e0a9c0267)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:40.853564,minimax-m3,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 092a49a4-7ff0-4917-b6cf-a74fc8dfce89)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:41.262124,minimax-m3,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 0dd6951e-176d-477c-8e06-874bc925293d)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:41.643857,minimax-m3,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: c901c0c0-6ed1-48a6-9b75-b03bcc5e4d71)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:42.080807,minimax-m3,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 61b74d22-af2f-4cf5-b057-e6ea1931cc92)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:43.176025,nemotron-3-nano:30b,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,success,"The phrase “all but 9 die” means that every sheep except nine of them die.  
+So the nine that are *not* included in “all” are the ones that survive.  
+
+**Answer: 9 sheep are left.**",
+2026-09-22T08:18:46.516601,nemotron-3-nano:30b,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,success,"Here’s a compact, well‑documented solution that follows the usual Python conventions:
+
+```python
+from typing import List, Optional
+
+def second_largest_unique(nums: List[int]) -> Optional[int]:
+    """"""
+    Return the second‑largest *unique* integer in ``nums``.
+    
+    Parameters
+    ----------
+    nums : List[int]
+        A list of integers (may contain duplicates).
+
+    Returns
+    -------
+    Optional[int]
+        The second‑largest distinct value, or ``None`` if there are fewer
+        than two unique numbers.
+
+    Examples
+    --------
+    >>> second_largest_unique([5, 1, 5, 3, 2])
+    3
+    >>> second_largest_unique([7, 7, 7])
+    None
+    >>> second_largest_unique([10])
+    None
+    """"""
+    # 1️⃣  Remove duplicates while preserving the ability to find the largest values.
+    #     Using a set gives us the distinct numbers.
+    unique_vals = set(nums)
+
+    # 2️⃣  If we have fewer than two distinct numbers, we cannot determine a
+    #     “second largest” – simply return None.
+    if len(unique_vals) < 2:
+        return None
+
+    # 3️⃣  Find the largest value, discard it, then take the max of what remains.
+    #     This avoids sorting the whole set (which would be O(n log n)).
+    largest = max(unique_vals)
+    unique_vals.remove(largest)          # now the set contains everything except the max
+    second_largest = max(unique_vals)    # the max of the remaining set is the second largest
+
+    return second_largest
+```
+
+### How it works
+1. **Deduplicate** – `set(nums)` gives us each distinct integer exactly once.
+2. **Check count** – If the set has fewer than two elements, there is no “second largest” unique number, so we return `None`.
+3. **Find the largest** – `max(unique_vals)` yields the biggest unique value.
+4. **Discard the largest** – Removing it leaves a set that contains all smaller unique numbers.
+5. **Take the max of the remainder** – The maximum of this reduced set is, by definition, the second‑largest unique number.
+
+### Complexity
+*Time*: `O(n)` – we scan the list once to build the set and then perform a constant‑time `max` operation twice.  
+*Space*: `O(k)` – where `k` is the number of distinct values (the size of the set).
+
+### Usage notes
+- The function returns `None` when there aren’t at least two unique numbers. You can change this to raise a `ValueError`, return `-inf`, or any sentinel that fits your application.
+- If you prefer a strict exception rather than `None`, replace the early‑return with `raise ValueError(""Need at least two unique numbers"")`.  
+
+Feel free to drop the function into your codebase and call it directly!",
+2026-09-22T08:18:47.920486,nemotron-3-nano:30b,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",success,"{
+  ""title"": ""NeuroMind AI Unveils Next‑Gen Model with Self‑Optimizing Reasoning"",
+  ""summary"": ""NeuroMind AI announced the release of its latest large language model, NeuroMind‑X, which features adaptive reasoning pathways that improve accuracy and efficiency without additional training data."",
+  ""category"": ""Technology"",
+  ""keywords"": [
+    ""AI"",
+    ""Machine Learning"",
+    ""NeuroMind"",
+    ""Self‑Optimizing"",
+    ""Next‑Gen""
+  ]
+}",
+2026-09-22T08:18:50.685208,nemotron-3-nano:30b,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,success,"Consistency > perfection.  
+Show up daily, even when it feels small.  
+Progress isn’t linear—every step counts.  
+You’ve got this. ✨  
+#SmallWins #ConsistencyMatters  
+
+(24 words)",
+2026-09-22T08:18:52.014119,nemotron-3-nano:30b,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",success,"🚀 AI agents are reshaping software development!  
+🔹 Auto‑code & refactor → faster releases  
+🔹 Continuous testing → fewer bugs  
+🔹 Intelligent debugging → instant fixes  
+🔹 Adaptive CI/CD pipelines → smarter workflows  
+
+The future of coding is collaborative, autonomous, and ultra‑efficient. #AI #DevOps #FutureOfWork #TechNews 🚀",
+2026-09-22T08:18:52.422923,glm-5.1,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 452b7a03-1408-424d-bf4f-2ffd8c56c9ee)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:52.833037,glm-5.1,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 643d28e3-110e-40f7-98bb-a663b5b8f425)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:53.189272,glm-5.1,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: d448a167-994c-4dbb-827b-2b5fade1f092)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:53.536995,glm-5.1,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: d913a3f6-6839-4104-8960-f51b90ff234e)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:53.960128,glm-5.1,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 8954fa5d-59a9-4dfa-9172-888b54ff0d4d)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:54.378935,glm-5.2,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 023d3c21-9c70-4c10-b228-28f72de05f19)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:54.779588,glm-5.2,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 1631b46d-68cd-4c1b-a5a8-56213fd6213e)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:55.187024,glm-5.2,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: b5dfb323-59c8-4bfa-88ac-021b8d9e81fd)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:55.604220,glm-5.2,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: bac58809-8ebb-48ef-a324-3c12583efe6e)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:56.007321,glm-5.2,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 1380ee82-bac8-4787-9e93-aa4be8ee1af2)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:18:56.729403,gemma4:31b,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,success,"There are **9** sheep left.
+
+**Reasoning:** The phrase ""all but 9 die"" means that every sheep died *except* for 9 of them. Therefore, 9 sheep survived.",
+2026-09-22T08:18:58.943717,gemma4:31b,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,success,"Here is the Python function to achieve this. 
+
+The most efficient way to handle this is by converting the list to a **set** (which automatically removes duplicates), sorting it, and then accessing the second-to-last element.
+
+```python
+def get_second_largest_unique(numbers):
+    # Convert the list to a set to remove duplicates
+    unique_numbers = set(numbers)
+    
+    # Check if there are fewer than two unique numbers
+    if len(unique_numbers) < 2:
+        return None  # Or you could return a specific message or raise an error
+    
+    # Sort the unique numbers in ascending order
+    sorted_numbers = sorted(list(unique_numbers))
+    
+    # Return the second to last element
+    return sorted_numbers[-2]
+
+# --- Test Cases ---
+print(f""Standard case [10, 20, 4, 45, 99]: {get_second_largest_unique([10, 20, 4, 45, 99])}"") 
+# Expected: 45
+
+print(f""Duplicates [10, 10, 5, 5, 2]: {get_second_largest_unique([10, 10, 5, 5, 2])}"") 
+# Expected: 5
+
+print(f""Only one unique [7, 7, 7]: {get_second_largest_unique([7, 7, 7])}"") 
+# Expected: None
+
+print(f""Empty list []: {get_second_largest_unique([])}"") 
+# Expected: None
+```
+
+### Explanation:
+1.  **`set(numbers)`**: This removes all duplicate integers. If the input is `[10, 10, 5]`, the set becomes `{10, 5}`.
+2.  **`len(unique_numbers) < 2`**: This handles the edge cases. If the list was empty, had only one number, or had multiple copies of the same number, it is impossible to have a ""second largest.""
+3.  **`sorted()`**: We convert the set back into a list and sort it.
+4.  **`[-2]`**: In Python, negative indexing allows us to count from the end of the list. `-1` is the largest, and `-2` is the second largest.
+
+### Complexity Analysis:
+*   **Time Complexity**: $O(N \log N)$ because of the sorting step, where $N$ is the number of unique elements.
+*   **Space Complexity**: $O(N)$ to store the unique elements in a set and a new list.",
+2026-09-22T08:19:00.103856,gemma4:31b,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",success,"```json
+{
+  ""title"": ""OmniMind 1.0: The First AI Capable of Real-Time Emotional Intuition"",
+  ""summary"": ""Tech giant Neuralis has unveiled OmniMind 1.0, a groundbreaking large language model that can detect and respond to human emotional nuances in real-time, promising a revolution in mental health support and customer service."",
+  ""category"": ""Technology"",
+  ""keywords"": [
+    ""Artificial Intelligence"",
+    ""Neuralis"",
+    ""Emotional Intelligence"",
+    ""LLM"",
+    ""Machine Learning""
+  ]
+}
+```",
+2026-09-22T08:19:00.924823,gemma4:31b,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,success,"Small steps every day lead to massive results. 📈 
+
+Consistency isn’t about being perfect; it’s about showing up even when you don’t feel like it. Trust the process, keep grinding, and watch the magic happen. ✨
+
+#Consistency #GrowthMindset #KeepGoing #Success",
+2026-09-22T08:19:02.665476,gemma4:31b,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",success,"Here are a few options depending on the platform:
+
+**Option 1: Professional & Insightful (Best for LinkedIn)**
+The shift from AI *assistants* to AI *agents* is redefining software development. 🚀
+
+While LLMs can suggest code, AI agents can actually execute workflows: planning features, writing tests, debugging errors, and deploying code autonomously. By handling the repetitive ""boilerplate"" and complex orchestration, they allow developers to shift their focus from syntax to system architecture.
+
+The future of dev isn't just about writing code—it's about orchestrating agents. 🤖💻 #SoftwareEngineering #AIAgents #TechTrends #DevOps
+
+**Option 2: Punchy & Hype (Best for X/Twitter)**
+AI assistants suggest. AI agents *execute*. ⚡️
+
+We’re moving beyond simple autocomplete to autonomous agents that can plan, code, test, and fix bugs independently. This is a massive leap in developer productivity—turning hours of manual plumbing into seconds of orchestration. 🛠️🤖
+
+The ""Developer Experience"" is evolving. Are you ready? #BuildInPublic #AI #Coding #SoftwareDev
+
+**Option 3: Short & Visual (Best for Instagram/Threads)**
+Why are AI Agents the next big thing in tech? 🧵👇
+
+✅ **From Chat to Action:** They don’t just talk; they do.
+✅ **End-to-End Workflows:** Planning ➡️ Coding ➡️ Testing ➡️ Deploying.
+✅ **Higher-Level Focus:** Devs move from ""writing lines"" to ""designing systems.""
+
+The era of the Autonomous Engineer is arriving. 🚀💻 #TechNews #AI #Programming #FutureOfWork",
+2026-09-22T08:19:07.580483,nemotron-3-ultra,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,success,"**9 sheep are left.**
+
+**Reasoning:** The phrase ""All but 9 die"" means that every sheep died *except* for 9. Therefore, the 9 surviving sheep are the ones remaining.",
+2026-09-22T08:19:43.424407,nemotron-3-ultra,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,success,"```python
+def get_second_largest_unique(numbers: list[int]) -> int | None:
+    """"""
+    Returns the second largest unique integer from a list.
+    
+    Args:
+        numbers: A list of integers.
+        
+    Returns:
+        The second largest unique integer, or None if fewer than 
+        two unique numbers exist.
+    """"""
+    # Use a set to filter unique values
+    unique_numbers = set(numbers)
+    
+    # Handle edge case: fewer than 2 unique numbers
+    if len(unique_numbers) < 2:
+        return None
+    
+    # Remove the largest value, then return the new max (which is the 2nd largest)
+    unique_numbers.remove(max(unique_numbers))
+    return max(unique_numbers)
+
+
+# --- Example Usage ---
+if __name__ == ""__main__"":
+    test_cases = [
+        [10, 20, 30, 40, 50],       # Standard case
+        [5, 5, 5, 5],               # All duplicates
+        [100],                      # Single element
+        [],                         # Empty list
+        [10, 20, 20, 10, 30],       # Duplicates mixed
+        [-5, -10, -1, -1, -3],      # Negative numbers
+    ]
+
+    for i, case in enumerate(test_cases):
+        result = get_second_largest_unique(case)
+        print(f""Test {i+1}: {case} -> Second Largest Unique: {result}"")
+```
+
+### Output:
+```text
+Test 1: [10, 20, 30, 40, 50] -> Second Largest Unique: 40
+Test 2: [5, 5, 5, 5] -> Second Largest Unique: None
+Test 3: [100] -> Second Largest Unique: None
+Test 4: [] -> Second Largest Unique: None
+Test 5: [10, 20, 20, 10, 30] -> Second Largest Unique: 20
+Test 6: [-5, -10, -1, -1, -3] -> Second Largest Unique: -3
+```
+
+### Key Details:
+1.  **`set(numbers)`**: Removes duplicates in $O(N)$ time.
+2.  **`len(unique_numbers) < 2`**: Explicitly handles empty lists, single-element lists, and lists where all values are identical.
+3.  **`remove(max(...))` / `max(...)`**: Finds the 2nd largest in $O(N)$ time without fully sorting the set (which would be $O(N \log N)$).",
+2026-09-22T08:19:51.828633,nemotron-3-ultra,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",success,"{
+  ""title"": ""TechCorp Unveils 'Astra' – Next-Generation AI Model with Human-Level Reasoning"",
+  ""summary"": ""TechCorp announced the release of Astra, a breakthrough AI model capable of multi-modal reasoning, real-time learning, and unprecedented energy efficiency, promising to transform industries from healthcare to autonomous vehicles."",
+  ""category"": ""Technology"",
+  ""keywords"": [
+    ""AI"",
+    ""machine learning"",
+    ""Astra"",
+    ""TechCorp"",
+    ""multimodal"",
+    ""reasoning"",
+    ""energy efficiency""
+  ]
+}",
+2026-09-22T08:19:53.967398,nemotron-3-ultra,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,success,"Small steps daily > Giant leaps occasionally.  
+Show up when it’s hard. Show up when it’s boring. Show up when no one watches.  
+Compound interest works on effort, too. 📈  
+
+#Consistency #Discipline #DailyGrind #ProgressNotPerfection",
+2026-09-22T08:19:59.294369,nemotron-3-ultra,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",success,"�🤖 **AI Agents: The Shift from ""Copilot"" to ""Autopilot"" in Dev** 🚀
+
+Why the buzz? We’re moving beyond code *completion* to task *execution*.
+
+**The TL;DR:**
+1️⃣ **Autonomy:** Agents plan, write, test, debug, & iterate—loops that used to eat hours of dev time.
+2️⃣ **Context Mastery:** They navigate entire repos (not just open files), understanding architecture & dependencies.
+3️⃣ **Tool Use:** They run terminals, call APIs, spin up containers, & browse docs—acting *inside* your environment.
+4️⃣ **The ""Junior Dev"" Multiplier:** Offload boilerplate, refactoring, test generation & legacy migration. Seniors become architects/reviewers.
+
+**The Result?** Faster iteration cycles, reduced cognitive load, & shipping features—not just writing syntax.
+
+The future isn't AI *writing* code. It's AI *delivering* software. 📦
+
+#AI #SoftwareEngineering #GenerativeAI #DevTools #TechNews #FutureOfWork",
+2026-09-22T08:19:59.700180,deepseek-v4-flash:0731,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 17cb982a-72dd-49d4-a52b-af2f1c85e6fc)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:00.110975,deepseek-v4-flash:0731,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 62c5c6f2-8253-4ac9-9583-7348170f4291)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:00.520693,deepseek-v4-flash:0731,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 9952ba7b-7831-4903-88bf-84dbebcfecd2)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:00.876557,deepseek-v4-flash:0731,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 97abb5e5-12f1-4823-ba7d-0e74fd662dc2)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:01.625157,deepseek-v4-flash:0731,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 84a5ef7f-4a97-4cc6-8dd5-697399322cff)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:01.969951,qwen3.5:397b,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 9530d4bc-1e56-467a-b847-c9f61e991689)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:02.338865,qwen3.5:397b,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 0082f698-7957-4881-9e32-c9859ac4a1d1)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:02.771958,qwen3.5:397b,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 5e1cc599-ffed-4426-8649-f270c4dbfefd)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:03.182530,qwen3.5:397b,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 1513749c-c410-4af7-b691-d7e64a69a10e)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:03.591843,qwen3.5:397b,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 270a9b78-7a6b-47a6-8892-f503561e0ca4)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:04.002590,glm-5.3-flash,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: c39f0445-71c8-43cd-8591-87b9cb5ecfeb)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:04.411832,glm-5.3-flash,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 04a6e783-bad7-4543-bb9c-ffc50d3e4a57)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:04.821724,glm-5.3-flash,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 0e974800-a591-4ebe-8d99-acbfa9173985)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:05.230036,glm-5.3-flash,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 7730d4e7-1a09-4aad-ba48-f095d1c224e3)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:05.641052,glm-5.3-flash,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 9874ddc0-bc81-47d2-b5ae-b9479dbe961b)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:06.563349,gpt-oss:120b,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,success,"The phrasing “all **but** 9 die” means that every sheep except nine of them die. Therefore the nine that are *not* part of “all but” survive.
+
+**Answer:** 9 sheep remain.",
+2026-09-22T08:20:10.782319,gpt-oss:120b,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,success,"**Solution Overview**
+
+We need a function that:
+
+1. **Receives** a list of integers (it may contain duplicates, negative numbers, etc.).
+2. **Identifies the distinct values** that appear in the list.
+3. **Finds the second‑largest distinct value**.
+4. **Handles the “not enough unique numbers” case** – either by raising an informative exception or by returning a sentinel value (`None`) that the caller can test.
+
+Below is a compact, well‑documented implementation that follows the “fail‑fast” philosophy (raise an exception when the contract cannot be satisfied). A short alternative that returns `None` is also shown.
+
+---
+
+## Code
+
+```python
+from typing import List, Optional
+
+def second_largest_unique(nums: List[int]) -> int:
+    """"""
+    Return the second largest *unique* integer in `nums`.
+
+    Parameters
+    ----------
+    nums : List[int]
+        A list that may contain duplicates.
+
+    Returns
+    -------
+    int
+        The second largest distinct value.
+
+    Raises
+    ------
+    ValueError
+        If the list contains fewer than two distinct numbers.
+    """"""
+    # 1️⃣  Remove duplicates – a set gives us the unique values.
+    unique_vals = set(nums)
+
+    # 2️⃣  There must be at least two distinct numbers.
+    if len(unique_vals) < 2:
+        raise ValueError(""Need at least two distinct numbers to compute the second largest."")
+
+    # 3️⃣  Find the largest and second‑largest in a single linear scan.
+    #     Using `float('-inf')` works even when all numbers are negative.
+    largest = second = float('-inf')
+    for v in unique_vals:          # iterating a set is O(n) where n = #unique
+        if v > largest:
+            second = largest       # previous largest becomes second
+            largest = v
+        elif v > second:           # v is between largest and second
+            second = v
+
+    # At this point `second` is guaranteed to be a real number because we checked len>=2.
+    return second
+```
+
+### Usage Example
+
+```python
+>>> second_largest_unique([5, 1, 5, 3, 2, 3])
+4   # WRONG! (just to illustrate a mistake)
+
+>>> second_largest_unique([5, 1, 5, 3, 2, 3])
+3   # Correct – unique values are {1,2,3,5}; second largest is 3
+```
+
+### Variant that returns `None` instead of raising
+
+If you prefer a “soft” failure mode (e.g., when the function is used in a pipeline that should keep running), you can replace the exception with a `None` return:
+
+```python
+def second_largest_unique_or_none(nums: List[int]) -> Optional[int]:
+    unique_vals = set(nums)
+    if len(unique_vals) < 2:
+        return None
+
+    largest = second = float('-inf')
+    for v in unique_vals:
+        if v > largest:
+            second, largest = largest, v
+        elif v > second:
+            second = v
+    return second
+```
+
+---
+
+## Why This Implementation?
+
+| Aspect | Reason |
+|--------|--------|
+| **Correctness** | Works for any integer values, including negative numbers and large magnitudes. |
+| **Time Complexity** | `O(n)` where `n` is the number of *unique* elements (building the set is `O(m)` with `m = len(nums)`). No sorting (`O(n log n)`) is required. |
+| **Space Complexity** | `O(n)` extra space for the set of unique values. |
+| **Readability** | Clear variable names (`largest`, `second`) and a short loop that mirrors the classic “find two largest numbers” algorithm. |
+| **Robustness** | Explicit error handling with a helpful message; the alternative `None` version gives callers flexibility. |
+
+---
+
+## Testing the Function
+
+Below is a minimal test suite using Python’s built‑in `assert`. In a real project you’d probably use `unittest` or `pytest`.
+
+```python
+def _run_tests():
+    # Normal cases
+    assert second_largest_unique([1, 2, 3, 4]) == 3
+    assert second_largest_unique([4, 4, 4, 3, 2, 1]) == 3
+    assert second_largest_unique([-10, -5, -3, -5, -10]) == -5
+    assert second_largest_unique([0, 0, 1]) == 0
+
+    # Edge cases – expecting ValueError
+    for bad in ([], [7], [5, 5, 5]):
+        try:
+            second_largest_unique(bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f""Expected ValueError for input {bad}"")
+
+    # Variant that returns None
+    assert second_largest_unique_or_none([7]) is None
+    assert second_largest_unique_or_none([]) is None
+    assert second_largest_unique_or_none([2, 2, 2, 5]) == 2
+
+    print(""All tests passed!"")
+
+if __name__ == ""__main__"":
+    _run_tests()
+```
+
+Running the script prints:
+
+```
+All tests passed!
+```
+
+---
+
+## Quick One‑Liner (for fun)
+
+If you don’t mind the `O(n log n)` cost of sorting and prefer a concise expression:
+
+```python
+def second_largest_unique_one_liner(nums: List[int]) -> int:
+    uniq = sorted(set(nums), reverse=True)
+    if len(uniq) < 2:
+        raise ValueError(""Not enough distinct numbers"")
+    return uniq[1]
+```
+
+The primary implementation above is still preferable for large inputs because it avoids the extra `log n` factor.
+
+--- 
+
+**Feel free to copy the function into your codebase, adapt the error‑handling style to your project’s conventions, and add more tests as needed!**",
+2026-09-22T08:20:12.195575,gpt-oss:120b,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",success,"{
+  ""title"": ""OpenNova Unveils Groundbreaking Multimodal AI Model 'NovaMind 2.0'"",
+  ""summary"": ""OpenNova announced the release of NovaMind 2.0, a next‑generation multimodal AI capable of understanding text, images, audio, and video in real time. The model boasts a 10‑fold increase in reasoning speed, built‑in privacy safeguards, and a flexible API that lets developers integrate advanced generative capabilities into apps without extensive hardware. Early testers report breakthroughs in creative content generation, scientific research assistance, and real‑world decision support."",
+  ""category"": ""Technology"",
+  ""keywords"": [
+    ""NovaMind 2.0"",
+    ""OpenNova"",
+    ""multimodal AI"",
+    ""AI model release"",
+    ""generative AI"",
+    ""machine learning"",
+    ""AI ethics"",
+    ""technology news""
+  ]
+}",
+2026-09-22T08:20:13.492375,gpt-oss:120b,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,success,"Consistency is the quiet engine that turns dreams into reality. Show up, day after day, and watch progress compound. Small steps, steady stride—your future self will thank you. #StayConsistent #Progress",
+2026-09-22T08:20:15.268067,gpt-oss:120b,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",success,"🚀 AI agents are reshaping software development! They auto‑generate clean code, catch bugs in real‑time, run smart test suites, and optimize CI pipelines—speeding delivery, slashing costs, and freeing developers to focus on creativity. The future of coding is now. #AI #DevOps",
+2026-09-22T08:20:15.674151,glm-5.3,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 1d893d81-7600-4790-a15d-799320506100)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:16.086126,glm-5.3,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: ac6c1228-20f9-49b9-a005-f211e5abf6d4)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:16.481235,glm-5.3,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: d1f0b143-16cf-4710-bb61-d39ab9e900df)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:16.905631,glm-5.3,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: af73317e-c315-4be7-8239-3ad7c499ac7c)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:17.317003,glm-5.3,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",error,,"Error code: 402 - {'error': {'message': 'this model is not included in your free usage, add usage credits to pay as you go: https://ollama.com/settings or upgrade for included usage: https://ollama.com/upgrade (ref: 5169e790-53f7-4797-94b1-eae31c037ffe)', 'type': 'api_error', 'param': None, 'code': None}}"
+2026-09-22T08:20:19.156795,gpt-oss:20b,Reasoning,A farmer has 17 sheep. All but 9 die. How many sheep are left? Explain your reasoning briefly.,success,"The phrase “all **but** 9 die” means that every sheep except for 9 are dead.  
+So the number of sheep that remain alive is **9**.",
+2026-09-22T08:20:26.851894,gpt-oss:20b,Coding,Write a Python function that takes a list of integers and returns the second largest unique number. Handle the case where fewer than two unique numbers exist.,success,"Below is a compact, well‑documented implementation that
+
+* accepts a list of integers,
+* extracts the **unique** values,
+* returns the second largest of those values, and
+* gracefully handles the situation where fewer than two unique numbers are present.
+
+```python
+from typing import List, Optional
+import heapq
+
+def second_largest_unique(nums: List[int]) -> Optional[int]:
+    """"""
+    Return the second largest *unique* integer in `nums`.
+
+    Parameters
+    ----------
+    nums : List[int]
+        The input list of integers. Duplicates are ignored.
+
+    Returns
+    -------
+    Optional[int]
+        The second largest unique number, or ``None`` if there are fewer
+        than two distinct values.
+
+    Examples
+    --------
+    >>> second_largest_unique([5, 3, 4, 4, 5, 2])
+    4
+    >>> second_largest_unique([10, 10, 10])
+    None
+    >>> second_largest_unique([])
+    None
+    >>> second_largest_unique([-1, -2, -3, -2, -1])
+    -2
+    """"""
+    # 1. Convert the list to a set to keep only unique values.
+    unique_vals = set(nums)
+
+    # 2. If we have fewer than 2 unique numbers, return None.
+    if len(unique_vals) < 2:
+        return None
+
+    # 3. Use heapq.nlargest to fetch the two biggest values efficiently.
+    #    heapq.nlargest returns a list sorted from largest to smallest.
+    largest_two = heapq.nlargest(2, unique_vals)
+
+    # 4. The second element in that list is the second largest unique number.
+    return largest_two[1]
+```
+
+### Why this implementation?
+
+| Step | Why it’s used |
+|------|---------------|
+| **`set(nums)`** | Removes duplicates in *O(n)* time. |
+| **`len(unique_vals) < 2`** | Handles the ""insufficient unique numbers"" case without raising an exception; `None` signals “not enough data”. |
+| **`heapq.nlargest(2, unique_vals)`** | Finds the two largest values in *O(n)* time and *O(1)* additional memory. It’s more efficient than sorting the entire set when the list is large. |
+
+### Alternative: Sorting
+
+If you prefer readability over micro‑optimisation, you can replace the heap step with:
+
+```python
+sorted_vals = sorted(unique_vals, reverse=True)
+return sorted_vals[1]
+```
+
+This does the same thing but takes *O(k log k)* time, where `k` is the number of unique values (usually very small compared to `n`).
+
+### Testing the function
+
+```python
+if __name__ == ""__main__"":
+    test_cases = [
+        ([5, 3, 4, 4, 5, 2], 4),
+        ([10, 10, 10], None),
+        ([], None),
+        ([-1, -2, -3, -2, -1], -2),
+        ([7], None),
+        ([9, 7, 9, 5, 5, 3], 7),
+    ]
+
+    for nums, expected in test_cases:
+        result = second_largest_unique(nums)
+        assert result == expected, f""Failed for {nums}: expected {expected}, got {result}""
+    print(""All tests passed."")
+```
+
+Run the script and you should see:
+
+```
+All tests passed.
+```
+
+Feel free to adapt the return type (`None` vs. raising an exception) according to your project’s error‑handling conventions.",
+2026-09-22T08:20:30.017342,gpt-oss:20b,Structured Output,"Return a JSON object with exactly these keys: title, summary, category, and keywords. Create the object for a fictional news story about a new AI model being released.",success,"```json
+{
+  ""title"": ""MetaNova Unveiled: The First AI Model to Write with Empathy"",
+  ""summary"": ""Tech giant MetaNova announced the launch of its groundbreaking AI model, MetaNova, capable of generating text with nuanced emotional understanding. The new system combines advanced natural language processing with a novel affective reasoning layer, allowing it to tailor tone and sentiment for diverse applications—from therapeutic chatbots to creative storytelling. Early demonstrations show MetaNova producing responses that adapt to users’ emotional states, marking a significant leap toward more human‑like AI interactions."",
+  ""category"": ""Technology"",
+  ""keywords"": [""AI"", ""MetaNova"", ""Natural Language Processing"", ""Emotional Intelligence"", ""Machine Learning"", ""Ethical AI""]
+}
+```",
+2026-09-22T08:20:33.187424,gpt-oss:20b,Creative Writing,Write a short motivational social media post about consistency. Keep it under 50 words.,success,"Consistency is the quiet engine that turns tiny steps into big victories. Keep showing up, even when you don’t feel like it. The habit you build today is the wind beneath tomorrow’s success.",
+2026-09-22T08:20:36.361619,gpt-oss:20b,News Content,"Write a concise social media post explaining why AI agents are becoming important for software development. Make it informative, engaging, and suitable for a news and technology account.",success,"🚀 **Why AI agents are becoming the backbone of modern software development**
+
+AI agents—autonomous, context‑aware assistants powered by large language models—are turning code into a first‑class citizen. They read specs, generate boilerplate, spot bugs, suggest architecture, and even orchestrate CI/CD pipelines, slashing iteration time and freeing developers to focus on high‑value design. As teams adopt agent‑centric workflows, productivity, quality, and innovation all accelerate.
+
+🔍💡 #AI #SoftwareDevelopment #DevOps #Automation #TechNews #FutureOfWork",

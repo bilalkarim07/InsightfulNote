@@ -1,0 +1,299 @@
+================================================================================
+NEWSROOM GEMINI MODEL EVALUATION
+================================================================================
+
+Model: models/gemini-flash-latest
+Display Name: Gemini Flash Latest
+Description: Latest release of Gemini Flash
+Started: 2026-09-22 09:45:07
+Questions: 10
+
+################################################################################
+TEST 1: News Understanding
+################################################################################
+
+QUESTION:
+You are the AI content engine for my Newsroom project.
+
+A technology company has announced a new AI model. The company claims
+that the model is significantly better than its previous model at
+coding, reasoning, and mathematics.
+
+However, independent benchmark results have not yet been published,
+and journalists are currently reporting only the company's claims.
+
+Explain:
+
+1. Which parts of this information are confirmed facts?
+2. Which parts are claims?
+3. What information should be verified before publishing?
+4. How should Newsroom report this story without presenting
+   unverified claims as established facts?
+
+RESPONSE:
+### 1. Confirmed Facts
+Based on the available information, the confirmed facts are:
+* A technology company made an announcement regarding a new AI model.
+* The company stated that the model outperforms its predecessor in coding, reasoning, and mathematics.
+* Independent benchmark results have not yet been published.
+* Current media coverage relies solely on the company’s statements.
+
+---
+
+### 2. Claims
+The unverified claims include:
+* The new model is "significantly better" than the previous model.
+* The model delivers superior performance specifically in coding, reasoning, and mathematics.
+
+---
+
+### 3. Information to Verify Before Publishing
+To establish the validity of the performance statements, Newsroom should verify:
+* **Independent benchmark data:** Results from third-party evaluations, standardized tests, or peer reviews that replicate the company’s findings.
+* **Testing methodology:** The datasets, baselines, and evaluation metrics the company used to compare the new model to the previous version.
+* **Model availability:** Whether the model is accessible to independent researchers, developers, or the public to verify these capabilities directly.
+
+---
+
+### 4. How Newsroom Should Report This Story Responsibly
+To cover the development responsibly without presenting claims as established facts:
+
+* **Center the report on the announcement, not the performance:** Frame the news around the fact that an announcement occurred (e.g., *"Company Announces New AI Model, Claims Major Gains in Reasoning and Coding"*).
+* **Use precise attribution:** Attribute every performance metric to the company using clear language such as *"the company stated,"* *"according to company claims,"* or *"the company reported."*
+* **Explicitly note the lack of independent testing:** Clearly state in the body of the article that independent benchmarks have not yet been published and the performance figures have not been externally validated.
+* **Avoid definitive language:** Refrain from stating that the model *is* faster, smarter, or better; only state that it is *claimed* or *designed* to be.
+
+RESPONSE TIME: 26.57 seconds
+
+################################################################################
+TEST 2: News Post Generation
+################################################################################
+
+QUESTION:
+Using the following scenario, create a short Newsroom-style post
+for X and Threads.
+
+Scenario:
+
+A technology company has announced a new AI model. The company says
+the model is significantly better than its previous model at coding,
+reasoning, and mathematics. Independent benchmark results have not
+yet been published.
+
+Write a concise, informative post under 80 words.
+
+Do not invent benchmark numbers or present the company's claims
+as independently verified facts.
+
+ERROR:
+503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+
+RESPONSE TIME: 2.82 seconds
+
+################################################################################
+TEST 3: Breaking News
+################################################################################
+
+QUESTION:
+Newsroom receives the following breaking-news information:
+
+"OpenAI has released a new AI model today. The company says the model
+is faster and more capable than its previous generation and is now
+available to developers."
+
+Create a breaking-news style post suitable for X.
+
+Rules:
+
+- Keep it under 60 words.
+- Do not invent technical specifications.
+- Clearly attribute claims to the company.
+- Do not use exaggerated language.
+- Make it informative and engaging.
+
+ERROR:
+503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+
+RESPONSE TIME: 6.75 seconds
+
+################################################################################
+TEST 4: Fact vs Claim
+################################################################################
+
+QUESTION:
+Newsroom is processing this information:
+
+"Company X says its new AI model is the world's most powerful model,
+beats every competitor on reasoning benchmarks, and will transform
+software development."
+
+Classify each statement as one of:
+
+FACT
+COMPANY CLAIM
+REQUIRES VERIFICATION
+
+Then explain briefly why you classified each statement that way.
+
+Do not perform external research.
+
+ERROR:
+503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+
+RESPONSE TIME: 3.65 seconds
+
+################################################################################
+TEST 5: Headline Generation
+################################################################################
+
+QUESTION:
+Generate 5 possible headlines for a Newsroom post about this story:
+
+"A new open-source AI model has been released. Its developers report
+strong performance on several coding and reasoning benchmarks."
+
+Requirements:
+
+- Headlines should be concise.
+- Avoid clickbait.
+- Do not invent benchmark scores.
+- Clearly communicate that the model has been released.
+- Make them suitable for a technology news account.
+
+RESPONSE:
+Here are 5 concise, factual headlines suitable for a technology news account:
+
+1. **New Open-Source AI Model Released; Developers Report Strong Coding and Reasoning Performance**
+2. **Developers Release New Open-Source AI Model, Citing Strong Coding and Reasoning Benchmarks**
+3. **New Open-Source AI Model Launches with Reported Coding and Reasoning Strengths**
+4. **Developers Debut Open-Source AI Model with Reported High Marks in Code and Reasoning**
+5. **New Open-Source AI Model Released with Strong Benchmark Claims in Coding and Reasoning**
+
+RESPONSE TIME: 7.56 seconds
+
+################################################################################
+TEST 6: Social Media Rewrite
+################################################################################
+
+QUESTION:
+Rewrite the following news information into a concise social media
+post for Newsroom:
+
+"Google announced a new AI model. According to Google, the model
+improves performance across several tasks and is designed for
+developers building AI applications."
+
+Requirements:
+
+- Under 70 words.
+- Neutral news tone.
+- Preserve the important information.
+- Do not add facts that are not provided.
+- Do not exaggerate Google's claims.
+
+RESPONSE:
+Google has announced a new AI model designed for developers building AI applications. According to the company, the model improves performance across several tasks.
+
+RESPONSE TIME: 2.32 seconds
+
+################################################################################
+TEST 7: Incomplete Information
+################################################################################
+
+QUESTION:
+Newsroom receives this incomplete report:
+
+"Several users are reporting that a major AI service is currently
+unavailable. The company's official account has not yet confirmed
+an outage."
+
+What should Newsroom do?
+
+Explain:
+
+1. Whether the story should immediately be presented as a confirmed
+   outage.
+2. What should be verified.
+3. How the story could be reported while information is still developing.
+4. Provide an example post under 60 words.
+
+ERROR:
+503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+
+RESPONSE TIME: 5.01 seconds
+
+################################################################################
+TEST 8: Conflicting Reports
+################################################################################
+
+QUESTION:
+Newsroom receives two reports about an AI product launch.
+
+Report A says the product launched today.
+
+Report B, published by another technology publication, says the launch
+has been delayed until next month.
+
+Neither report provides an official announcement.
+
+Explain how Newsroom should handle the conflicting information.
+
+Then write a short post that communicates the situation without
+pretending that either report has been confirmed.
+
+ERROR:
+429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.8-flash\nPlease retry in 56.807641008s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.8-flash', 'location': 'global'}, 'quotaValue': '5'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '56s'}]}}
+
+RESPONSE TIME: 0.30 seconds
+
+################################################################################
+TEST 9: AI Technology Explanation
+################################################################################
+
+QUESTION:
+Write a short Newsroom post explaining why AI agents are becoming
+important for software development.
+
+Requirements:
+
+- Under 80 words.
+- Explain the concept simply.
+- Mention that agents can perform multi-step tasks.
+- Avoid hype.
+- Make it understandable to someone who is not an AI engineer.
+
+ERROR:
+429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.8-flash\nPlease retry in 56.508444702s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.8-flash'}, 'quotaValue': '5'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '56s'}]}}
+
+RESPONSE TIME: 0.30 seconds
+
+################################################################################
+TEST 10: Newsroom Editorial Judgment
+################################################################################
+
+QUESTION:
+Newsroom has this information:
+
+"An AI startup claims its new model is 10x better than GPT-class
+models, but provides no benchmark methodology, independent testing,
+or detailed results."
+
+Explain how Newsroom should approach this story.
+
+Then write a responsible social media post about it.
+
+The goal is to inform readers without amplifying an unsupported claim.
+
+ERROR:
+429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.8-flash\nPlease retry in 56.195862754s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.8-flash'}, 'quotaValue': '5'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '56s'}]}}
+
+RESPONSE TIME: 0.32 seconds
+
+================================================================================
+TEST SUMMARY
+================================================================================
+
+Model: models/gemini-flash-latest
+Successful: 3
+Failed: 7
+Total: 10

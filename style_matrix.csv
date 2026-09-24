@@ -1,0 +1,40 @@
+tone,item,text
+Eye-Catching Breaking News,Syntax,[FACTUAL HOOK] → [EVENT] → [KEY VERIFIED DETAIL] → [ATTRIBUTION/UNKNOWN]
+Eye-Catching Breaking News,Example 1,"[FACTUAL HOOK]: [Event] has occurred in [location], according to [source]. Here’s what is confirmed so far."
+Eye-Catching Breaking News,Example 2,New development: [actor] announced [verified action]. The announcement was published [time/date].
+Eye-Catching Breaking News,Example 3,[Event] reported in [location]. Officials said [verified detail]; further details remain unclear.
+Eye-Catching Breaking News,Example 4,Breaking: [organization] says [verified statement]. Independent reporting also documents [fact].
+Eye-Catching Breaking News,Example 5,[Actor] has taken [verified action]. The immediate documented effect is [effect].
+Eye-Catching Breaking News,Example 6,Update: [event] has changed [specific condition]. [Source] reported the change at [time].
+Eye-Catching Breaking News,Example 7,New details on [story]: [verified detail]. The earlier claim that [claim] remains unverified.
+Eye-Catching Breaking News,Example 8,[Event] confirmed by [primary source]. Here’s what the available evidence currently shows.
+Eye-Catching Breaking News,Example 9,[Organization] released new information about [event]. The key confirmed point: [fact].
+Eye-Catching Breaking News,Example 10,[Story] is developing. Confirmed so far: [fact 1]; [fact 2].
+Eye-Catching Breaking News,Example 11,"Officials reported [event]. The evidence supports [fact], while [unknown] remains unresolved."
+Eye-Catching Breaking News,Example 12,"JUST IN: [verified development]. The next confirmed detail is [fact], while [open question] is still being checked."
+Analytical Deep-Dive,Syntax,[THESIS] → [CONTEXT] → [EVIDENCE] → [COUNTERPOINT/UNCERTAINTY] → [IMPLICATION]
+Analytical Deep-Dive,Example 1,"[Event] matters because [supported reason]. The evidence shows [fact], but it does not establish [inference]."
+Analytical Deep-Dive,Example 2,"To understand [event], start with [context]. [Source A] reports [fact], while [Source B] provides [corroboration]."
+Analytical Deep-Dive,Example 3,The headline is [event]. The deeper documented issue is [context]. What remains uncertain is [unknown].
+Analytical Deep-Dive,Example 4,"[Development] changes [specific condition]. Historical context shows [fact], although the current outcome remains uncertain."
+Analytical Deep-Dive,Example 5,"Three facts frame [story]: [fact 1], [fact 2], and [fact 3]. Together they support [limited conclusion]."
+Analytical Deep-Dive,Example 6,"[Claim] is circulating, but the evidence is narrower: [verified evidence]. That distinction matters."
+Analytical Deep-Dive,Example 7,The available reporting points to [fact]. It is too early to conclude [unsupported conclusion].
+Analytical Deep-Dive,Example 8,[Policy/event] has two documented effects: [effect 1] and [effect 2]. Longer-term impact remains unknown.
+Analytical Deep-Dive,Example 9,"Looking beyond the headline: [fact]. The strongest evidence comes from [source], while [issue] still lacks confirmation."
+Analytical Deep-Dive,Example 10,[Event] should be read in context. [Historical fact] explains background but does not prove [current claim].
+Analytical Deep-Dive,Example 11,"The evidence around [story] is mixed. [Source A] reports [claim], while [Source B] reports [different claim]."
+Analytical Deep-Dive,Example 12,[Development] is significant for [documented reason]. What happens next depends on [known uncertainty].
+Conversational,Syntax,[PLAIN-LANGUAGE OPEN] → [WHAT HAPPENED] → [WHY IT MATTERS] → [QUESTION/CTA]
+Conversational,Example 1,"So, what actually happened with [story]? The short version: [verified fact]."
+Conversational,Example 2,You may have seen [claim] today. Here’s what the available evidence actually confirms.
+Conversational,Example 3,Here’s the simple version of [event]: [fact]. The part we still don’t know is [unknown].
+Conversational,Example 4,Why is everyone talking about [story]? Because [verified reason].
+Conversational,Example 5,Quick context on [event]: [fact 1]. Then [fact 2]. That’s what we can confirm right now.
+Conversational,Example 6,One detail about [story] is getting attention: [fact]. But separate that from [unverified claim].
+Conversational,Example 7,"Let’s unpack [event] without the noise: [fact 1], [fact 2], and [unknown]."
+Conversational,Example 8,What changed today? [verified development]. What hasn’t changed? [verified context].
+Conversational,Example 9,"If you’re catching up on [story], start here: [concise factual summary]."
+Conversational,Example 10,The important part of [event] is not the speculation. It’s [verified fact].
+Conversational,Example 11,"There’s a lot being said about [story]. The evidence supports [fact], while [claim] remains unconfirmed."
+Conversational,Example 12,Here’s where [story] stands: [fact]. Researchers/reporters are still checking [open question].

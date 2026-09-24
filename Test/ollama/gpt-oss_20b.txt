@@ -1,0 +1,416 @@
+================================================================================
+NEWSROOM MODEL EVALUATION
+================================================================================
+
+Model: gpt-oss:20b
+Test started: 2026-09-22 08:28:21
+Questions: 10
+
+================================================================================
+
+################################################################################
+TEST 1: News Understanding
+################################################################################
+
+QUESTION:
+You are the AI content engine for my Newsroom project.
+
+A technology company has announced a new AI model. The company claims
+that the model is significantly better than its previous model at
+coding, reasoning, and mathematics.
+
+However, independent benchmark results have not yet been published,
+and journalists are currently reporting only the company's claims.
+
+Explain:
+
+1. Which parts of this information are confirmed facts?
+2. Which parts are claims?
+3. What information should be verified before publishing?
+4. How should Newsroom report this story without presenting
+   unverified claims as established facts?
+
+RESPONSE:
+**1. Confirmed facts**
+
+| Fact | Source / Basis |
+|------|----------------|
+| A technology company announced a new AI model. | Official company statement / press release. |
+| The company claims the new model is “significantly better” than its predecessor at coding, reasoning, and mathematics. | Direct quote from the company’s announcement. |
+| No independent benchmark results have been published yet. | Public record (absence of third‑party reports). |
+| Journalists are currently reporting only the company’s claims. | Observed media coverage to date. |
+
+**2. Claims (unverified)**
+
+- The new model is *significantly better* at coding.  
+- The new model is *significantly better* at reasoning.  
+- The new model is *significantly better* at mathematics.  
+
+These statements are asserted by the company but lack independent evidence.
+
+**3. Information to verify before publishing**
+
+| Verification item | Why it matters |
+|--------------------|----------------|
+| Independent benchmark results (e.g., OpenAI, DeepMind, or academic labs). | Provides objective evidence of performance. |
+| Methodology of the company’s internal tests (datasets, evaluation metrics, baselines). | Allows assessment of the claim’s validity. |
+| Definition of “significantly better” (quantitative improvement, statistical significance). | Clarifies the magnitude and relevance of the improvement. |
+| Scope of the comparison (same model version, same hardware, same software stack). | Ensures a fair comparison. |
+| Any third‑party reviews or expert commentary. | Adds credibility or counter‑evidence. |
+
+**4. How Newsroom should report the story**
+
+- **Attribute all performance claims to the company.**  
+  *Example:* “According to the company’s press release, the new model outperforms its predecessor in coding, reasoning, and mathematics.”
+
+- **State the absence of independent verification.**  
+  *Example:* “No third‑party benchmark results are yet available to confirm these claims.”
+
+- **Provide context for the claim.**  
+  *Example:* “The company has not disclosed the specific metrics or datasets used to determine ‘significantly better’.”
+
+- **Highlight pending verification.**  
+  *Example:* “Independent evaluations are expected in the coming weeks; readers should await those results before forming conclusions.”
+
+- **Use neutral, non‑assertive language.**  
+  *Example:* “The company says…; it remains unverified until external tests are published.”
+
+By following these steps, Newsroom can present the information accurately, avoid presenting unverified claims as facts, and maintain journalistic integrity.
+
+RESPONSE TIME: 8.90 seconds
+
+
+################################################################################
+TEST 2: News Post Generation
+################################################################################
+
+QUESTION:
+Using the following scenario, create a short Newsroom-style post
+for X and Threads.
+
+Scenario:
+
+A technology company has announced a new AI model. The company says
+the model is significantly better than its previous model at coding,
+reasoning, and mathematics. Independent benchmark results have not
+yet been published.
+
+Write a concise, informative post under 80 words.
+
+Do not invent benchmark numbers or present the company's claims
+as independently verified facts.
+
+RESPONSE:
+TechCo unveiled its new AI model, claiming it outperforms the previous version in coding, reasoning and math. No independent benchmarks have been released yet, so third‑party verification is still pending. Stay tuned for further evaluations.
+
+RESPONSE TIME: 6.11 seconds
+
+
+################################################################################
+TEST 3: Breaking News
+################################################################################
+
+QUESTION:
+Newsroom receives the following breaking-news information:
+
+"OpenAI has released a new AI model today. The company says the model
+is faster and more capable than its previous generation and is now
+available to developers."
+
+Create a breaking-news style post suitable for X.
+
+Rules:
+
+- Keep it under 60 words.
+- Do not invent technical specifications.
+- Clearly attribute claims to the company.
+- Do not use exaggerated language.
+- Make it informative and engaging.
+
+RESPONSE:
+OpenAI has launched a new AI model today, claiming it is faster and more capable than the previous generation. The model is now available to developers.
+
+RESPONSE TIME: 3.71 seconds
+
+
+################################################################################
+TEST 4: Fact vs Claim
+################################################################################
+
+QUESTION:
+Newsroom is processing this information:
+
+"Company X says its new AI model is the world's most powerful model,
+beats every competitor on reasoning benchmarks, and will transform
+software development."
+
+Classify each statement as one of:
+
+FACT
+COMPANY CLAIM
+REQUIRES VERIFICATION
+
+Then explain briefly why you classified each statement that way.
+Do not perform external research.
+
+RESPONSE:
+**Statement 1:** *“Company X says its new AI model is the world's most powerful model.”*  
+**Classification:** FACT  
+**Why:** This sentence reports what the company has publicly stated. It is a factual account of the company's claim, not the claim itself.
+
+**Statement 2:** *“Beats every competitor on reasoning benchmarks.”*  
+**Classification:** COMPANY CLAIM  
+**Why:** This is a performance claim made by Company X about its model relative to competitors. No evidence is provided, so it remains a claim.
+
+**Statement 3:** *“Will transform software development.”*  
+**Classification:** COMPANY CLAIM  
+**Why:** This is a future‑impact claim asserted by Company X. Without corroborating evidence, it is a claim rather than a verified fact.
+
+RESPONSE TIME: 4.07 seconds
+
+
+################################################################################
+TEST 5: Headline Generation
+################################################################################
+
+QUESTION:
+Generate 5 possible headlines for a Newsroom post about this story:
+
+"A new open-source AI model has been released. Its developers report
+strong performance on several coding and reasoning benchmarks."
+
+Requirements:
+
+- Headlines should be concise.
+- Avoid clickbait.
+- Do not invent benchmark scores.
+- Clearly communicate that the model has been released.
+- Make them suitable for a technology news account.
+
+RESPONSE:
+1. “New Open‑Source AI Model Unveiled, Excels on Coding and Reasoning Benchmarks”  
+2. “Open‑Source AI Model Released, Shows Strong Performance on Coding Tests”  
+3. “Researchers Release Open‑Source AI Model with Notable Coding and Reasoning Results”  
+4. “Open‑Source AI Model Comes Out, Performs Well on Multiple Benchmarks”  
+5. “New Open‑Source AI Tool Launched, Demonstrates Solid Coding and Reasoning Capabilities”
+
+RESPONSE TIME: 3.15 seconds
+
+
+################################################################################
+TEST 6: Social Media Rewrite
+################################################################################
+
+QUESTION:
+Rewrite the following news information into a concise social media
+post for Newsroom:
+
+"Google announced a new AI model. According to Google, the model
+improves performance across several tasks and is designed for
+developers building AI applications."
+
+Requirements:
+
+- Under 70 words.
+- Neutral news tone.
+- Preserve the important information.
+- Do not add facts that are not provided.
+- Do not exaggerate Google's claims.
+
+RESPONSE:
+Google unveiled a new AI model that, according to the company, improves performance across several tasks and is intended to help developers build AI applications.
+
+RESPONSE TIME: 2.07 seconds
+
+
+################################################################################
+TEST 7: Incomplete Information
+################################################################################
+
+QUESTION:
+Newsroom receives this incomplete report:
+
+"Several users are reporting that a major AI service is currently
+unavailable. The company's official account has not yet confirmed
+an outage."
+
+What should Newsroom do?
+
+Explain:
+
+1. Whether the story should immediately be presented as a confirmed
+   outage.
+2. What should be verified.
+3. How the story could be reported while information is still developing.
+4. Provide an example post under 60 words.
+
+RESPONSE:
+**1. Should the story be presented as a confirmed outage?**  
+No. The report is based only on user complaints and lacks confirmation from the company. Treat it as a developing story, not a verified incident.
+
+**2. What should be verified?**  
+- *Official confirmation*: Wait for the company’s own statement or status page.  
+- *Independent evidence*: Check the service’s status page, API health dashboards, or third‑party monitoring sites.  
+- *Scope and impact*: Determine how many users are affected, which services are down, and whether the outage is global or localized.  
+- *Timeline*: Note when the first reports appeared and how quickly they spread.
+
+**3. How to report while information is still developing**  
+- Use neutral language: “users report… no official confirmation yet.”  
+- Cite the source of the reports (e.g., “multiple user posts on X”).  
+- Mention any preliminary evidence from status dashboards or third‑party monitors.  
+- Indicate that the story is evolving and that updates will follow.  
+- Avoid speculation about causes or duration.
+
+**4. Example post (≤60 words)**  
+
+> Multiple users report that the AI service is currently inaccessible, but the company has not yet confirmed an outage. Status pages and third‑party monitors show no widespread issues at this time. We’ll update as official information becomes available.  
+
+(53 words)
+
+RESPONSE TIME: 3.42 seconds
+
+
+################################################################################
+TEST 8: Conflicting Reports
+################################################################################
+
+QUESTION:
+Newsroom receives two reports about an AI product launch.
+
+Report A says the product launched today.
+
+Report B, published by another technology publication, says the launch
+has been delayed until next month.
+
+Neither report provides an official announcement.
+
+Explain how Newsroom should handle the conflicting information.
+
+Then write a short post that communicates the situation without
+pretending that either report has been confirmed.
+
+RESPONSE:
+**How Newsroom Should Handle the Conflicting Reports**
+
+1. **Verify the Sources**  
+   * Check the credentials and past accuracy of the outlets that produced Report A and Report B.  
+   * Look for corroborating evidence (e.g., press releases, social‑media posts from the company, statements from a spokesperson).  
+
+2. **Seek an Official Statement**  
+   * Contact the company’s public‑relations department or the relevant product team to ask for a definitive update.  
+   * If no response is received within a reasonable time, note that the information is still unconfirmed.
+
+3. **Maintain Neutrality**  
+   * Report the facts that are known: two independent sources present contradictory dates.  
+   * Avoid implying that one report is “right” or “wrong”; instead, present the uncertainty.
+
+4. **Disclose Limitations**  
+   * Clearly state that neither source has provided an official announcement and that the launch date remains unverified.  
+   * If the company issues a statement later, update the story promptly.
+
+5. **Follow Up**  
+   * Monitor the company’s channels and reputable tech news outlets for any new information.  
+   * Plan to publish a follow‑up once confirmation is obtained.
+
+---
+
+**Short News Post (Unconfirmed Update)**
+
+> **Unconfirmed Launch Date for New AI Product**  
+> Two technology outlets have reported conflicting launch dates for the upcoming AI product from [Company Name].  
+> - Report A claims the product launched today.  
+> - Report B states the release has been postponed to next month.  
+> Neither source has released an official announcement, and the company has not yet confirmed a launch schedule.  Newsroom will update this story as soon as verifiable information becomes available.
+
+RESPONSE TIME: 3.52 seconds
+
+
+################################################################################
+TEST 9: AI Technology Explanation
+################################################################################
+
+QUESTION:
+Write a short Newsroom post explaining why AI agents are becoming
+important for software development.
+
+Requirements:
+
+- Under 80 words.
+- Explain the concept simply.
+- Mention that agents can perform multi-step tasks.
+- Avoid hype.
+- Make it understandable to someone who is not an AI engineer.
+
+RESPONSE:
+AI agents are software helpers that can follow a plan, gather data, and act on it. In development they can write code, run tests, and fix bugs in a sequence of steps, freeing engineers from routine work. By handling multi‑step tasks automatically, they improve efficiency without replacing human judgment.
+
+RESPONSE TIME: 3.80 seconds
+
+
+################################################################################
+TEST 10: Newsroom Editorial Judgment
+################################################################################
+
+QUESTION:
+Newsroom has this information:
+
+"An AI startup claims its new model is 10x better than GPT-class
+models, but provides no benchmark methodology, independent testing,
+or detailed results."
+
+Explain how Newsroom should approach this story.
+
+Then write a responsible social media post about it.
+
+The goal is to inform readers without amplifying an unsupported claim.
+
+RESPONSE:
+**How Newsroom Should Handle the Story**
+
+1. **Verify the Claim**  
+   * Request the startup’s benchmark methodology, dataset, and evaluation metrics.  
+   * Ask for raw results and, if possible, a code repository or a demo that can be independently tested.  
+
+2. **Seek Independent Confirmation**  
+   * Reach out to third‑party AI researchers or institutions that could replicate the benchmark.  
+   * Look for any external reviews or press releases that have already assessed the model.
+
+3. **Provide Context**  
+   * Explain what “10× better” means in concrete terms (e.g., higher accuracy on a specific task).  
+   * Compare the claim to industry benchmarks (GLUE, SuperGLUE, etc.) and recent GPT‑style models.
+
+4. **Highlight the Gap**  
+   * Note the absence of a published methodology, independent testing, or detailed results.  
+   * Emphasize that without transparent evidence, the claim remains unverified.
+
+5. **Report Responsibly**  
+   * Present the startup’s statement as a claim, not a fact.  
+   * Include quotes from experts who can explain the importance of reproducibility.  
+   * Encourage readers to look for follow‑up data before drawing conclusions.
+
+---
+
+**Responsible Social Media Post**
+
+> 🚨 **AI Startup Claims 10× Performance Over GPT‑Style Models**  
+>  The company says its new model outperforms GPT‑class systems, but it has not shared any benchmark methodology, independent testing, or detailed results.  
+>   
+>  Until transparent evidence is made public, we treat this as an unverified claim.  
+>   
+>  👉 Read our full story for context, expert opinions, and what to look for when evaluating AI claims.  
+>  
+>  #AI #MachineLearning #TechNews
+
+*(Link to article)*
+
+RESPONSE TIME: 4.90 seconds
+
+
+================================================================================
+TEST SUMMARY
+================================================================================
+
+Model: gpt-oss:20b
+Successful: 10
+Failed: 0
+Total: 10

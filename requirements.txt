@@ -1,0 +1,13 @@
+langchain
+langgraph
+langchain-tavily
+langchain-core
+beautifulsoup4
+lxml
+python-dotenv
+ddgs
+feedparser
+httpx
+pydantic
+tavily-python
+googlenewsdecoder
