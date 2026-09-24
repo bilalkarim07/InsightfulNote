@@ -11,3 +11,4 @@ httpx
 pydantic
 tavily-python
 googlenewsdecoder
+supabase

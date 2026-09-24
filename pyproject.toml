@@ -1,7 +1,7 @@
 [project]
 name = "insightfullnote"
 version = "0.1.0"
-description = "Add your description here"
+description = "NewsRoom ETL pipeline"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -16,7 +16,7 @@ dependencies = [
     "langgraph>=1.2.12",
     "lxml>=6.1.3",
     "pydantic>=2.13.5",
-    "pytest>=9.1.1",
     "python-dotenv>=1.2.3",
+    "supabase>=2.0.0",          # NEW
     "tavily-python>=0.8.4",
 ]
