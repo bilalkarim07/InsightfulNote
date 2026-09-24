@@ -1,4 +1,4 @@
-"""Idempotent source resolution."""
+"""Idempotent source resolution using DB-level uniqueness."""
 from __future__ import annotations
 
 from typing import Optional
@@ -15,33 +15,27 @@ def get_or_create_source(
     domain: Optional[str] = None,
     base_url: Optional[str] = None,
 ) -> UUID:
-    """Return source UUID, creating it if it doesn't exist.
+    """Return the source UUID, using DB upsert on (name, source_type).
 
-    Uniqueness is based on (name, source_type).
+    Relies on the existing UNIQUE (name, source_type) constraint.
+    No SELECT-then-INSERT race window.
     """
-    # Try to fetch existing
+    payload = {
+        "name": name,
+        "source_type": source_type,
+        "domain": domain,
+        "base_url": base_url,
+        "is_active": True,
+    }
+
     resp = (
         client.table("sources")
-        .select("id")
-        .eq("name", name)
-        .eq("source_type", source_type)
+        .upsert(payload, on_conflict="name,source_type")
         .execute()
     )
-    if resp.data:
-        return UUID(resp.data[0]["id"])
 
-    # Create new
-    insert_resp = (
-        client.table("sources")
-        .insert({
-            "name": name,
-            "source_type": source_type,
-            "domain": domain,
-            "base_url": base_url,
-            "is_active": True,
-        })
-        .execute()
-    )
-    if not insert_resp.data:
-        raise RuntimeError(f"Failed to create source: {name} ({source_type})")
-    return UUID(insert_resp.data[0]["id"])
+    if not resp.data:
+        raise RuntimeError(
+            f"Source upsert returned no data for ({name!r}, {source_type!r})"
+        )
+    return UUID(resp.data[0]["id"])

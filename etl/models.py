@@ -9,7 +9,6 @@ from pydantic import BaseModel, Field
 
 
 class PersistedNewsItem(BaseModel):
-    """Persistence-ready representation of a NewsItem."""
     id: str
     source_id: Optional[UUID] = None
     title: str
@@ -32,7 +31,6 @@ class PersistedNewsItem(BaseModel):
 
 
 class IngestionSummary(BaseModel):
-    """Summary of a batch ingestion run."""
     discovered: int = 0
     transformed: int = 0
     inserted: int = 0

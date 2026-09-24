@@ -1,4 +1,4 @@
-"""High-level ingestion pipeline."""
+"""High-level ingestion pipeline: transform → dedupe → resolve source → persist."""
 from __future__ import annotations
 
 from typing import Optional
@@ -13,8 +13,6 @@ from etl.persistence.news_items import upsert_news_item
 
 
 class IngestionPipeline:
-    """Orchestrates transform → deduplicate → resolve source → persist."""
-
     def __init__(self, client=None):
         self.client = client or get_supabase()
 
@@ -22,13 +20,13 @@ class IngestionPipeline:
         self,
         items: list[NewsItem],
         *,
-        source_name: str = "unknown",
-        source_type: str = "website",
+        source_name: str,
+        source_type: str,
         source_domain: Optional[str] = None,
     ) -> IngestionSummary:
         summary = IngestionSummary(discovered=len(items))
 
-        # 1. Transform
+        # --- 1. Transform (per-item, failure-isolated) ---
         transformed: list[PersistedNewsItem] = []
         for item in items:
             try:
@@ -38,12 +36,12 @@ class IngestionPipeline:
                 summary.failed += 1
                 summary.errors.append(f"Transform failed for {item.url}: {exc}")
 
-        # 2. Deduplicate
+        # --- 2. Batch deduplication (in-memory, per-run) ---
         before = len(transformed)
         transformed = deduplicate_items(transformed)
         summary.skipped += before - len(transformed)
 
-        # 3. Resolve source
+        # --- 3. Source resolution (infrastructure op — may raise) ---
         source_id = get_or_create_source(
             self.client,
             name=source_name,
@@ -51,7 +49,9 @@ class IngestionPipeline:
             domain=source_domain,
         )
 
-        # 4. Persist each item
+        # --- 4. Persist (per-item, failure-isolated) ---
+        # Pre-check on `id` — the SAME field used by the upsert's
+        # on_conflict. This makes inserted/updated counts truthful.
         for item in transformed:
             try:
                 existing = (
@@ -61,6 +61,7 @@ class IngestionPipeline:
                     .execute()
                 )
                 upsert_news_item(self.client, item, source_id=source_id)
+
                 if existing.data:
                     summary.updated += 1
                 else:

@@ -1,3 +1,4 @@
+"""Obtain a real article, transform it, verify determinism, print results."""
 import sys
 from pathlib import Path
 
@@ -13,12 +14,11 @@ print("NEWSROOM TRANSFORMATION TEST")
 print("=" * 40)
 
 from sources.rss import RSSClient
-
-client = RSSClient()
+rss = RSSClient()
 try:
-    result = client.fetch("https://feeds.bbci.co.uk/news/rss.xml")
+    result = rss.fetch("https://feeds.bbci.co.uk/news/rss.xml")
 finally:
-    client.close()
+    rss.close()
 
 if not result.items:
     print("✗ No items discovered from RSS feed.")
@@ -30,13 +30,20 @@ print(f"Original URL: {raw.url}")
 print(f"Title: {raw.title}")
 
 from extraction.normalizers.article import extract_article
-
 extracted = extract_article(raw.url)
 
 from etl.transform.news_item import transform_news_item
 
-persisted = transform_news_item(extracted)
+# Determinism check
+t1 = transform_news_item(extracted)
+t2 = transform_news_item(extracted)
+assert t1.id == t2.id
+assert t1.canonical_url == t2.canonical_url
+assert t1.content_hash == t2.content_hash
+assert t1.canonical_hash == t2.canonical_hash
+print("\n✓ Determinism: id / canonical_url / content_hash / canonical_hash stable")
 
+persisted = t1
 print(f"\nCanonical URL: {persisted.canonical_url}")
 print(f"Content length: {len(persisted.content or '')}")
 print(f"Content hash: {persisted.content_hash}")

@@ -1,3 +1,4 @@
+"""Production daily ingestion runner. Suitable for GitHub Actions."""
 import sys
 from pathlib import Path
 
@@ -13,17 +14,17 @@ from extraction.normalizers.article import extract_article
 from etl.pipeline import IngestionPipeline
 
 
-def main():
+def main() -> int:
     print("Starting daily ingestion...")
 
-    client = RSSClient()
+    rss = RSSClient()
     try:
-        result = client.fetch("https://feeds.bbci.co.uk/news/rss.xml")
+        result = rss.fetch("https://feeds.bbci.co.uk/news/rss.xml")
     finally:
-        client.close()
+        rss.close()
 
     candidates = result.items[:25]
-    print(f"Discovered {len(candidates)} candidates.")
+    print(f"Discovered {len(candidates)} candidate(s).")
 
     items = []
     for cand in candidates:
@@ -41,10 +42,11 @@ def main():
     )
     summary.print_summary()
 
-    if summary.failed > 0 and summary.inserted == 0:
-        print("Fatal: no items ingested.")
-        sys.exit(1)
+    if summary.inserted == 0 and summary.updated == 0 and summary.failed > 0:
+        print("Fatal: no items ingested and failures occurred.")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
