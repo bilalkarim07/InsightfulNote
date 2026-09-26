@@ -1,0 +1,351 @@
+{
+  "run_id": "run_f999888fab71",
+  "outcome": "PASS",
+  "state": {
+    "run_id": "run_f999888fab71",
+    "story_id": "story_f999888fab71",
+    "topic": "news",
+    "seed": {
+      "story_id": "story_f999888fab71",
+      "title": "Apple Q4 2025 earnings",
+      "summary": "Latest developments regarding: Apple Q4 2025 earnings",
+      "topic": "news"
+    },
+    "provider": "groq",
+    "model_id": "openai/gpt-oss-120b",
+    "discovery": {
+      "run_id": "run_f999888fab71",
+      "created_at": "2026-09-26T12:00:00Z",
+      "candidates": [
+        {
+          "story_id": "story_f999888fab71",
+          "title": "Apple Q4 2025 earnings",
+          "summary": "Latest developments regarding: Apple Q4 2025 earnings",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_f999888fab71",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f999888fab71",
+      "assessments": [
+        {
+          "story_id": "story_f999888fab71",
+          "source_id": "s1",
+          "source_name": "Source Name",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_f999888fab71",
+      "created_at": "2026-09-26T07:40:50.142217Z",
+      "story_id": "story_f999888fab71",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "Apple reported record Q4 2025 revenue of $102.5\u202fbillion, an 8% year\u2011over\u2011year increase.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_2",
+          "text": "Services revenue in Q4 2025 reached an all\u2011time high of $28.8\u202fbillion, up 15% from the prior year.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_3",
+          "text": "Apple\u2019s operating cash flow for Q4 2025 was a record $29.73\u202fbillion.",
+          "evidence_ids": [
+            "ev_3"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "Apple Inc (AAPL) Q4 2025 Earnings Call Highlights \u2014 Apple Inc (NASDAQ:AAPL) reported a record revenue of $102.5 billion for Q4 2025, marking an 8% increase year-over-year. Services revenue reached an all-time high of $28.8 billion, growing 15% from the previous year. The iPhone 17 series set a revenue record for the September quarter at $49\u2026",
+          "url": "https://finance.yahoo.com/news/apple-inc-aapl-q4-2025-030510387.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "Apple (AAPL) earnings report Q4 2025 \u2014 Analysts polled by LSEG expect Apple to guide to $132.31 billion in December quarter sales and earnings of $2.53 per share. Apple's guide surpasses those expectations. With 11% growth over last year's December quarter, revenue for the upcoming period would be $137.97 billion. Cook said that Apple\u2026",
+          "url": "https://www.cnbc.com/2025/10/30/apple-aapl-earnings-report-q4-2025.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_3",
+          "source_id": "s3",
+          "quote": "Apple Q4 2025 Earnings: Services and AI Drive Growth \u2014 Apple ended Q4 with $132 billion in cash and marketable securities, while cutting short-term liabilities by 6.1%. Operating cash flow hit a record $29.73 billion, and operating cash-to-net income ratio stood at 1.08, showing the quality of earnings. Capital expenditure rose 34.5% to $12.7 billion,\u2026",
+          "url": "https://leverageshares.com/en/insights/apple-q4-earnings-services-and-ai-drive-a-structural-turnaround",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_4",
+          "source_id": "s4",
+          "quote": "Apple Q4 2025 Earnings Call | $AAPL | WATCH LIVE \u2014 paper by $ 1.9 billion resulting in $99 billion in total debt. Therefore, at the end of the quarter, net cash was $34 billion. During the quarter, we returned $ 24 billion to shareholders. This included 3.9 billion in dividends and equivalents and 20 billion through open market repurchases of 89\u2026",
+          "url": "https://www.youtube.com/watch?v=j2se-TYG3hw",
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": ""
+    },
+    "verification": {
+      "run_id": "run_f999888fab71",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f999888fab71",
+      "verifications": [
+        {
+          "claim_id": "claim_1",
+          "status": "SUPPORTED",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "contradictions": [],
+          "notes": ""
+        },
+        {
+          "claim_id": "claim_2",
+          "status": "SUPPORTED",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "contradictions": [],
+          "notes": ""
+        },
+        {
+          "claim_id": "claim_3",
+          "status": "SUPPORTED",
+          "evidence_ids": [
+            "ev_3"
+          ],
+          "contradictions": [],
+          "notes": ""
+        }
+      ],
+      "blocking": false,
+      "escalate": false,
+      "notes": ""
+    },
+    "editorial": {
+      "run_id": "run_f999888fab71",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f999888fab71",
+      "central_event": "",
+      "allowed_claim_ids": [
+        "claim_1",
+        "claim_2",
+        "claim_3"
+      ],
+      "blocked_claim_ids": [],
+      "must_include": [],
+      "optional": [],
+      "do_not_include": [],
+      "attribution_notes": "",
+      "uncertainty_notes": "",
+      "framing": ""
+    },
+    "tone": {
+      "run_id": "run_f999888fab71",
+      "created_at": "2026-09-26T12:34:56Z",
+      "story_id": "story_f999888fab71",
+      "tone": "INFORMATIVE",
+      "rationale": "A factual news post should be clear, objective, and prioritize information delivery, which aligns with the INFORMATIVE tone.",
+      "constraints": [
+        "Maintain factual accuracy",
+        "Use neutral language",
+        "Avoid subjective commentary"
+      ]
+    },
+    "draft": {
+      "run_id": "run_f999888fab71",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f999888fab71",
+      "headline": "Apple posts record Q4 2025 revenue and cash flow",
+      "body": "Apple reported record Q4 2025 revenue of $102.5\u202fbillion, an 8% year\u2011over\u2011year increase. Services revenue reached an all\u2011time high of $28.8\u202fbillion, up 15% from the prior year. The company\u2019s operating cash flow for the quarter was a record $29.73\u202fbillion.",
+      "source_reference": "",
+      "claim_ids": [
+        "claim_1",
+        "claim_2",
+        "claim_3"
+      ],
+      "tone": "INFORMATIVE",
+      "warnings": []
+    },
+    "post": {
+      "run_id": "run_f999888fab71",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f999888fab71",
+      "platform": "threads",
+      "text": "Apple posts record Q4 2025 revenue and cash flow: $102.5\u202fbillion revenue (+8% YoY), services revenue $28.8\u202fbillion (+15% YoY), operating cash flow $29.73\u202fbillion.",
+      "char_count": 162,
+      "claim_ids": [],
+      "source_reference": "",
+      "warnings": []
+    },
+    "validation": {
+      "run_id": "run_f999888fab71",
+      "created_at": "2026-09-26T07:41:02.776352Z",
+      "story_id": "story_f999888fab71",
+      "state": "PASS",
+      "errors": [],
+      "warnings": [],
+      "notes": ""
+    },
+    "publication": {
+      "run_id": "run_f999888fab71",
+      "created_at": "2026-09-26T07:41:02.778362Z",
+      "story_id": "story_f999888fab71",
+      "publication_id": "pub_67c22dd22e40",
+      "platform": "threads",
+      "external_id": null,
+      "url": null,
+      "published_at": null,
+      "status": "SKIPPED_DRY_RUN",
+      "error": null
+    },
+    "iteration": {
+      "research": 1
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "publisher",
+    "outcome": "PASS",
+    "blockers": [],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: 'Apple Q4 2025 earnings'",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:40:44.365022+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:40:46.034314+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 3 claims with 4 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T07:40:50.142217+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "All claims have verbatim support.",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:40:50.145154+00:00"
+    },
+    {
+      "from_agent": "verification",
+      "to_agent": "editorial",
+      "kind": "HANDOFF",
+      "content": "3 supported, 0 unsupported.",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:40:52.079433+00:00"
+    },
+    {
+      "from_agent": "editorial",
+      "to_agent": "writer",
+      "kind": "HANDOFF",
+      "content": "Central event: ''",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:40:53.409018+00:00"
+    },
+    {
+      "from_agent": "tone",
+      "to_agent": "writer",
+      "kind": "INFO",
+      "content": "Tone: INFORMATIVE",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:40:54.247136+00:00"
+    },
+    {
+      "from_agent": "writer",
+      "to_agent": "adapter",
+      "kind": "HANDOFF",
+      "content": "Draft ready (254 chars)",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:40:55.752269+00:00"
+    },
+    {
+      "from_agent": "platform_adapter",
+      "to_agent": "validation",
+      "kind": "HANDOFF",
+      "content": "Post adapted (162 chars)",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:41:02.774076+00:00"
+    },
+    {
+      "from_agent": "validation",
+      "to_agent": "publisher",
+      "kind": "HANDOFF",
+      "content": "OK",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:41:02.776352+00:00"
+    },
+    {
+      "from_agent": "publisher",
+      "to_agent": "all",
+      "kind": "DONE",
+      "content": "Publication: SKIPPED_DRY_RUN",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:41:02.779364+00:00"
+    }
+  ]
+}

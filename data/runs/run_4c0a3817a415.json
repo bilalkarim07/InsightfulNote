@@ -1,0 +1,218 @@
+{
+  "run_id": "run_4c0a3817a415",
+  "story_id": "story_4c0a3817a415",
+  "stages": {
+    "discovery": {
+      "run_id": "run_4c0a3817a415",
+      "created_at": "2026-09-25T12:03:01.964590Z",
+      "candidates": [
+        {
+          "story_id": "story_4c0a3817a415",
+          "title": "Company X announces product Y",
+          "summary": "Company X today announced product Y, available Q2 2026.",
+          "topic": "technology",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_4c0a3817a415",
+      "created_at": "2026-09-25T12:03:05.800986Z",
+      "story_id": "story_4c0a3817a415",
+      "assessments": [
+        {
+          "story_id": "story_4c0a3817a415",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "PRIMARY",
+          "authority": "official press release",
+          "independence": "independent",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": true,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_4c0a3817a415",
+      "created_at": "2026-09-25T12:03:10.822050Z",
+      "story_id": "story_4c0a3817a415",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "Company X today announced product Y, available Q2 2026.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_2",
+          "text": "We expect product Y to lift revenue by 5% in FY27.",
+          "evidence_ids": [
+            "ev_2"
+          ],
+          "attribution": "Analyst at Firm Z",
+          "uncertainty": "not confirmed",
+          "is_forecast": true,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "[mock] Official press release (companyx.com): Company X today announced product Y, available Q2 2026.",
+          "url": null,
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "[mock] Analyst at Firm Z: 'We expect product Y to lift revenue by 5% in FY27.' (attributed forecast, not confirmed)",
+          "url": null,
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": ""
+    },
+    "selection": {
+      "run_id": "run_4c0a3817a415",
+      "created_at": "2026-09-25T00:00:00Z",
+      "story_id": "story_4c0a3817a415",
+      "state": "SELECT",
+      "reason": "fresh, primary source available",
+      "priority": 10,
+      "topic": "technology",
+      "novelty_score": 0.9,
+      "previous_publication_ids": [],
+      "notes": ""
+    },
+    "verification": {
+      "run_id": "run_4c0a3817a415",
+      "created_at": "2026-09-25T12:03:15.184267Z",
+      "story_id": "story_4c0a3817a415",
+      "verifications": [
+        {
+          "claim_id": "claim_1",
+          "status": "SUPPORTED",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "contradictions": [],
+          "notes": ""
+        },
+        {
+          "claim_id": "claim_2",
+          "status": "SUPPORTED_AS_ATTRIBUTED",
+          "evidence_ids": [
+            "ev_2"
+          ],
+          "contradictions": [],
+          "notes": ""
+        }
+      ],
+      "blocking": false,
+      "escalate": false,
+      "notes": ""
+    },
+    "editorial": {
+      "run_id": "run_4c0a3817a415",
+      "created_at": "2026-09-25T12:03:16.961377Z",
+      "story_id": "story_4c0a3817a415",
+      "central_event": "Company X announced product Y",
+      "allowed_claim_ids": [
+        "claim_1",
+        "claim_2"
+      ],
+      "blocked_claim_ids": [],
+      "must_include": [
+        "the announcement",
+        "attribution for any forecast"
+      ],
+      "optional": [],
+      "do_not_include": [
+        "unsupported speculation"
+      ],
+      "attribution_notes": "All forecasts must be clearly attributed to a named source (e.g., analyst, company spokesperson, market research firm) with a citation or reference to the original statement.",
+      "uncertainty_notes": "Indicate the level of confidence for any forward\u2011looking statements, using qualifiers such as \"likely\", \"possible\" or \"expected\" and note any known sources of uncertainty.",
+      "framing": "Focus on the factual details of the product announcement, its expected market impact, and any quoted forecasts, while avoiding speculation not grounded in sourced information."
+    },
+    "tone": {
+      "run_id": "run_4c0a3817a415",
+      "created_at": "2026-09-25T12:03:18.282545Z",
+      "story_id": "story_4c0a3817a415",
+      "tone": "INFORMATIVE",
+      "rationale": "",
+      "constraints": []
+    },
+    "draft": {
+      "run_id": "run_4c0a3817a415",
+      "created_at": "2026-09-25T12:03:20.205045Z",
+      "story_id": "story_4c0a3817a415",
+      "headline": "Company X Announces Product Y, Projected to Boost FY27 Revenue",
+      "body": "Company X today announced product Y, which is slated for release in the second quarter of 2026. Analysts at Firm Z expect product Y to lift the company's revenue by approximately 5% in fiscal year 2027.",
+      "source_reference": "",
+      "claim_ids": [
+        "claim_1",
+        "claim_2"
+      ],
+      "tone": "INFORMATIVE",
+      "warnings": []
+    },
+    "post": {
+      "run_id": "run_4c0a3817a415",
+      "created_at": "2026-09-25T12:00:00Z",
+      "story_id": "story_4c0a3817a415",
+      "platform": "threads",
+      "text": "Company X announced product Y, slated for release in Q2 2026. Analysts at Firm Z expect product Y to lift Company X\u2019s revenue by ~5% in FY 2027.",
+      "char_count": 144,
+      "claim_ids": [
+        "claim_1",
+        "claim_2"
+      ],
+      "source_reference": "",
+      "warnings": []
+    },
+    "validation": {
+      "run_id": "run_4c0a3817a415",
+      "created_at": "2026-09-25T12:03:24.465845Z",
+      "story_id": "story_4c0a3817a415",
+      "state": "PASS",
+      "errors": [],
+      "warnings": [],
+      "notes": ""
+    },
+    "publication": {
+      "run_id": "run_4c0a3817a415",
+      "created_at": "2026-09-25T12:03:24.465845Z",
+      "story_id": "story_4c0a3817a415",
+      "publication_id": "pub_22482e8bf53f",
+      "platform": "threads",
+      "external_id": null,
+      "url": null,
+      "published_at": null,
+      "status": "SKIPPED_DRY_RUN",
+      "error": null
+    }
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "run_id": "run_d5b83c894483",
+  "outcome": "INSUFFICIENT_EVIDENCE",
+  "state": {
+    "run_id": "run_d5b83c894483",
+    "story_id": "story_d5b83c894483",
+    "topic": "news",
+    "seed": {
+      "story_id": "story_d5b83c894483",
+      "title": "Apple Q4 2025 earnings",
+      "summary": "Latest developments regarding: Apple Q4 2025 earnings",
+      "topic": "news"
+    },
+    "provider": "ollama",
+    "model_id": "gpt-oss:120b",
+    "discovery": {
+      "run_id": "run_d5b83c894483",
+      "created_at": "2026-09-26T07:14:22.097349Z",
+      "candidates": [
+        {
+          "story_id": "story_d5b83c894483",
+          "title": "Apple Q4 2025 earnings",
+          "summary": "Latest developments regarding: Apple Q4 2025 earnings",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_d5b83c894483",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_d5b83c894483",
+      "assessments": [
+        {
+          "story_id": "story_d5b83c894483",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_d5b83c894483",
+      "created_at": "2026-09-26T07:14:33.249856Z",
+      "story_id": "story_d5b83c894483",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "Apple reported record Q4 2025 revenue of $102.5\u202fbillion, an 8% year\u2011over\u2011year increase.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_2",
+          "text": "Apple\u2019s services revenue reached $28.8\u202fbillion in Q4 2025, up 15% from the prior year.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_3",
+          "text": "Apple posted earnings per share of $1.85 for Q4 2025 and net profit of $27.47\u202fbillion.",
+          "evidence_ids": [
+            "ev_2"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": ""
+    },
+    "iteration": {
+      "research": 1
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "research_gate",
+    "outcome": "INSUFFICIENT_EVIDENCE",
+    "blockers": [
+      "claim claim_1 cites no known evidence",
+      "claim claim_2 cites no known evidence",
+      "claim claim_3 cites no known evidence"
+    ],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: 'Apple Q4 2025 earnings'",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:14:22.097883+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:14:23.783505+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 3 claims with 0 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T07:14:33.249856+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "claim claim_1 cites no known evidence; claim claim_2 cites no known evidence; claim claim_3 cites no known evidence",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:14:33.250856+00:00"
+    }
+  ]
+}

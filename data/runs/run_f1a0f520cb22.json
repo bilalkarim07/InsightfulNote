@@ -1,0 +1,218 @@
+{
+  "run_id": "run_f1a0f520cb22",
+  "story_id": "story_f1a0f520cb22",
+  "stages": {
+    "discovery": {
+      "run_id": "run_f1a0f520cb22",
+      "created_at": "2026-09-25T12:01:01.957258Z",
+      "candidates": [
+        {
+          "story_id": "story_f1a0f520cb22",
+          "title": "Company X announces product Y",
+          "summary": "Company X today announced product Y, available Q2 2026.",
+          "topic": "technology",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_f1a0f520cb22",
+      "created_at": "2026-09-25T12:00:00Z",
+      "story_id": "story_f1a0f520cb22",
+      "assessments": [
+        {
+          "story_id": "story_f1a0f520cb22",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "PRIMARY",
+          "authority": "",
+          "independence": "",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": true,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_f1a0f520cb22",
+      "created_at": "2026-09-25T12:01:07.778163Z",
+      "story_id": "story_f1a0f520cb22",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "Company X today announced product Y, available Q2 2026.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_2",
+          "text": "We expect product Y to lift revenue by 5% in FY27.",
+          "evidence_ids": [
+            "ev_2"
+          ],
+          "attribution": "Analyst at Firm Z",
+          "uncertainty": "attributed forecast, not confirmed",
+          "is_forecast": true,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "[mock] Official press release (companyx.com): Company X today announced product Y, available Q2 2026.",
+          "url": null,
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "[mock] Analyst at Firm Z: 'We expect product Y to lift revenue by 5% in FY27.' (attributed forecast, not confirmed)",
+          "url": null,
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": ""
+    },
+    "selection": {
+      "run_id": "run_f1a0f520cb22",
+      "created_at": "2026-09-25T00:00:00Z",
+      "story_id": "story_f1a0f520cb22",
+      "state": "SELECT",
+      "reason": "fresh, primary source available",
+      "priority": 10,
+      "topic": "technology",
+      "novelty_score": 0.9,
+      "previous_publication_ids": [],
+      "notes": ""
+    },
+    "verification": {
+      "run_id": "run_f1a0f520cb22",
+      "created_at": "2026-09-25T00:00:00Z",
+      "story_id": "story_f1a0f520cb22",
+      "verifications": [
+        {
+          "claim_id": "claim_1",
+          "status": "SUPPORTED",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "contradictions": [],
+          "notes": ""
+        },
+        {
+          "claim_id": "claim_2",
+          "status": "SUPPORTED_AS_ATTRIBUTED",
+          "evidence_ids": [
+            "ev_2"
+          ],
+          "contradictions": [],
+          "notes": ""
+        }
+      ],
+      "blocking": false,
+      "escalate": false,
+      "notes": ""
+    },
+    "editorial": {
+      "run_id": "run_f1a0f520cb22",
+      "created_at": "2026-09-25T12:01:13.601184Z",
+      "story_id": "story_f1a0f520cb22",
+      "central_event": "Company X announced product Y",
+      "allowed_claim_ids": [
+        "claim_1",
+        "claim_2"
+      ],
+      "blocked_claim_ids": [],
+      "must_include": [
+        "the announcement",
+        "attribution for any forecast"
+      ],
+      "optional": [],
+      "do_not_include": [
+        "unsupported speculation"
+      ],
+      "attribution_notes": "All forecasts must be clearly attributed to their source, with citations where applicable.",
+      "uncertainty_notes": "No significant uncertainties identified beyond standard market variability.",
+      "framing": "Neutral, factual reporting focusing on the announcement and its implications."
+    },
+    "tone": {
+      "run_id": "run_f1a0f520cb22",
+      "created_at": "2026-09-25T12:00:00Z",
+      "story_id": "story_f1a0f520cb22",
+      "tone": "INFORMATIVE",
+      "rationale": "",
+      "constraints": []
+    },
+    "draft": {
+      "run_id": "run_f1a0f520cb22",
+      "created_at": "2026-09-25T12:01:19.978223Z",
+      "story_id": "story_f1a0f520cb22",
+      "headline": "Company X Announces Product Y, Set for Q2 2026 Release",
+      "body": "Company X announced today that its new product, Y, will be available in the second quarter of 2026. Analysts at Firm Z expect the introduction of product Y to increase the company's revenue by approximately 5% in fiscal year 2027.",
+      "source_reference": "",
+      "claim_ids": [
+        "claim_1",
+        "claim_2"
+      ],
+      "tone": "INFORMATIVE",
+      "warnings": []
+    },
+    "post": {
+      "run_id": "run_f1a0f520cb22",
+      "created_at": "2026-09-25T00:00:00Z",
+      "story_id": "story_f1a0f520cb22",
+      "platform": "threads",
+      "text": "<adapted draft>",
+      "char_count": 15,
+      "claim_ids": [
+        "claim_1",
+        "claim_2"
+      ],
+      "source_reference": "",
+      "warnings": []
+    },
+    "validation": {
+      "run_id": "run_f1a0f520cb22",
+      "created_at": "2026-09-25T12:01:22.374274Z",
+      "story_id": "story_f1a0f520cb22",
+      "state": "PASS",
+      "errors": [],
+      "warnings": [],
+      "notes": ""
+    },
+    "publication": {
+      "run_id": "run_f1a0f520cb22",
+      "created_at": "2026-09-25T12:01:22.374274Z",
+      "story_id": "story_f1a0f520cb22",
+      "publication_id": "pub_88ab0dfa5ce1",
+      "platform": "threads",
+      "external_id": null,
+      "url": null,
+      "published_at": null,
+      "status": "SKIPPED_DRY_RUN",
+      "error": null
+    }
+  }
+}

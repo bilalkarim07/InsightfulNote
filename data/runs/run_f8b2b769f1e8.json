@@ -1,0 +1,218 @@
+{
+  "run_id": "run_f8b2b769f1e8",
+  "story_id": "story_f8b2b769f1e8",
+  "stages": {
+    "discovery": {
+      "run_id": "run_f8b2b769f1e8",
+      "created_at": "2026-09-25T00:00:00Z",
+      "candidates": [
+        {
+          "story_id": "story_f8b2b769f1e8",
+          "title": "Company X announces product Y",
+          "summary": "Company X today announced product Y, available Q2 2026.",
+          "topic": "technology",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_f8b2b769f1e8",
+      "created_at": "2026-09-25T12:42:30.981418Z",
+      "story_id": "story_f8b2b769f1e8",
+      "assessments": [
+        {
+          "story_id": "story_f8b2b769f1e8",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "PRIMARY",
+          "authority": "official press release",
+          "independence": "independent",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": true,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_f8b2b769f1e8",
+      "created_at": "2026-09-25T12:42:46.275730Z",
+      "story_id": "story_f8b2b769f1e8",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "Company X manufactures and sells two products, X and Y.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_2",
+          "text": "Analysts forecast that Tesla could produce up to 1 million Optimus robots per year.",
+          "evidence_ids": [
+            "ev_2"
+          ],
+          "attribution": "Analysts (Yahoo Finance)",
+          "uncertainty": "moderately certain",
+          "is_forecast": true,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "[Solved] A company manufactures and sells two products (X and Y) whic",
+          "url": null,
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "Tesla said this line could potentially produce 1 million robots per year",
+          "url": null,
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": ""
+    },
+    "selection": {
+      "run_id": "run_f8b2b769f1e8",
+      "created_at": "2026-09-25T12:42:47.430444Z",
+      "story_id": "story_f8b2b769f1e8",
+      "state": "SELECT",
+      "reason": "fresh, primary source available",
+      "priority": 10,
+      "topic": "technology",
+      "novelty_score": 0.9,
+      "previous_publication_ids": [],
+      "notes": ""
+    },
+    "verification": {
+      "run_id": "run_f8b2b769f1e8",
+      "created_at": "2026-09-25T12:00:00Z",
+      "story_id": "story_f8b2b769f1e8",
+      "verifications": [
+        {
+          "claim_id": "claim_1",
+          "status": "SUPPORTED",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "contradictions": [],
+          "notes": ""
+        },
+        {
+          "claim_id": "claim_2",
+          "status": "SUPPORTED_AS_ATTRIBUTED",
+          "evidence_ids": [
+            "ev_2"
+          ],
+          "contradictions": [],
+          "notes": ""
+        }
+      ],
+      "blocking": false,
+      "escalate": false,
+      "notes": ""
+    },
+    "editorial": {
+      "run_id": "run_f8b2b769f1e8",
+      "created_at": "2026-09-25T12:42:50.583416Z",
+      "story_id": "story_f8b2b769f1e8",
+      "central_event": "Company X announced product Y",
+      "allowed_claim_ids": [
+        "claim_1",
+        "claim_2"
+      ],
+      "blocked_claim_ids": [],
+      "must_include": [
+        "the announcement",
+        "attribution for any forecast"
+      ],
+      "optional": [],
+      "do_not_include": [
+        "unsupported speculation"
+      ],
+      "attribution_notes": "",
+      "uncertainty_notes": "",
+      "framing": ""
+    },
+    "tone": {
+      "run_id": "run_f8b2b769f1e8",
+      "created_at": "2026-09-25T12:00:00Z",
+      "story_id": "story_f8b2b769f1e8",
+      "tone": "INFORMATIVE",
+      "rationale": "tech product, no sensitivity",
+      "constraints": []
+    },
+    "draft": {
+      "run_id": "run_f8b2b769f1e8",
+      "created_at": "2026-09-25T12:42:54.785876Z",
+      "story_id": "story_f8b2b769f1e8",
+      "headline": "Company X's Product Line and Tesla's Optimus Robot Production Forecast",
+      "body": "Company X manufactures and sells two products, X and Y. Analysts at Yahoo Finance forecast that Tesla could produce up to 1 million Optimus robots per year.",
+      "source_reference": "",
+      "claim_ids": [
+        "claim_1",
+        "claim_2"
+      ],
+      "tone": "INFORMATIVE",
+      "warnings": []
+    },
+    "post": {
+      "run_id": "run_f8b2b769f1e8",
+      "created_at": "2026-09-25T12:00:00Z",
+      "story_id": "story_f8b2b769f1e8",
+      "platform": "threads",
+      "text": "Company X makes two products, X and Y. Analysts at Yahoo Finance forecast Tesla could produce up to 1 million Optimus robots per year.",
+      "char_count": 134,
+      "claim_ids": [
+        "claim_1",
+        "claim_2"
+      ],
+      "source_reference": "",
+      "warnings": []
+    },
+    "validation": {
+      "run_id": "run_f8b2b769f1e8",
+      "created_at": "2026-09-25T12:42:58.055967Z",
+      "story_id": "story_f8b2b769f1e8",
+      "state": "PASS",
+      "errors": [],
+      "warnings": [],
+      "notes": ""
+    },
+    "publication": {
+      "run_id": "run_f8b2b769f1e8",
+      "created_at": "2026-09-25T12:42:58.119027Z",
+      "story_id": "story_f8b2b769f1e8",
+      "publication_id": "pub_03ab172c877b",
+      "platform": "threads",
+      "external_id": null,
+      "url": null,
+      "published_at": null,
+      "status": "SKIPPED_DRY_RUN",
+      "error": null
+    }
+  }
+}

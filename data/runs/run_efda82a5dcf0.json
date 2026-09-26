@@ -1,0 +1,254 @@
+{
+  "run_id": "run_efda82a5dcf0",
+  "outcome": "INSUFFICIENT_EVIDENCE",
+  "state": {
+    "run_id": "run_efda82a5dcf0",
+    "story_id": "story_efda82a5dcf0",
+    "topic": "news",
+    "seed": {
+      "story_id": "story_efda82a5dcf0",
+      "title": "Apple Q4 2025 earnings",
+      "summary": "Latest developments regarding: Apple Q4 2025 earnings",
+      "topic": "news"
+    },
+    "provider": "groq",
+    "model_id": "openai/gpt-oss-120b",
+    "discovery": {
+      "run_id": "run_efda82a5dcf0",
+      "created_at": "2026-09-26T00:00:00Z",
+      "candidates": [
+        {
+          "story_id": "story_efda82a5dcf0",
+          "title": "Apple Q4 2025 earnings",
+          "summary": "Latest developments regarding: Apple Q4 2025 earnings",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_efda82a5dcf0",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_efda82a5dcf0",
+      "assessments": [
+        {
+          "story_id": "story_efda82a5dcf0",
+          "source_id": "s1",
+          "source_name": "Search Aggregator",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_efda82a5dcf0",
+      "created_at": "2026-09-26T07:36:24.154290Z",
+      "story_id": "story_efda82a5dcf0",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "Apple reported Q4 2025 revenue of $102.5\u202fbillion, an 8% year\u2011over\u2011year increase.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_2",
+          "text": "Apple generated record operating cash flow of $29.73\u202fbillion in Q4 2025.",
+          "evidence_ids": [
+            "ev_3"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_3",
+          "text": "Apple returned $24\u202fbillion to shareholders during Q4 2025, including $3.9\u202fbillion in dividends and $20\u202fbillion in share repurchases.",
+          "evidence_ids": [
+            "ev_4"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "Apple Inc (AAPL) Q4 2025 Earnings Call Highlights \u2014 Apple Inc (NASDAQ:AAPL) reported a record revenue of $102.5 billion for Q4 2025, marking an 8% increase year-over-year. Services revenue reached an all-time high of $28.8 billion, growing 15% from the previous year. The iPhone 17 series set a revenue record for the September quarter at $49\u2026",
+          "url": "https://finance.yahoo.com/news/apple-inc-aapl-q4-2025-030510387.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "Apple (AAPL) earnings report Q4 2025 \u2014 Analysts polled by LSEG expect Apple to guide to $132.31 billion in December quarter sales and earnings of $2.53 per share. Apple's guide surpasses those expectations. With 11% growth over last year's December quarter, revenue for the upcoming period would be $137.97 billion. Cook said that Apple\u2026",
+          "url": "https://www.cnbc.com/2025/10/30/apple-aapl-earnings-report-q4-2025.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_3",
+          "source_id": "s3",
+          "quote": "Apple Q4 2025 Earnings: Services and AI Drive Growth \u2014 Apple ended Q4 with $132 billion in cash and marketable securities, while cutting short-term liabilities by 6.1%. Operating cash flow hit a record $29.73 billion, and operating cash-to-net income ratio stood at 1.08, showing the quality of earnings. Capital expenditure rose 34.5% to $12.7 billion,\u2026",
+          "url": "https://leverageshares.com/en/insights/apple-q4-earnings-services-and-ai-drive-a-structural-turnaround",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_4",
+          "source_id": "s4",
+          "quote": "Apple Q4 2025 Earnings Call | $AAPL | WATCH LIVE \u2014 paper by $ 1.9 billion resulting in $99 billion in total debt. Therefore, at the end of the quarter, net cash was $34 billion. During the quarter, we returned $ 24 billion to shareholders. This included 3.9 billion in dividends and equivalents and 20 billion through open market repurchases of 89\u2026",
+          "url": "https://www.youtube.com/watch?v=j2se-TYG3hw",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_5",
+          "source_id": "s5",
+          "quote": "Evidence Needed For Your Disability Claim \u2014 Find out what evidence you can submit for a claim related to military sexual trauma (MST). Learn about evidence to support an MST claim Find out what additional evidence you\u2019ll need if you\u2019re filing a claim for any of these other issues: #### Posttraumatic stress disorder (PTSD) and other mental\u2026",
+          "url": "https://www.va.gov/disability/how-to-file-claim/evidence-needed",
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": ""
+    },
+    "verification": {
+      "run_id": "run_efda82a5dcf0",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_efda82a5dcf0",
+      "verifications": [
+        {
+          "claim_id": "claim_1",
+          "status": "UNSUPPORTED",
+          "evidence_ids": [],
+          "contradictions": [],
+          "notes": "No evidence provided to verify claim."
+        },
+        {
+          "claim_id": "claim_2",
+          "status": "UNSUPPORTED",
+          "evidence_ids": [],
+          "contradictions": [],
+          "notes": "No evidence provided to verify claim."
+        },
+        {
+          "claim_id": "claim_3",
+          "status": "UNSUPPORTED",
+          "evidence_ids": [],
+          "contradictions": [],
+          "notes": "No evidence provided to verify claim."
+        }
+      ],
+      "blocking": false,
+      "escalate": false,
+      "notes": ""
+    },
+    "iteration": {
+      "research": 2
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "research_gate",
+    "outcome": "INSUFFICIENT_EVIDENCE",
+    "blockers": [
+      "claim claim_3: no verbatim support"
+    ],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: 'Apple Q4 2025 earnings'",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:36:07.362496+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:36:08.943750+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 3 claims with 4 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T07:36:14.567786+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "All claims have verbatim support.",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:36:14.568782+00:00"
+    },
+    {
+      "from_agent": "verification",
+      "to_agent": "editorial",
+      "kind": "HANDOFF",
+      "content": "3 verified, 3 unsupported.",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:36:16.241307+00:00"
+    },
+    {
+      "from_agent": "verification",
+      "to_agent": "research",
+      "kind": "REQUEST",
+      "content": "Need more evidence for: ['claim_1', 'claim_2', 'claim_3']",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:36:16.241307+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 3 claims with 5 evidence items.",
+      "iteration": 2,
+      "created_at": "2026-09-26T07:36:24.154290+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "claim claim_3: no verbatim support",
+      "iteration": 0,
+      "created_at": "2026-09-26T07:36:24.155300+00:00"
+    }
+  ]
+}

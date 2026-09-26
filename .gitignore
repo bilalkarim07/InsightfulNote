@@ -10,3 +10,6 @@ wheels/
 .venv
 .env
 .env.example
+# NewsRoom runtime data
+data/slices/
+data/model_capabilities.json
