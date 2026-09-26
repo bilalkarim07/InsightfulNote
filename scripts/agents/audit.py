@@ -1,8 +1,11 @@
-﻿"""Generate the §99–105 final audit report."""
+"""Real executable audit — every PASS must come from actual execution.
+
+No more `contracts_work = True`. Each check function actually exercises
+the code path it claims to verify and returns (bool, detail).
+"""
 from __future__ import annotations
 import json
 import sys
-from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -11,185 +14,236 @@ sys.path.insert(0, str(ROOT))
 
 from scripts._bootstrap import *  # noqa: F401,F403,E402
 
-from core.llm.persistence import load_capabilities  # noqa: E402
-from core.llm.registry import build_default_registry  # noqa: E402
-from core.llm.routing.router import AgentTask, ModelRouter  # noqa: E402
-from core.observability.runlog import summarize as runlog_summary  # noqa: E402
-from core.llm.providers import (  # noqa: E402
-    OllamaProvider, GroqProvider, OpenRouterProvider, GeminiProvider, ProviderFactory,
-)
 
-# Register providers so §99.1 reports their real status.
-ProviderFactory.register(OllamaProvider(cloud=True))
-ProviderFactory.register(GroqProvider())
-ProviderFactory.register(OpenRouterProvider())
-ProviderFactory.register(GeminiProvider())
+# ── Individual checks ──────────────────────────────────────────
+
+def check_contracts() -> tuple[bool, str]:
+    try:
+        from schemas.common import new_run_id
+        from schemas.discovery import DiscoveryResult, CandidateStory
+        from schemas.source_intelligence import SourceIntelligenceResult, SourceAssessment
+        from schemas.research import ResearchResult, Claim, Evidence
+        from schemas.selection import SelectionDecision, SelectionState
+        from schemas.verification import VerificationResult, ClaimVerification, VerificationStatus
+        from schemas.editorial import EditorialDecision
+        from schemas.tone import ToneDecision, ToneType
+        from schemas.writing import WriterDraft
+        from schemas.platform import PlatformPost
+        from schemas.validation import ValidationResult, ValidationState
+        from schemas.publishing import PublishResult
+        rid = new_run_id()
+        sid = "s_test"
+        models = [
+            DiscoveryResult(run_id=rid, candidates=[CandidateStory(story_id=sid, title="T")]),
+            SourceIntelligenceResult(run_id=rid, story_id=sid,
+                assessments=[SourceAssessment(story_id=sid, source_id="s1")]),
+            ResearchResult(run_id=rid, story_id=sid,
+                claims=[Claim(text="c")], evidence=[Evidence(source_id="s1", quote="q")]),
+            SelectionDecision(run_id=rid, story_id=sid, state=SelectionState.SELECT),
+            VerificationResult(run_id=rid, story_id=sid,
+                verifications=[ClaimVerification(claim_id="c1", status=VerificationStatus.SUPPORTED)]),
+            EditorialDecision(run_id=rid, story_id=sid, central_event="e"),
+            ToneDecision(run_id=rid, story_id=sid, tone=ToneType.INFORMATIVE),
+            WriterDraft(run_id=rid, story_id=sid, headline="h", body="b"),
+            PlatformPost(run_id=rid, story_id=sid, text="t"),
+            ValidationResult(run_id=rid, story_id=sid, state=ValidationState.PASS),
+            PublishResult(run_id=rid, story_id=sid),
+        ]
+        for m in models:
+            rt = type(m).model_validate(m.model_dump())
+            assert rt == m, f"roundtrip failed: {type(m).__name__}"
+        return True, f"{len(models)} contracts roundtrip"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
 
 
-def section(title: str) -> None:
-    print()
-    print("═" * 70)
-    print(f"  {title}")
-    print("═" * 70)
+def check_providers() -> tuple[bool, str]:
+    try:
+        from core.llm.providers import (
+            ProviderFactory, OllamaProvider, GroqProvider,
+            OpenRouterProvider, GeminiProvider,
+        )
+        ProviderFactory.register(OllamaProvider(cloud=True))
+        ProviderFactory.register(GroqProvider())
+        ProviderFactory.register(OpenRouterProvider())
+        ProviderFactory.register(GeminiProvider())
+        names = []
+        for n in ("ollama", "groq", "openrouter", "gemini"):
+            p = ProviderFactory.get(n)
+            assert p.config.base_url, f"{n} has no base_url"
+            names.append(n)
+        return True, f"{len(names)} providers constructed"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
+
+
+def check_registry() -> tuple[bool, str]:
+    try:
+        from core.llm.registry import build_default_registry
+        reg = build_default_registry()
+        entries = reg.all(enabled_only=False)
+        assert len(entries) >= 5, "too few models registered"
+        return True, f"{len(entries)} models registered"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
+
+
+def check_capabilities() -> tuple[bool, str]:
+    try:
+        from core.llm.persistence import load_capabilities
+        from core.llm.registry import build_default_registry
+        reg = build_default_registry()
+        loaded = load_capabilities(reg)
+        assert loaded >= 1, f"no verified capabilities loaded (got {loaded})"
+        return True, f"{loaded} model capabilities loaded"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
+
+
+def check_routing() -> tuple[bool, str]:
+    try:
+        from core.llm.persistence import load_capabilities
+        from core.llm.registry import build_default_registry
+        from core.llm.routing.router import AgentTask, ModelRouter
+        reg = build_default_registry()
+        load_capabilities(reg)
+        router = ModelRouter(reg)
+        primary = router.route(AgentTask.RESEARCH)
+        assert primary is not None, "no eligible model for RESEARCH"
+        chain = router.fallback_chain(AgentTask.RESEARCH)
+        return True, f"research={primary.provider}/{primary.model_id}, {len(chain)} in chain"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
+
+
+def check_fallback() -> tuple[bool, str]:
+    try:
+        from core.agents.runtime.middleware import with_model_fallback, FallbackTrace
+        class M:
+            def __init__(self, name, fail): self.model_name = name; self.fail = fail
+        def invoke(m):
+            if m.fail: raise RuntimeError("forced")
+            return f"ok-{m.model_name}"
+        result, trace = with_model_fallback([M("a", True), M("b", False)], invoke)
+        assert result == "ok-b", "fallback did not select second model"
+        return True, "primary failure → fallback succeeded"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
+
+
+def check_tools() -> tuple[bool, str]:
+    try:
+        from core.tools.search import search_web, real_tools_status
+        status = real_tools_status()
+        r = search_web.invoke({"query": "test"})
+        assert isinstance(r, str), "search did not return str"
+        return True, f"search status={status}"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
+
+
+def check_prompts() -> tuple[bool, str]:
+    try:
+        from core.prompts.loader import compose_prompt
+        p = compose_prompt(agent_role="test", input_state="test")
+        assert "# GLOBAL POLICY" in p, "no global policy"
+        assert "Accuracy > engagement" in p or "accuracy" in p.lower(), "no accuracy policy"
+        return True, f"{len(p)} chars composed"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
+
+
+def check_middleware() -> tuple[bool, str]:
+    try:
+        from core.agents.runtime.middleware import ToolCallBudget, ModelCallBudget, TodoList
+        tb = ToolCallBudget(limit=1)
+        tb.consume("x")
+        raised = False
+        try:
+            tb.consume("y")
+        except RuntimeError:
+            raised = True
+        assert raised, "ToolCallBudget did not enforce limit"
+        todo = TodoList()
+        todo.add("task1")
+        assert todo.pending() == ["task1"]
+        return True, "budgets + todo exercised"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
+
+
+def check_team_graph_compiles() -> tuple[bool, str]:
+    try:
+        from core.team.graph import compile_graph
+        g = compile_graph()
+        assert g is not None
+        return True, "graph compiled"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
+
+
+def check_quota() -> tuple[bool, str]:
+    try:
+        from core.team import quota
+        allowed, reason, state = quota.can_publish()
+        s = quota.status()
+        assert "published" in s and "max_per_day" in s
+        return True, f"published={s['published']}/{s['max_per_day']}, allowed={allowed}"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
+
+
+def check_tone_bank() -> tuple[bool, str]:
+    try:
+        from core.team.tone_bank import TONES, example_for
+        assert len(TONES) >= 5, f"only {len(TONES)} tones"
+        ex = example_for("INFORMATIVE")
+        assert ex, "empty tone example"
+        return True, f"{len(TONES)} tones with examples"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:150]}"
+
+
+# ── Runner ─────────────────────────────────────────────────────
+
+CHECKS = [
+    ("contracts work", check_contracts),
+    ("provider layer works", check_providers),
+    ("model registry works", check_registry),
+    ("capabilities are testable", check_capabilities),
+    ("routing works", check_routing),
+    ("fallback works", check_fallback),
+    ("semantic tools work", check_tools),
+    ("prompts load correctly", check_prompts),
+    ("middleware works", check_middleware),
+    ("team graph compiles", check_team_graph_compiles),
+    ("quota gate works", check_quota),
+    ("tone bank works", check_tone_bank),
+]
 
 
 def main() -> None:
-    registry = build_default_registry()
-    loaded = load_capabilities(registry)
-    router = ModelRouter(registry)
-
-    print("╔" + "═" * 68 + "╗")
-    print("║" + "  NewsRoom Phase 6 Audit Report".ljust(68) + "║")
-    print("║" + f"  {datetime.now(timezone.utc).isoformat()}".ljust(68) + "║")
-    print("╚" + "═" * 68 + "╝")
-
-    # ── §99 Providers ──
-    section("§99.1 — LLM Providers")
-    for name in ("ollama", "groq", "openrouter", "gemini"):
-        from core.llm.providers import ProviderFactory
+    print("=" * 74)
+    print("  NewsRoom Audit — every PASS is an executed check")
+    print("  " + datetime.now(timezone.utc).isoformat())
+    print("=" * 74)
+    results = []
+    for name, fn in CHECKS:
         try:
-            prov = ProviderFactory.get(name)
-            status = "CONFIGURED" if prov.is_configured() else "NO KEY"
-        except KeyError:
-            status = "NOT REGISTERED"
-        print(f"  {name:12} {status}")
-
-    # ── §99 Models configured ──
-    section("§99.2 — Models in Registry")
-    entries = registry.all(enabled_only=False)
-    print(f"  Total registered: {len(entries)}")
-    for entry in entries:
-        cap = entry.capabilities
-        verified = []
-        if cap:
-            if cap.verified_basic_invocation.value == "PASS":
-                verified.append("basic")
-            if cap.verified_pydantic_output.value == "PASS":
-                verified.append("struct")
-            if cap.verified_tool_calling.value == "PASS":
-                verified.append("tools")
-            if cap.verified_tool_plus_structure.value == "PASS":
-                verified.append("tools+struct")
-            if cap.verified_newsroom_contracts.value == "PASS":
-                verified.append("contract")
-        marker = "✓" if verified else "·"
-        verified_str = ",".join(verified) if verified else "UNVERIFIED"
-        print(f"  [{marker}] {entry.provider}/{entry.model_id:32} {verified_str}")
-
-    # ── §99.3 Capability summary ──
-    section("§99.3 — Capability Summary")
-    statuses = Counter()
-    for entry in entries:
-        cap = entry.capabilities
-        if not cap:
-            statuses["unverified"] += 1
-            continue
-        for field in (
-            "verified_basic_invocation",
-            "verified_pydantic_output",
-            "verified_tool_calling",
-            "verified_tool_plus_structure",
-            "verified_newsroom_contracts",
-        ):
-            value = getattr(cap, field).value
-            statuses[value.lower()] += 1
-    for k, v in sorted(statuses.items()):
-        print(f"  {k:14} {v}")
-
-    # ── §100 Routing report ──
-    section("§100 — Routing Report")
-    for task in (AgentTask.RESEARCH, AgentTask.VERIFICATION, AgentTask.WRITER):
-        req = router.get_task_requirements(task)
-        eligible = router.eligible_models(req)
-        primary = eligible[0] if eligible else None
-        print(f"\n[{task.value}]")
-        print(f"  required: {req.required}")
-        if primary:
-            cap = primary.capabilities
-            rel = cap.reliability_score if cap else None
-            rel_str = f"{rel:.2f}" if rel is not None else "n/a"
-            print(f"  primary:  {primary.provider}/{primary.model_id}")
-            print(f"  reason:   priority={primary.priority}, reliability={rel_str}")
-            fallbacks = eligible[1:4]
-            if fallbacks:
-                print(f"  fallback:")
-                for f in fallbacks:
-                    print(f"    → {f.provider}/{f.model_id}")
-            else:
-                print(f"  fallback: <empty — single-model deployment>")
-        else:
-            print(f"  primary:  <none eligible>")
-
-    # ── §101 Agent report ──
-    section("§101 — Agent Report")
-    from core.agents.base.config import DEFAULT_AGENT_CONFIGS
-    for name, cfg in DEFAULT_AGENT_CONFIGS.items():
-        kind = "deterministic" if cfg.is_deterministic else "llm"
-        tools = ",".join(cfg.tools) if cfg.tools else "none"
-        mw = ",".join(cfg.middleware) if cfg.middleware else "none"
-        print(f"\n[{name}] ({kind})")
-        print(f"  in:  {cfg.input_schema_name}")
-        print(f"  out: {cfg.output_schema_name}")
-        print(f"  tools:        {tools}")
-        print(f"  capabilities: {cfg.required_capabilities or 'none'}")
-        print(f"  middleware:   {mw}")
-
-    # ── §75 Observability ──
-    section("§75 — Observability")
-    try:
-        summary = runlog_summary()
-        print(f"  total stage rows: {summary['total_rows']}")
-        for agent, by_status in sorted(summary["by_agent"].items()):
-            print(f"  {agent}: {dict(by_status)}")
-    except Exception as exc:  # noqa: BLE001
-        print(f"  (run log unavailable: {exc})")
-
-    # ── §104 Limitations ──
-    section("§104 — Limitations")
-    print("  - Contract tests, agent config, router, prompt injection: PASS")
-    print("  - Ollama Cloud structured output uses function_calling/json_mode")
-    print("  - Groq fallback: see §99.2 for verified capabilities")
-    print("  - No real DB — persistence is local JSONL")
-    print("  - Compressor tested separately, not yet wired into adapter")
-
-    # ── §105 Phase status ──
-    section("§105 — Phase Status")
-    ollama_verified = any(
-        e.provider == "ollama" and e.capabilities
-        and e.capabilities.verified_tool_calling.value == "PASS"
-        for e in entries
-    )
-    contracts_work = True  # covered by test_agent_contracts
-    provider_layer_works = True
-    registry_works = len(entries) > 0
-    routing_works = router.route(AgentTask.RESEARCH) is not None or True
-    fallback_works = True
-    runtime_works = True
-    tools_work = True
-    prompts_work = True
-    middleware_works = True
-    tests_pass = True
-
-    checks = {
-        "contracts work": contracts_work,
-        "provider layer works": provider_layer_works,
-        "model registry works": registry_works,
-        "capabilities are testable": True,
-        "routing works": routing_works,
-        "fallback works": fallback_works,
-        "agent runtime works": runtime_works,
-        "semantic tools work": tools_work,
-        "prompts load correctly": prompts_work,
-        "middleware works": middleware_works,
-        "executable tests pass": tests_pass,
-        "at least one Research vertical slice works": ollama_verified,
-    }
-    for k, v in checks.items():
-        print(f"  [{'✓' if v else '·'}] {k}")
-
-    all_pass = all(checks.values())
+            ok, detail = fn()
+        except Exception as exc:
+            ok, detail = False, f"unexpected: {type(exc).__name__}: {exc}"
+        mark = "PASS" if ok else "FAIL"
+        print(f"  [{mark}] {name:32} — {detail}")
+        results.append(ok)
     print()
-    print("PHASE 2.1 COMPLETE" if all_pass else "PHASE 2.1 INCOMPLETE")
+    print(f"  {sum(results)}/{len(results)} checks passed")
+    print()
+    if all(results):
+        print("PHASE 2.1 COMPLETE")
+    else:
+        print("PHASE 2.1 INCOMPLETE")
+    sys.exit(0 if all(results) else 1)
 
 
 if __name__ == "__main__":

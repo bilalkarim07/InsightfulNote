@@ -1,0 +1,315 @@
+{
+  "run_id": "run_9cf2df447dfd",
+  "outcome": "PASS",
+  "state": {
+    "run_id": "run_9cf2df447dfd",
+    "story_id": "story_f06e8c960a266120",
+    "topic": "news",
+    "seed": {
+      "story_id": "story_9cf2df447dfd",
+      "title": "Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+      "summary": "Latest developments regarding: Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+      "topic": "news"
+    },
+    "provider": "ollama",
+    "model_id": "gpt-oss:120b",
+    "discovery": {
+      "run_id": "run_9cf2df447dfd",
+      "created_at": "2026-09-26T08:58:34.144911Z",
+      "candidates": [
+        {
+          "story_id": "story_f06e8c960a266120",
+          "title": "Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+          "summary": "Latest developments regarding: Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_9cf2df447dfd",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f06e8c960a266120",
+      "assessments": [
+        {
+          "story_id": "story_f06e8c960a266120",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_9cf2df447dfd",
+      "created_at": "2026-09-26T08:58:40.468195Z",
+      "story_id": "story_f06e8c960a266120",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "The breaking\u2011news video titled \u201cSad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\u201d is AI\u2011generated clickbait, not a real news report.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "Fact Check: Video Does NOT Show The \"Strange Behavior Of A Woman\" At The White House | Lead Stories \u2014 Get more fact-checks in your Google Search results by setting up leadstories.com as one of your preferred sources. ## Most Read Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As...' Is AI-Generated Clickbait Headline Tease ## Fact Check: FAKE\u2026",
+          "url": "https://leadstories.com/hoax-alert/2026/02/fact-check-on-twitter-video-does-not-show-woman-strange-behavior-at-white-house.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "Lead Stories \u2014 ## Most recent ## Fact Check: FAKE Video Shows Trump Making Kissy Faces And Sounds In Front Of Sarah Huckabee Sanders -- It Is An Altered Satire Video ## Fact Check [...] Fact Check: FAKE Video Shows Trump Making Kissy Faces And Sounds In Front Of Sarah Huckabee Sanders -- It Is An Altered Satire\u2026",
+          "url": "https://leadstories.com/",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_3",
+          "source_id": "s3",
+          "quote": "Don't get spun by internet rumors. - FactCheck.org \u2014 The Falsehoods of the \u2018Plandemic\u2019 Video The first installment of a documentary called \u201cPlandemic\u201d stormed through social media this week. But the viral video weaves a grand conspiracy theory by using a host of false and misleading claims about the novel coronavirus pandemic and its origins,\u2026",
+          "url": "https://www.factcheck.org/hot-topics",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_4",
+          "source_id": "s4",
+          "quote": "Snopes.com | The definitive fact-checking site and reference ... \u2014 Screenshot of an image posted by Facebook page claiming it depicts a chimpanzee saving a zookeeper. Image is divided vertically into two security camera screenshots timestamped a minute apart. In the top image, a chimpanzee can be seen tugging a man collapsed onto the ground. The chimpanzee is\u2026",
+          "url": "https://www.snopes.com/",
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": "Evidence ev_1 from Lead Stories explicitly describes the video as AI\u2011generated clickbait."
+    },
+    "verification": {
+      "run_id": "run_9cf2df447dfd",
+      "created_at": "2026-09-26T08:58:44.492196Z",
+      "story_id": "story_f06e8c960a266120",
+      "verifications": [
+        {
+          "claim_id": "claim_1",
+          "status": "SUPPORTED",
+          "evidence_ids": [],
+          "contradictions": [],
+          "notes": ""
+        }
+      ],
+      "blocking": false,
+      "escalate": false,
+      "notes": ""
+    },
+    "editorial": {
+      "run_id": "run_9cf2df447dfd",
+      "created_at": "2026-09-26T00:00:00Z",
+      "story_id": "story_f06e8c960a266120",
+      "central_event": "The breaking\u2011news video titled \u201cSad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\u201d is AI\u2011generated clickbait and not a genuine news report.",
+      "allowed_claim_ids": [
+        "claim_1"
+      ],
+      "blocked_claim_ids": [],
+      "must_include": [
+        "The video\u2019s exact title: \u201cSad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\u201d.",
+        "The video was created using AI technology.",
+        "The video is intended as clickbait rather than a legitimate news report."
+      ],
+      "optional": [],
+      "do_not_include": [
+        "Any claim that JD Vance was actually confirmed or any political outcome.",
+        "Speculation about the motives of the video\u2019s creator beyond clickbait.",
+        "Unverified statements about the content of the video beyond its AI\u2011generated nature."
+      ],
+      "attribution_notes": "Based on verified claim_1 confirming the video is AI\u2011generated clickbait.",
+      "uncertainty_notes": "",
+      "framing": "Readers should treat the video as misinformation designed to attract clicks, not as a factual news source."
+    },
+    "tone": {
+      "run_id": "run_9cf2df447dfd",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f06e8c960a266120",
+      "tone": "INFORMATIVE",
+      "rationale": "The story is a straightforward factual correction about AI\u2011generated clickbait, best presented neutrally without editorializing.",
+      "constraints": []
+    },
+    "draft": {
+      "run_id": "run_9cf2df447dfd",
+      "created_at": "2026-09-26T08:58:52.035953Z",
+      "story_id": "story_f06e8c960a266120",
+      "headline": "The breaking\u2011news video titled \u201cSad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\u201d was created using AI...",
+      "body": "The breaking\u2011news video titled \u201cSad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\u201d was created using AI technology. The video is AI\u2011generated clickbait and is not a genuine news report.",
+      "source_reference": "",
+      "claim_ids": [
+        "claim_1"
+      ],
+      "tone": "INFORMATIVE",
+      "warnings": []
+    },
+    "post": {
+      "run_id": "run_9cf2df447dfd",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f06e8c960a266120",
+      "platform": "threads",
+      "text": "The breaking\u2011news video titled \u201cSad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\u201d was created using AI technology. The video is AI\u2011generated clickbait and is not a genuine news report.",
+      "char_count": 196,
+      "claim_ids": [],
+      "source_reference": "",
+      "warnings": []
+    },
+    "validation": {
+      "run_id": "run_9cf2df447dfd",
+      "created_at": "2026-09-26T08:58:53.738069Z",
+      "story_id": "story_f06e8c960a266120",
+      "state": "PASS",
+      "errors": [],
+      "warnings": [],
+      "notes": ""
+    },
+    "publication": {
+      "run_id": "run_9cf2df447dfd",
+      "created_at": "2026-09-26T08:58:53.746138Z",
+      "story_id": "story_f06e8c960a266120",
+      "publication_id": "pub_97697236d5fe",
+      "platform": "threads",
+      "external_id": null,
+      "url": null,
+      "published_at": null,
+      "status": "SKIPPED_DRY_RUN",
+      "error": null
+    },
+    "iteration": {
+      "research": 1
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "publisher",
+    "outcome": "PASS",
+    "blockers": [],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: \"Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...\"",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:58:34.144911+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:58:35.506596+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 1 claims with 4 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T08:58:40.468195+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "All claims have verbatim support.",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:58:40.472174+00:00"
+    },
+    {
+      "from_agent": "verification",
+      "to_agent": "editorial",
+      "kind": "HANDOFF",
+      "content": "1 supported, 0 unsupported.",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:58:44.492196+00:00"
+    },
+    {
+      "from_agent": "editorial",
+      "to_agent": "tone",
+      "kind": "HANDOFF",
+      "content": "Central event: The breaking\u2011news video titled \u201cSad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\u201d is AI\u2011generated clickbait ",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:58:47.029831+00:00"
+    },
+    {
+      "from_agent": "tone",
+      "to_agent": "writer",
+      "kind": "INFO",
+      "content": "Tone: INFORMATIVE",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:58:48.472171+00:00"
+    },
+    {
+      "from_agent": "writer",
+      "to_agent": "platform_adapter",
+      "kind": "HANDOFF",
+      "content": "Draft ready (196 chars)",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:58:52.036952+00:00"
+    },
+    {
+      "from_agent": "platform_adapter",
+      "to_agent": "validation",
+      "kind": "HANDOFF",
+      "content": "Post adapted (196 chars)",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:58:53.736135+00:00"
+    },
+    {
+      "from_agent": "validation",
+      "to_agent": "publisher",
+      "kind": "HANDOFF",
+      "content": "OK",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:58:53.738069+00:00"
+    },
+    {
+      "from_agent": "quota_gate",
+      "to_agent": "publisher",
+      "kind": "HANDOFF",
+      "content": "quota ok",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:58:53.745141+00:00"
+    },
+    {
+      "from_agent": "publisher",
+      "to_agent": "all",
+      "kind": "DONE",
+      "content": "Publication: SKIPPED_DRY_RUN (live=False)",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:58:53.747133+00:00"
+    }
+  ]
+}

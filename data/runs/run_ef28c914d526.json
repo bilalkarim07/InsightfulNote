@@ -1,0 +1,244 @@
+{
+  "run_id": "run_ef28c914d526",
+  "outcome": "ESCALATE",
+  "state": {
+    "run_id": "run_ef28c914d526",
+    "story_id": "story_test1",
+    "topic": "news",
+    "seed": {
+      "story_id": "story_ef28c914d526",
+      "title": "Test",
+      "summary": "Latest developments regarding: Test",
+      "topic": "news"
+    },
+    "provider": "ollama",
+    "model_id": "gpt-oss:120b",
+    "discovery": {
+      "run_id": "run_ef28c914d526",
+      "created_at": "2026-09-26T00:00:00Z",
+      "candidates": [
+        {
+          "story_id": "story_test1",
+          "title": "Test",
+          "summary": "Latest developments regarding: Test",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_ef28c914d526",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_test1",
+      "assessments": [
+        {
+          "story_id": "story_test1",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_ef28c914d526",
+      "created_at": "2026-09-26T08:51:53.308431Z",
+      "story_id": "story_test1",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "Test cricket is a series of matches played by two national representative teams.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_2",
+          "text": "A test is a procedure or method for identifying something.",
+          "evidence_ids": [
+            "ev_2"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_3",
+          "text": "A test match in rugby union is an international match usually between national teams.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "Test \u2014 ## Sports Test cricket, a series of matches played by two national representative teams Test match (rugby league) \"Test match (rugby league)\"), a match between teams of the Rugby League International Federation Test match (rugby union) \"Test match (rugby union)\"), an international match usually\u2026",
+          "url": "https://en.wikipedia.org/wiki/Test",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "TEST Definition & Meaning \u2014 put the new car to the _test_ 2 :a procedure or method for identifying something a _test_ for starch allergy _tests_ 3 :a set of questions or problems designed to find out a person's knowledge, skills, or intelligence 4 :a result of or rating based on a test uses 80-pound _test_ fishing line test\u2026",
+          "url": "https://www.merriam-webster.com/dictionary/test",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_3",
+          "source_id": "s3",
+          "quote": "What is a Test? \u2014 [17:42] so a test is often a procedure you know and and usually when we test we're we might be following a script that's [17:49] possible of course but we might also be exploring in a in an improvisational way at any rate we have to do things in [17:57] certain sequences and in order to replicate\u2026",
+          "url": "https://www.youtube.com/watch?v=q0zaEGbs-cE",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_4",
+          "source_id": "s4",
+          "quote": "TEST | definition in the Cambridge English Dictionary \u2014 Blog All good things come to an end: talking about leaving a place AI icon AI icon cdo logo cdo logo cdo logo cdo logo ## Learn more with +Plus ## Learn more with +Plus Cambridge Dictionary Cambridge Dictionary To add test to a word list please sign up or log in. Add test to one of your lists\u2026",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/test",
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": ""
+    },
+    "iteration": {
+      "research": 1
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "escalate",
+    "outcome": "ESCALATE",
+    "blockers": [
+      "verification: All structured-output methods failed.\n  function_calling: native parsed=None, raw recovery failed\n  json_mode: native parsed=None, raw recovery failed\n--- raw outputs ---\n  function_calling raw: \n  json_mode raw: [\n  {\n    \"claim_id\": \"claim_1\",\n    \"verdict\": \"SUPPORTED\"\n  },\n  {\n    \"claim_id\": \"claim_2\",\n    \"verdict\": \"SUPPORTED\"\n  },\n  {\n    \"claim_id\": \"claim_3\",\n    \"verdict\": \"SUPPORTED\"\n  }\n]",
+      "editorial: 'verification'",
+      "tone: 'editorial'",
+      "writer: 'editorial'",
+      "platform_adapter: 'draft'",
+      "validation: 'post'"
+    ],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: 'Test'",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:51:48.260483+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:51:49.530182+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 3 claims with 4 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T08:51:53.308431+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "All claims have verbatim support.",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:51:53.310430+00:00"
+    },
+    {
+      "from_agent": "verification",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "StructuredOutputError: All structured-output methods failed.\n  function_calling: native parsed=None, raw recovery failed\n  json_mode: native parsed=None, raw recovery failed\n--- raw outputs ---\n  function_calling raw: \n  json_mode raw: [\n  {\n    \"claim_id\": \"claim_1\",\n    \"verdict\": \"SUPPORTED\"\n  },\n  {\n    \"claim_id\": \"c",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:52:01.326397+00:00"
+    },
+    {
+      "from_agent": "editorial",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "KeyError: 'verification'",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:52:01.330399+00:00"
+    },
+    {
+      "from_agent": "tone",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "KeyError: 'editorial'",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:52:01.337407+00:00"
+    },
+    {
+      "from_agent": "writer",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "KeyError: 'editorial'",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:52:01.342397+00:00"
+    },
+    {
+      "from_agent": "platform_adapter",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "KeyError: 'draft'",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:52:01.348411+00:00"
+    },
+    {
+      "from_agent": "validation",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "KeyError: 'post'",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:52:01.351401+00:00"
+    },
+    {
+      "from_agent": "escalate",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "Escalated. Blockers: ['verification: All structured-output methods failed.\\n  function_calling: native parsed=None, raw recovery failed\\n  json_mode: native parsed=None, raw recovery failed\\n--- raw outputs ---\\n  function_calling raw: \\n  json_mode raw: [\\n  {\\n    \"claim_id\": \"claim_1\",\\n    \"verdict\": \"SUPPORTED\"\\n  },\\n  {\\n    \"claim_id\": \"claim_2\",\\n    \"verdict\": \"SUPPORTED\"\\n  },\\n  {\\n    \"claim_id\": \"claim_3\",\\n    \"verdict\": \"SUPPORTED\"\\n  }\\n]', \"editorial: 'verification'\", \"tone: 'editorial'\", \"writer: 'editorial'\", \"platform_adapter: 'draft'\", \"validation: 'post'\"]",
+      "iteration": 0,
+      "created_at": "2026-09-26T08:52:01.352426+00:00"
+    }
+  ]
+}

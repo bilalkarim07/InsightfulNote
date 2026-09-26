@@ -1,0 +1,1003 @@
+{
+  "stories": [
+    {
+      "story_id": "story_test1",
+      "title": "Test",
+      "url": "https://example.com/a",
+      "source_ids": [
+        "test"
+      ],
+      "first_seen_at": "2026-09-26T08:38:41.988107+00:00",
+      "latest_seen_at": "2026-09-26T08:38:41.988107+00:00"
+    },
+    {
+      "story_id": "story_1f6b6718dca2ced4",
+      "title": "CNN: Breaking News, Latest News and Videos",
+      "summary": "An assistant conducts cancer vaccine research in the lab at the Moderna Inc. headquarters in Cambridge, Massachusetts, US, on Tuesday, March 26, 2024. The forthcoming RSV shot, expected to get US regulatory approval this month, is Moderna's first chance to show the versatility of mRNA technology to more effectively treat and prevent a range of illnesses from the flu to cancer. It will be the first mRNA product for something other than Covid. Photographer: Adam Glanzman/Bloomberg via Getty [...] WASHINGTON, DC - SEPTEMBER 20: The White House is seen from the South Lawn on September 20, 2026 in Washington, DC. The Supreme Court let construction resume on the ballroom on August 31 in a 5-4 ruling. The Trump administration has also built a new heli-pad on White House grounds and is moving forward with plans for a \"triumphal arch\". (Photo by Samuel Corum/Getty Images) [...] Ukraine's President Volodymyr Zelensky during a bilateral meeting with US President Donald Trump on the sidelines of the 81st United Nations General Assembly in New York, on September 22, 2026. (Photo by Brendan SMIALOWSKI / AFP via Getty Images)",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://www.cnn.com/",
+      "first_seen_at": "2026-09-26T08:42:56.954444+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.952274+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_c90c6903ab083727",
+      "title": "ABC News - Breaking News, Latest News and Videos",
+      "summary": "### They're not playing our song! North Korean anthem played at South Korean hockey match\n ### Taiwan holds first joint military drills using attack drones ahead of Trump-Xi summit\n ### Australian man accused of teenage girl's murder appears in Thailand court\n ### Africa's urban waste crisis is choking neighborhoods\n ### Russia's wartime economy faces long-term erosion from debt and military spending\n ### Vanuatu ends search for 37 people missing in ferry sinking\n\n### Good Morning America [...] ### RFK Jr. tells vaccine-skeptic group they have a 'friend' in the White House\n ### Trump administration allows inadvertent killing of endangered species\n ### Judge says Trump has to give 30 days notice before demolishing Kennedy Center\n ### Trump's proposed arch has 'adverse effects,' administration acknowledges\n\nTrump Administration\n\n## Trump administration begins building border wall in Texas\u2019 Big Bend region [...] ### Why returns are getting more difficult\n ### So Delicious frozen dessert voluntarily recalled after customer complaints\n ### Toys \u2018R\u2019 Us making a comeback\n ### What rising mortgage rates mean for home buyers\n ### Japan's central bank raises benchmark interest rate to 1.25%\n ### 'How are we gonna get through this?' Many Americans are struggling as prices rise\n\n### International\n\nThe Associated Press\n\nRoyal Family\n\n## Princess Diana's 'revenge dress' goes on show ahead of Sotheby's auction",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://abcnews.com/",
+      "first_seen_at": "2026-09-26T08:42:56.954444+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.957275+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_5f5348c331296c87",
+      "title": "Associated Press News: Breaking News, Latest Headlines ...",
+      "summary": "79\n\n\n\nIran\u2019s Foreign Minister Abbas Araghchi arrives ahead of the 81st session of the United Nations General Assembly at United Nations headquarters, Tuesday, Sept. 22, 2026. (AP Photo/Stefan Jeremiah)\n\n## Iran has suggested a deal to reopen the Strait of Hormuz in 7 days [...] Read More\n\nImage 36: President Donald Trump and first lady Melania Trump walk with China's President Xi Jinping and his wife Peng Liyuan in the Grand Foyer of the White House during a State Dinner, Thursday, Sept. 24, 2026, in Washington. (AP Photo/Alex Brandon) [...] 28 of 30|\nPresident Donald Trump and first lady Melania Trump walk with China\u2019s President Xi Jinping and his wife Peng Liyuan in the Grand Foyer of the White House during a State Dinner, Thursday, Sept. 24, 2026, in Washington. (AP Photo/Alex Brandon)\n\nLicense this photo\n\nRead More",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://apnews.com/",
+      "first_seen_at": "2026-09-26T08:42:56.954444+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.959275+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_10b6b18f32d34529",
+      "title": "The New York Times - Breaking News, US News, World News ...",
+      "summary": "7 min read\n\nPrime Minister Benjamin Netanyahu defended Israeli military action across the Middle East. Dozens of delegates walked out as he took the podium.\n\n5 min read\n\nUnder the offer, the Strait of Hormuz would reopen and nuclear talks would be revived.\n\n3 min read\n\nSee 40-21 on our list of the best series, compiled from the votes of more than 500 stars, showrunners and other experts. [...] Indonesia Records 175,000 Respiratory Cases as Wildfires Rage\n\nSheet-Pan Feta With Corn and Shishito Peppers\n\n## More News\n\nFor months, millions of people have been living under a stifling blanket of toxic haze, fueled by a drought brought on by the El Ni\u00f1o weather pattern.\n\n5 min read\n\n## Well\n\n## Latest Shows\n\nLatest Shows\n\n## Culture and Lifestyle\n\n## Games Daily puzzles\n\nGames\n\nDaily puzzles\n\nGuess the 5-letter word with 6 chances.\n\nGroup words that share a common thread. [...] 3 min read\n\nOur Ukraine correspondent Siobh\u00e1n O\u2019Grady visits a school in the Ukrainian capital where children often have to leave their classrooms to take shelter.\n\nCritics said the changes, mostly in the South, moved the nation \u201cback toward the Jim Crow era.\u201d Justice Department officials said the decrees were outdated.\n\n3 min read\n\nAdvertisement\n\nSKIP ADVERTISEMENT\n\n## Watch Today\u2019s Videos\n\nCNN, MS NOW and Politico Return to White House\n\nNetanyahu Goes on the Attack on the World Stage",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://www.nytimes.com/",
+      "first_seen_at": "2026-09-26T08:42:56.954444+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.961274+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_48bbd81e6ae908e8",
+      "title": "CBS News | Breaking news, top stories & today's latest ...",
+      "summary": "From labor shortages to environmental impacts, farmers are looking to AI to help revolutionize the agriculture industry. One California startup, Farm-ng, is tapping into the power of AI and robotics to perform a wide range of tasks, including seeding, weeding and harvesting.\n\n \n\n#### FBI expands AI usage despite safety warnings [...] OpenAI on Thursday revealed an additional six incidents in which its artificial intelligence models exhibited unexpected or concerning behavior. Stuart Russell, a distinguished professor of computer science at UC Berkeley and president of the International Association for Safe and Ethical AI, joins CBS News to discuss.\n\n \n\n#### Rep. Larsen: \"We need to get serious\" about AI [...] OpenAI on Thursday revealed an additional six incidents in which its artificial intelligence models exhibited unexpected or concerning behavior. Stuart Russell, a distinguished professor of computer science at UC Berkeley and president of the International Association for Safe and Ethical AI, joins CBS News to discuss.\n\n \n\n#### Rep. Larsen: \"We need to get serious\" about AI",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://www.cbsnews.com/",
+      "first_seen_at": "2026-09-26T08:42:56.954444+00:00",
+      "latest_seen_at": "2026-09-26T08:44:49.248962+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_00f646448c67c320",
+      "title": "Top World News - Free download and install on Windows",
+      "summary": "Get updated news from around the world. This software supports news for different countries, politics/sports/entertainment and much more.",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://apps.microsoft.com/detail/9n68p3qzj32m?gl=US&hl=qu-PE",
+      "first_seen_at": "2026-09-26T08:40:33.024626+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.558831+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_6d8c67ce8409d825",
+      "title": "Today in History: August 29, Hurricane Katrina strikes ...",
+      "summary": "Aug 29, 2026 \u2014 On Aug. 29, 2005, Hurricane Katrina struck the U.S. Gulf Coast in southeast Louisiana, breaching levees and spurring floods that devastated New",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://www.newschannel20.com/news/nation-world/today-in-history-august-29-hurricane-katrina-strikes-louisiana/article_ae2b91c6-0580-5cd1-9316-3b800fa6d198.html",
+      "first_seen_at": "2026-09-26T08:40:33.024626+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.559832+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_15a944496ffb3580",
+      "title": "The Hindu : India & World News - App Store",
+      "summary": "Stay updated with The Hindu News app, the definitive source for breaking news and comprehensive coverage from India and the world.Read more",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://apps.apple.com/us/app/the-hindu-india-world-news/id771672321?l=zh-Hans-CN&platform=mac",
+      "first_seen_at": "2026-09-26T08:40:33.024626+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.561024+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_8483ab641c558144",
+      "title": "The Economist: News & Analysis - App Store - Apple",
+      "summary": "The world is complex\u2014and changing fast. The Economist app unlocks independent reporting and news analysis from correspondents across the globe.Read more",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://apps.apple.com/es/app/the-economist-news-analysis/id1239397626",
+      "first_seen_at": "2026-09-26T08:40:33.024626+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.563032+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_3437a09389f1f839",
+      "title": "Breaking: Fox News joins mainstream media networks in White House boycott",
+      "summary": "Fox News and the four other major television networks have stopped shared White House pool camera coverage of President Donald Trump after the administration barred CNN from its assigned rotation. Fox ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.msn.com/en-us/politics/government/breaking-fox-news-joins-mainstream-media-networks-in-white-house-boycott/ar-AA2cGmI6?ocid=BingNewsVerp",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.976288+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_db45c366128473b8",
+      "title": "Download the latest ABC News mobile app with a newly redesigned home screen",
+      "summary": "Get links to download the free ABC News App and stream 24/7 live news coverage from your smartphone, mobile, tablet, or connected tv.",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://abcnews.com/devices",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.984275+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_5259116859fc7755",
+      "title": "ABC uproar as David Muir's replacement drops big breaking news as fans fume 'thanks Trump'",
+      "summary": "David Muir stepped away from ABC World News Tonight over the weekend, leaving Linsey Davis in charge, and there was some shocking news coming in on the Iran war ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.msn.com/en-us/news/other/abc-uproar-as-david-muir-s-replacement-drops-big-breaking-news-as-fans-fume-thanks-trump/ar-AA2cFqWH?ocid=BingNewsVerp",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.978343+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_1c93822de7070135",
+      "title": "ABC fury as David Muir's stand-in drops big breaking news as fans blast 'thanks Trump'",
+      "summary": "Linsey Davis filled in during David Muir's weekly break on ABC World News Tonight, covering a wide range of breaking news and developments.",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.msn.com/en-us/news/other/abc-fury-as-david-muir-s-stand-in-drops-big-breaking-news-as-fans-blast-thanks-trump/ar-AA2cJGnf?ocid=BingNewsVerp",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.980360+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_66d21e6e6e0987e7",
+      "title": "Latest news bulletin | September 26th, 2026 \u2013 Morning",
+      "summary": "Catch up with the most important stories from around Europe and beyond this September 26th, 2026 - latest news, breaking news ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.msn.com/en-nz/news/other/latest-news-bulletin-september-26th-2026-morning/ar-AA2cZCLd?ocid=BingNewsVerp",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.986275+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_855106b63711fb39",
+      "title": "ABC fury as David Muir's stand-in drops breaking news as fans blast Trump",
+      "summary": "Linsey Davis filled in for David Muir during his weekly break on ABC World News Tonight, covering a wide range of breaking ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.msn.com/en-us/news/other/abc-fury-as-david-muir-s-stand-in-drops-breaking-news-as-fans-blast-trump/vi-AA2cL0lm?ocid=BingNewsVerp",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.988388+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_f06e8c960a266120",
+      "title": "Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+      "summary": "Did a real news broadcast show Vice President JD Vance in Ohio breaking sad news while flanked by...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.yahoo.com/news/politics/articles/fact-check-fake-breaking-news-070114474.html",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.568102+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_ca29f7102f6faf05",
+      "title": "Action News Live at 11pm - September 25, 2026",
+      "summary": "Fresno's source for breaking news and live streaming video online. Covering North Valley, South Valley, Sierra and the greater Fresno area.",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://abc30.com/videoClip/19874863",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.571100+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_015d05a7789986ad",
+      "title": "internal combustion - Breaking internal combustion News, Analysis, Photos and...",
+      "summary": "Unbiased Politics News",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://thehill.com/social-tags/internal-combustion",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.572100+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_5b3f68e6c5e8ca35",
+      "title": "Breaking Travel News Q&A: Amir Golbarg, COO, Minor Hotels Middle East & Africa",
+      "summary": "In this Breaking Travel News Q&A, Golbarg discusses the outlook for hospitality across the Middle...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.breakingtravelnews.com/news/article/breaking-travel-news-qa-amir-golbarg-coo-minor-hotels-middle-east-africa",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.573101+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_26c0a24f6f273608",
+      "title": "Nepal's leader, at UN, says recent floods serve as a warning to the world about climate change",
+      "summary": "Nepal's prime minister scolded fellow world leaders Thursday, saying the nation's recent deadly flood reminds a warming world ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.msn.com/en-us/news/other/nepal-s-leader-at-un-says-recent-floods-serve-as-a-warning-to-the-world-about-climate-change/ar-AA2cVdCC?ocid=BingNewsVerp",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:44:49.267986+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_b8f13af7787b0ac4",
+      "title": "Today\u2019s NYT Connections Hints And Answers: Friday, September 25",
+      "summary": "Looking for today's NYT Connections hints? Some help and the answers for today's game are right here...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://tech.yahoo.com/puzzles/connections/articles/today-nyt-connections-hints-answers-180000619.html",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.575100+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_29e049b2ae3db2cd",
+      "title": "Turkey vs. France Lineup Today: Confirmed Team News & Starting XI",
+      "summary": "Both sides are in the same group as Italy and Belgium. France are coming off a historic World Cup in...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://sports.yahoo.com/articles/turkey-vs-france-lineup-today-202621849.html",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.577102+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_2e46cbd5a6985049",
+      "title": "Disney World Adds New Affordable Perks at Every Hotel",
+      "summary": "We previously covered free perks at each hotel, and today we're taking a look at hotel activities...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://travel.yahoo.com/hotels/articles/disney-world-adds-affordable-perks-174237468.html;_ylt=A2RTsWgEhbdqEAMA5TLQtDMD;_ylu=Y29sbwNhcC1zb3V0aGVhc3QtMQRwb3MDNAR2dGlkAwRzZWMDc3I-",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.578102+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_e138eb1e762440ed",
+      "title": "What's Streaming Today At The UCI Road World Championships On FloBikes? Sept. 25...",
+      "summary": "See what's streaming today at the 2026 UCI Road World Championships on FloBikes, including the Women...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://r.search.yahoo.com/_ylt=A2RTsWgEhbdqEAMA6DLQtDMD;_ylu=Y29sbwNhcC1zb3V0aGVhc3QtMQRwb3MDNQR2dGlkAwRzZWMDc3I-/RV=2/RE=1791621636/RO=10/RU=https:/sports.yahoo.com/articles/whats-streaming-today-uci-road-100153714.html?fr=sycsrp_catchall%2FRK%3D2%2FRS%3DUGEJ.8tfjo9C8ICST76Y_p0RGQA-",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.580099+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_f85936241c41b74d",
+      "title": "Today Is Dolly Parton Day \u2013 It\u2019s 9/25",
+      "summary": "\"We could all afford to live a little more like Dolly,\" California Gov. Gavin Newsom said in announcing the passage of a bill declaring Sept. 25 Dolly...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://r.search.yahoo.com/_ylt=A2RTsWgEhbdqEAMA6zLQtDMD;_ylu=Y29sbwNhcC1zb3V0aGVhc3QtMQRwb3MDNgR2dGlkAwRzZWMDc3I-/RV=2/RE=1791621636/RO=10/RU=https:/www.yahoo.com/entertainment/music/articles/today-dolly-parton-day-9-130000805.html?fr=sycsrp_catchall%2FRK%3D2%2FRS%3DMlG9LYyxAH9hjN4Kna_EZm6dxHw-",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.582105+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_fd1fdc9e56ef0df0",
+      "title": "Today's 5\ufe0f\u20e3 top stories: Mbapp\u00e9 injured, Spain unveil a star...",
+      "summary": "Saturday, September 26 kicks off with plenty of news after a very eventful Friday.So let\u2019s go over t...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://r.search.yahoo.com/_ylt=A2RTsWgEhbdqEAMA8TLQtDMD;_ylu=Y29sbwNhcC1zb3V0aGVhc3QtMQRwb3MDOAR2dGlkAwRzZWMDc3I-/RV=2/RE=1791621636/RO=10/RU=https:/sports.yahoo.com/articles/todays-5-top-stories-mbapp-071700889.html?fr=sycsrp_catchall%2FRK%3D2%2FRS%3Dy5zWtm8O5_tnV9SGm6981Sr1Q2E-",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.584100+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_594011283842af71",
+      "title": "Poland vs Bosnia Today: Team News, Probable Lineups and How to Watch",
+      "summary": "Jan Urban\u2019s Poland are trying to move forward after missing the 2026 World Cup, while Bosnia and Her...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://r.search.yahoo.com/_ylt=A2RTsWgEhbdqEAMA9DLQtDMD;_ylu=Y29sbwNhcC1zb3V0aGVhc3QtMQRwb3MDOQR2dGlkAwRzZWMDc3I-/RV=2/RE=1791621636/RO=10/RU=https:/sports.yahoo.com/articles/poland-vs-bosnia-today-team-144452785.html?fr=sycsrp_catchall%2FRK%3D2%2FRS%3Dbo3Jfq12VLLRvHWK0xQIvKusoDQ-",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.586104+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_ff544ac693db8f6e",
+      "title": "World in Brief: Iran\u2019s president hits back at Trump; AI bosses to brief the UN",
+      "summary": "At the UN General Assembly, Iran\u2019s president also accused America of breaking international law by striking civilian targets, ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.economist.com/the-world-in-brief/2026/09/23/52977f32-b63e-4cfb-8a94-9ba911f5a60c",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:44:49.272975+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_06361cd05fd87f9f",
+      "title": "World in Brief: Trump\u2019s \u201cgreat\u201d meeting with Xi; Netanyahu\u2019s combative UN speech",
+      "summary": "Donald Trump described his meeting with Xi Jinping at the White House as \u201cgreat\u201d. It is Mr Xi\u2019s first state visit to ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.economist.com/the-world-in-brief/2026/09/24/bbbd826d-245f-4262-aca3-4245b158e1be",
+      "first_seen_at": "2026-09-26T08:40:36.066118+00:00",
+      "latest_seen_at": "2026-09-26T08:41:18.588105+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_d9fe988cfbcbbcaf",
+      "title": "ABC7 Chicago 24/7 Stream - ABC7 Chicago",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMigApBVV95cUxPNHVMTzh6Y1doal9WNGlrWGc3NUxRUGpwT2RoNXlyWE15VXlLR1JwS3g3YWxKdFVBNHpqdEZtcGVjSmdpdTRWRHZmV0JpUlE4cHRYZndwVVJ4U3ZYZ2VYeE9Od3NuN0ZfVV9xR0tiOVRPUktzWGRqMnllbTJrQXhYUEtIN1NaQXVxRlppMkFjWjAzaDhzcEp5UGRLYWs4OXhoaE96enNCWjVTZW9qRi0xOVZxdmZoemEwZERVR3ozX2piQ2JwTllJYkxyQTJKYllja0haS01Ga2RmeEVMbG5BR1RsTWlDbEk3QkRRYm93WGRHNjgzUEFxS2lJNjhhT2Rlb3k2SmowUzN6Q2VHbmd3MlpLVUVyczVYZlFFX2czWmJyWmE5eXhfbTA1NjF4N05DNHowZE9wZ25PRUhTMUtrU3M1TjVEQmJPNlMyTHFkTWlTdGxWVVNrZlBrOGl3UmZFUmpXRFZqeXJRWThFS0V5R3dUZUZvTzU2MHFrZmhxWk9heU1Oa0VqU2JTaEZMdXpwWmJNVjVuOTZfYm9lVkhYQ2puYXR5WXVSNWZ4Zm4xQUxEbnM2dzJTYk14RGNzTmRDTGlVaHZ2Y2VMekdDWWZvOVlDX2FpWlZ3VE1EdHprS091TjFEUGpkNzZ6cDFVWkxscXBtUl95cWxHWk5JX1F1d3hIU0ZJemE5cnNMNl93SkNQZlVMOWNsVV9nNnJpdEVxVXFvZXRGQnJqeWpBR3NxTW02d1ZMOWxUOW91RkplYXFVdjNfenVFWXFSRzBQY2FDUVM3UlItNjlybWpZN1ZFZlhtMGxBN01rTE1KU1NqZ0Rka3J2eFRON0NHaWI0MEQyZDRCQm91UHJfTUJDcUotRU5DcUFrYW40aTkxekJrSlBSdTVVT2p2N3BMamgwTEZJWnFmNU42VGVyUFNSbTVsN2djZ2lmcFlEdGx6cVI5NkszUEcyNmNqMjdnMWZ1VXk4MW5lZGd3TUFMUVA5NlpEdWE1ZzZLTThRM0ZvVmVqdE16aXl4ZkpZMFBtdHNmYWZiZi1ZSHBIOTM3SmdkYUlvX00tSlRrbHhyVkFhQzdPU0hiNC1iUUFTV0RDUHhvMkRVZVlsTDZzaFNXT2RXaGdaY2xaZVhkTUVqZjBDX2VqTUI0QmxZeFdKOE5YYUlEY0RQczhqSGFCRDlzVHFUUlphTld2dG1ZQVVJM1p6UUQySElUSF9ha21kMHZMdWFIMXN0amZIa0tDclhJUTRmejlMNUlFS0dVemVNQWZhRkJwMkFaa3luV3d4QkVTTnpzbU9Wc0VQSDN4Vy1Qb1Zfb1FHY29uRy1hdU9wV2ZNSWpNRXd5UGFESS05WmpXNVhnTVZDaWFqR2hyWnpZUDJCSEZ2eHlPNXBUVGFQb3Z3VzlqdU9tdERWWTNxMk9fMWtwQmJXTTdCOGdvSHg0cE85ZGFFczJ6ZzFKWTBTOE9MMlUwVUFEeWxnbzN6Zk9mX0tGQnBzY1F1b1R4WFFYdTUwU2Z2WmlkRTFVc3pRS0Q5akZhaU1iUm85RnQyQ3B1QXVTS3NzNnNHNHM4R2lycmJOT1BKdHo0ZnpVSV84dTZoX0VwNHRzaG80RjNZZDJ3al9XS2F6Mk1vcnpWSHFud3VPUUsySVI0XzlCOHVnT1lHNTBidFZRajhOc3IwRm1ZR3BxLVd4WjBZQ2s0NTJLMmNmRzJnUQ?oc=5\" target=\"_blank\">ABC7 Chicago 24/7 Stream</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">ABC7 Chicago</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMigApBVV95cUxPNHVMTzh6Y1doal9WNGlrWGc3NUxRUGpwT2RoNXlyWE15VXlLR1JwS3g3YWxKdFVBNHpqdEZtcGVjSmdpdTRWRHZmV0JpUlE4cHRYZndwVVJ4U3ZYZ2VYeE9Od3NuN0ZfVV9xR0tiOVRPUktzWGRqMnllbTJrQXhYUEtIN1NaQXVxRlppMkFjWjAzaDhzcEp5UGRLYWs4OXhoaE96enNCWjVTZW9qRi0xOVZxdmZoemEwZERVR3ozX2piQ2JwTllJYkxyQTJKYllja0haS01Ga2RmeEVMbG5BR1RsTWlDbEk3QkRRYm93WGRHNjgzUEFxS2lJNjhhT2Rlb3k2SmowUzN6Q2VHbmd3MlpLVUVyczVYZlFFX2czWmJyWmE5eXhfbTA1NjF4N05DNHowZE9wZ25PRUhTMUtrU3M1TjVEQmJPNlMyTHFkTWlTdGxWVVNrZlBrOGl3UmZFUmpXRFZqeXJRWThFS0V5R3dUZUZvTzU2MHFrZmhxWk9heU1Oa0VqU2JTaEZMdXpwWmJNVjVuOTZfYm9lVkhYQ2puYXR5WXVSNWZ4Zm4xQUxEbnM2dzJTYk14RGNzTmRDTGlVaHZ2Y2VMekdDWWZvOVlDX2FpWlZ3VE1EdHprS091TjFEUGpkNzZ6cDFVWkxscXBtUl95cWxHWk5JX1F1d3hIU0ZJemE5cnNMNl93SkNQZlVMOWNsVV9nNnJpdEVxVXFvZXRGQnJqeWpBR3NxTW02d1ZMOWxUOW91RkplYXFVdjNfenVFWXFSRzBQY2FDUVM3UlItNjlybWpZN1ZFZlhtMGxBN01rTE1KU1NqZ0Rka3J2eFRON0NHaWI0MEQyZDRCQm91UHJfTUJDcUotRU5DcUFrYW40aTkxekJrSlBSdTVVT2p2N3BMamgwTEZJWnFmNU42VGVyUFNSbTVsN2djZ2lmcFlEdGx6cVI5NkszUEcyNmNqMjdnMWZ1VXk4MW5lZGd3TUFMUVA5NlpEdWE1ZzZLTThRM0ZvVmVqdE16aXl4ZkpZMFBtdHNmYWZiZi1ZSHBIOTM3SmdkYUlvX00tSlRrbHhyVkFhQzdPU0hiNC1iUUFTV0RDUHhvMkRVZVlsTDZzaFNXT2RXaGdaY2xaZVhkTUVqZjBDX2VqTUI0QmxZeFdKOE5YYUlEY0RQczhqSGFCRDlzVHFUUlphTld2dG1ZQVVJM1p6UUQySElUSF9ha21kMHZMdWFIMXN0amZIa0tDclhJUTRmejlMNUlFS0dVemVNQWZhRkJwMkFaa3luV3d4QkVTTnpzbU9Wc0VQSDN4Vy1Qb1Zfb1FHY29uRy1hdU9wV2ZNSWpNRXd5UGFESS05WmpXNVhnTVZDaWFqR2hyWnpZUDJCSEZ2eHlPNXBUVGFQb3Z3VzlqdU9tdERWWTNxMk9fMWtwQmJXTTdCOGdvSHg0cE85ZGFFczJ6ZzFKWTBTOE9MMlUwVUFEeWxnbzN6Zk9mX0tGQnBzY1F1b1R4WFFYdTUwU2Z2WmlkRTFVc3pRS0Q5akZhaU1iUm85RnQyQ3B1QXVTS3NzNnNHNHM4R2lycmJOT1BKdHo0ZnpVSV84dTZoX0VwNHRzaG80RjNZZDJ3al9XS2F6Mk1vcnpWSHFud3VPUUsySVI0XzlCOHVnT1lHNTBidFZRajhOc3IwRm1ZR3BxLVd4WjBZQ2s0NTJLMmNmRzJnUQ?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.017634+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_1a77f05a1c240b78",
+      "title": "Live updates: Dangerous nor'easter threatens East Coast with major flooding and damaging winds - FOX Weather",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMiygFBVV95cUxNbmtIVFlhNkktZExJZG92QXM1Qlk4dEZCUE1nd2c3R1IteExXMEJYdGthbUFaV2VzczI1ejAtVmRDbFh0aGctdnJmdXJFajNjWkRhT243a3Y4Y1RYaGdnSUhNelU0UU9yZWFJX3U5U1BSOE1XVmFoSFZ5cWRBZGJQcnV3X2VFTjhQUF9xVHRnREZwcTZ4a050QnB2dEF6SklzMHBkeFdzUUs0S3VVamk0bTc1Nl9vb1ZrOUI3NVZGbjlkSzVsbk5Zc0lR?oc=5\" target=\"_blank\">Live updates: Dangerous nor'easter threatens East Coast with major flooding and damaging winds</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">FOX Weather</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNbmtIVFlhNkktZExJZG92QXM1Qlk4dEZCUE1nd2c3R1IteExXMEJYdGthbUFaV2VzczI1ejAtVmRDbFh0aGctdnJmdXJFajNjWkRhT243a3Y4Y1RYaGdnSUhNelU0UU9yZWFJX3U5U1BSOE1XVmFoSFZ5cWRBZGJQcnV3X2VFTjhQUF9xVHRnREZwcTZ4a050QnB2dEF6SklzMHBkeFdzUUs0S3VVamk0bTc1Nl9vb1ZrOUI3NVZGbjlkSzVsbk5Zc0lR?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.001603+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_387e50a1f80cc113",
+      "title": "Manchester City found guilty of breaking Premier League\u2019s financial fair play rules - The Guardian",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMiywFBVV95cUxNM2R2aG43RlZZSDlRa1FfWU84MmdBTmtkYzBnbzdaMlIyR2RHUWdVMEFGbG0xSWR4WjI1ZmVOUW5ubUlaWUdtbDFIeUVjZmxHN0d1QTFicUlMY1ViZkd5MnZHN3NYWGFjMzVxWjhKdzdLZDBCOU9fSDVjMTRUcUZTMlZrSDlDYTBxZFA3VEJhNDlRNm54WWRiRnVZLWc3azFZX0ZKaWpUaUxUNzY0UXJxZE9ZVDFmNk9kTVhrZGMyaW5tZXAzNWZSMThtSQ?oc=5\" target=\"_blank\">Manchester City found guilty of breaking Premier League\u2019s financial fair play rules</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">The Guardian</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxNM2R2aG43RlZZSDlRa1FfWU84MmdBTmtkYzBnbzdaMlIyR2RHUWdVMEFGbG0xSWR4WjI1ZmVOUW5ubUlaWUdtbDFIeUVjZmxHN0d1QTFicUlMY1ViZkd5MnZHN3NYWGFjMzVxWjhKdzdLZDBCOU9fSDVjMTRUcUZTMlZrSDlDYTBxZFA3VEJhNDlRNm54WWRiRnVZLWc3azFZX0ZKaWpUaUxUNzY0UXJxZE9ZVDFmNk9kTVhrZGMyaW5tZXAzNWZSMThtSQ?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.005637+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_c3d13fd37c6f906c",
+      "title": "Supreme Court allows Trump administration to use expanded database for potential voter purges - NBC News",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMixwFBVV95cUxQaVFSb0ZkbzI4Tkh1RzZqUDI3S000Z1FrNXMySE9lS0otZHNuOG5tQ3hPM1RTWXBhMnRMWko0cHBxUGFPeGhjUjdacUlYeVRwUElkY0c5T1h3THVFa2FZYTJQSkVxSTJpdWtHcXpzeC1RcDJhVUY4V2xjcEdROWtOYXpsVlkwMzZPVXpBVE8weWZzSFhpaWo5aGxkTHdRbmtHLXJZYXlaNDVxQ04tWVVwUnFzTzhGM1kwenJLakZFaF9lSURjdkVJ?oc=5\" target=\"_blank\">Supreme Court allows Trump administration to use expanded database for potential voter purges</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">NBC News</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxQaVFSb0ZkbzI4Tkh1RzZqUDI3S000Z1FrNXMySE9lS0otZHNuOG5tQ3hPM1RTWXBhMnRMWko0cHBxUGFPeGhjUjdacUlYeVRwUElkY0c5T1h3THVFa2FZYTJQSkVxSTJpdWtHcXpzeC1RcDJhVUY4V2xjcEdROWtOYXpsVlkwMzZPVXpBVE8weWZzSFhpaWo5aGxkTHdRbmtHLXJZYXlaNDVxQ04tWVVwUnFzTzhGM1kwenJLakZFaF9lSURjdkVJ?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.008700+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_2bc2574c132d0e59",
+      "title": "'The blockade is complete': Locals flee occupied south Ukraine as hunger deepens - ABC News - Breaking News, Latest News and Videos",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMiuwFBVV95cUxOQ29aMUdqY1dXd1hBTUdBSjBSNHVvX242M1BkS2lfd1hOQUFERVVlWmdLcDJMeE9xdUtRUHVjQWJrMjZCMzFZLW0xSVNrM09adFd3eUZSZWZaOTZkMDFZVTh0OGhyejlJc2FKQUowWUJJcUpBNEN4LWMyRFh3M1Y4NWxFZ0xtaXlhbnJkOWNENWw3X2JmQ2RHa3M4cEFqdU8tZmdmVWt4MUJoYllBU05iUXI3aUVQVENOWDRj0gHAAUFVX3lxTE1CNFdfYTBGVmJ2ZzJKaW14MERheExYMjB6UXo2S2hnV3M0REl5NUQ2V3JMckhGSWd6d0lka1ZzX1V0M2o4dHVzTHRFblJRQ0Q1QS02bWEwSUx1ZVdNOHVKOW0yT3o0QkUxTjBVZ19vc3JzaDBsZ3FvVGkyLV93aWhBYjE3UnN3eE1YMFF6VjUzWDRfN1pOdFY3ZFdlY0FSS28zeDBnck9ud3hvQl9CUU00QTFkNHRhbHZHdDJQclhwcg?oc=5\" target=\"_blank\">'The blockade is complete': Locals flee occupied south Ukraine as hunger deepens</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">ABC News - Breaking News, Latest News and Videos</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxOQ29aMUdqY1dXd1hBTUdBSjBSNHVvX242M1BkS2lfd1hOQUFERVVlWmdLcDJMeE9xdUtRUHVjQWJrMjZCMzFZLW0xSVNrM09adFd3eUZSZWZaOTZkMDFZVTh0OGhyejlJc2FKQUowWUJJcUpBNEN4LWMyRFh3M1Y4NWxFZ0xtaXlhbnJkOWNENWw3X2JmQ2RHa3M4cEFqdU8tZmdmVWt4MUJoYllBU05iUXI3aUVQVENOWDRj0gHAAUFVX3lxTE1CNFdfYTBGVmJ2ZzJKaW14MERheExYMjB6UXo2S2hnV3M0REl5NUQ2V3JMckhGSWd6d0lka1ZzX1V0M2o4dHVzTHRFblJRQ0Q1QS02bWEwSUx1ZVdNOHVKOW0yT3o0QkUxTjBVZ19vc3JzaDBsZ3FvVGkyLV93aWhBYjE3UnN3eE1YMFF6VjUzWDRfN1pOdFY3ZFdlY0FSS28zeDBnck9ud3hvQl9CUU00QTFkNHRhbHZHdDJQclhwcg?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.010635+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_e69cbec084b43df4",
+      "title": "BREAKING NEWS: 15-year-old Ryker Lee found safe near Three Points area - KVOA",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMi5gFBVV95cUxNYVNiYVJ3Z2RpYTJ0dmd3VERlSFhYeU13LVIzLXRLdi1pUy1oVjlPbWY3dzdaNUNtWjZhNDV0elVUdHdWU1lwLUVJdGlQM1ZIdUdVNi1ycFFCdmUybVhybHVJNnNpcTJ1UjJ1N3M0NG1kbWJnQlZCRDBzbnR5eUs4TEVTeTZxV042Sm04ZmxsWlBWUkIxV2xZZThvN1hfTVFRZ2ctaWRHMXpBVzJjWUZsbEhqaUZRdEc4WF91V05iT29yZW9iOUNtbjZMZmtWUTFOY051QXl1eU9xdDYzS1lCUmtHZ2dnZw?oc=5\" target=\"_blank\">BREAKING NEWS: 15-year-old Ryker Lee found safe near Three Points area</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">KVOA</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxNYVNiYVJ3Z2RpYTJ0dmd3VERlSFhYeU13LVIzLXRLdi1pUy1oVjlPbWY3dzdaNUNtWjZhNDV0elVUdHdWU1lwLUVJdGlQM1ZIdUdVNi1ycFFCdmUybVhybHVJNnNpcTJ1UjJ1N3M0NG1kbWJnQlZCRDBzbnR5eUs4TEVTeTZxV042Sm04ZmxsWlBWUkIxV2xZZThvN1hfTVFRZ2ctaWRHMXpBVzJjWUZsbEhqaUZRdEc4WF91V05iT29yZW9iOUNtbjZMZmtWUTFOY051QXl1eU9xdDYzS1lCUmtHZ2dnZw?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.012635+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_9a2ced5790d4eea8",
+      "title": "Manchester City charges live updates: Club found guilty of breaching Premier League financial regulations - The New York Times",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMimgFBVV95cUxPR1QtNnlYZkxWaU9PemhkLVQ0VXBLOHRncVpvWGpsdDdUSUR1MlctQmxtU2Y2WTUwcEhiWDlVeHRwUEpYbG43cUV0b1I5NU1nRy1qY09nWlBMWHVreHNDakFibUlJUEw1QldUTEJ5dUk0NWlYemZpdE5VUjBnUUMxN3o4ZVU4VmhhRVlTdC1TMmlRN2J6WlVHZEZ3?oc=5\" target=\"_blank\">Manchester City charges live updates: Club found guilty of breaching Premier League financial regulations</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">The New York Times</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPR1QtNnlYZkxWaU9PemhkLVQ0VXBLOHRncVpvWGpsdDdUSUR1MlctQmxtU2Y2WTUwcEhiWDlVeHRwUEpYbG43cUV0b1I5NU1nRy1qY09nWlBMWHVreHNDakFibUlJUEw1QldUTEJ5dUk0NWlYemZpdE5VUjBnUUMxN3o4ZVU4VmhhRVlTdC1TMmlRN2J6WlVHZEZ3?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.014634+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_e8e3fb5088f16c55",
+      "title": "BREAKING: Oceans Calling 2026 cancelled amid coastal storm threats - WBOC TV",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMi2AFBVV95cUxQRWNfUTZnVlZwRlFKNjliZjd5cFR4MUlxczVzd3drZHZJX0M0eGdmS0dPcmQzcEZfbEJmenZKSnRNcmE3R0stY1VnQXFzdWhwYms4UExrWXprTmJENloxM05CY21PVG5JSVliOVBFa3hQbFJ3UEIwRW1Ea0ZhUEs4QmdKSjZCZFFsdW9FYnRZcFhmV0hUZVlhWlVXMmZzbHJ1Y3d6NXk2SWxmR3RVdWtjN3Z1ajVvMy1IY2sycTVaRld6ZUVOYkZ5QlFVMS1mOHoyTkxpRDFCNkI?oc=5\" target=\"_blank\">BREAKING: Oceans Calling 2026 cancelled amid coastal storm threats</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">WBOC TV</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxQRWNfUTZnVlZwRlFKNjliZjd5cFR4MUlxczVzd3drZHZJX0M0eGdmS0dPcmQzcEZfbEJmenZKSnRNcmE3R0stY1VnQXFzdWhwYms4UExrWXprTmJENloxM05CY21PVG5JSVliOVBFa3hQbFJ3UEIwRW1Ea0ZhUEs4QmdKSjZCZFFsdW9FYnRZcFhmV0hUZVlhWlVXMmZzbHJ1Y3d6NXk2SWxmR3RVdWtjN3Z1ajVvMy1IY2sycTVaRld6ZUVOYkZ5QlFVMS1mOHoyTkxpRDFCNkI?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.016636+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_39e9db4e298e825a",
+      "title": "BREAKING NEWS: Cooper Flagg NBA Rookie Debut card sells for record $8 million - Sports Collectors Digest",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMirwFBVV95cUxQZ01Zb045VFZqU3NsLThveTd3c0hxTUJwcUhMd0V3WlR1SkJkQVpsWFBZV24zMzdSRWFITTBpN21sRy1EbjBRTGwzbFZSSW9NVnFYN25hanhyaXQtelVlYVBRbm5KcXRKOG5GSlNDSlJldndqaWg4SmVPZ0djV3cxVFdZNmJqOWtsYUFLN1d4VWsyd3U4ZjduMHE2TWo4QTB5V1RoS0FaLXpCTUl6X3RB?oc=5\" target=\"_blank\">BREAKING NEWS: Cooper Flagg NBA Rookie Debut card sells for record $8 million</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Sports Collectors Digest</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQZ01Zb045VFZqU3NsLThveTd3c0hxTUJwcUhMd0V3WlR1SkJkQVpsWFBZV24zMzdSRWFITTBpN21sRy1EbjBRTGwzbFZSSW9NVnFYN25hanhyaXQtelVlYVBRbm5KcXRKOG5GSlNDSlJldndqaWg4SmVPZ0djV3cxVFdZNmJqOWtsYUFLN1d4VWsyd3U4ZjduMHE2TWo4QTB5V1RoS0FaLXpCTUl6X3RB?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.019634+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_cfc20dc54abb4692",
+      "title": "Breaking News: Alpine front-row at wet Fuji - FIA WEC",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMihgFBVV95cUxNeVpFTDZrOXAwMDBxbThuR2ZJY3BZVFl1VUFnT3I4TnRRNnY1ZEktXzhxRHIyRFRBeWkxa1lGY2pILWFQVVdqYmdJeXhJMTJhTzZfdXo5N3dVSmUzNU1fNnJIbjZCV2Nza3lMZnlwUjR1dWNYTURfOTJlT0JDNVpITi1CaWFMUQ?oc=5\" target=\"_blank\">Breaking News: Alpine front-row at wet Fuji</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">FIA WEC</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNeVpFTDZrOXAwMDBxbThuR2ZJY3BZVFl1VUFnT3I4TnRRNnY1ZEktXzhxRHIyRFRBeWkxa1lGY2pILWFQVVdqYmdJeXhJMTJhTzZfdXo5N3dVSmUzNU1fNnJIbjZCV2Nza3lMZnlwUjR1dWNYTURfOTJlT0JDNVpITi1CaWFMUQ?oc=5",
+      "first_seen_at": "2026-09-26T08:40:39.145556+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.021643+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_769d4ba009f6e253",
+      "title": "Security Council LIVE: World leaders debate ongoing war in Ukraine - UN News",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMiV0FVX3lxTE1jLUktUmJUY0FmVTVjRW9FY0xrSUduamF0V0dOTC12MEUtb0UzR05hMHhYanFPVlpFYTE3NFFlb1g3SThQSVNhcktPTWVkYTRpdXNaUGxjWQ?oc=5\" target=\"_blank\">Security Council LIVE: World leaders debate ongoing war in Ukraine</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">UN News</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE1jLUktUmJUY0FmVTVjRW9FY0xrSUduamF0V0dOTC12MEUtb0UzR05hMHhYanFPVlpFYTE3NFFlb1g3SThQSVNhcktPTWVkYTRpdXNaUGxjWQ?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.023635+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_bd420895a66ec8c5",
+      "title": "Today in History: September 26, anti-globalization protesters clash with police at IMF, World Bank summit - The Mercury News",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMi2gFBVV95cUxPcjFzb1ZRbjZMeUJXNEdoeHNSSnJjX3dJR2E5S0JhVnJKb2V0QjhnallfSDZUbEd3RnVPUDZBTV9NV1M0bUlwQTFUcnQ2bEhkeGV0ZkllU3I1MkE0SkNTU2dzV2stNXNSV3cwN2dvcjYxMXhPVjdZSEVMVWdCdF8wUFJsa0dsMDdCX0tQRVRuVXhfdnl4ZDJTZ3hONmQzWEdpdXZvWmF0c2xhaWdIV0hlN1FQTWFwRGtrN1UxeVJ3eEJfdjBCNWdVSTBPc3Y3cXFPdUhKVmJ4SkFTQdIB3wFBVV95cUxQeFhYOUE3ZHN0M2s2SER6cXBPcENPV2J2NndqYTB2dldEVzZ5WDFDam9YLXA2RmE1Uk5OYU9sMUlQRktFQmhhd29DRGpyTVF2aDg1R3V5QkFMT2o3TXhPQ2lId0FzV0YyTndkdEM5a2tybC1qTjA3c0RsZnNaTU14SWNZblhST2FWalFYNkt5aGVkbUJ3Ni1XX0FSeHZwRFJlMEU1MUFBcDZQb0ZTZmMwb08wRkloWlBtZTRLZ2Q5Z09oUWdBRmN0clRGWmdUaE10ZUY4TTRKTk5hOVRPeWtV?oc=5\" target=\"_blank\">Today in History: September 26, anti-globalization protesters clash with police at IMF, World Bank summit</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">The Mercury News</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPcjFzb1ZRbjZMeUJXNEdoeHNSSnJjX3dJR2E5S0JhVnJKb2V0QjhnallfSDZUbEd3RnVPUDZBTV9NV1M0bUlwQTFUcnQ2bEhkeGV0ZkllU3I1MkE0SkNTU2dzV2stNXNSV3cwN2dvcjYxMXhPVjdZSEVMVWdCdF8wUFJsa0dsMDdCX0tQRVRuVXhfdnl4ZDJTZ3hONmQzWEdpdXZvWmF0c2xhaWdIV0hlN1FQTWFwRGtrN1UxeVJ3eEJfdjBCNWdVSTBPc3Y3cXFPdUhKVmJ4SkFTQdIB3wFBVV95cUxQeFhYOUE3ZHN0M2s2SER6cXBPcENPV2J2NndqYTB2dldEVzZ5WDFDam9YLXA2RmE1Uk5OYU9sMUlQRktFQmhhd29DRGpyTVF2aDg1R3V5QkFMT2o3TXhPQ2lId0FzV0YyTndkdEM5a2tybC1qTjA3c0RsZnNaTU14SWNZblhST2FWalFYNkt5aGVkbUJ3Ni1XX0FSeHZwRFJlMEU1MUFBcDZQb0ZTZmMwb08wRkloWlBtZTRLZ2Q5Z09oUWdBRmN0clRGWmdUaE10ZUY4TTRKTk5hOVRPeWtV?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.025635+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_e4b7b4ec86b80dbe",
+      "title": "TrumpRx claims the world's lowest drug prices. A new report raises doubts - Yahoo",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMimAFBVV95cUxNSVJzRG9rOGhMUmZId1dINkVDZWlyendSQlAzWWVETWlraDVpNkFnYm1uNVloQ0szVVFUNWdGbGg0NC16T0lyRHl2TUl1bHQ2U2dKX0c5ekhhWmdKNmdPeVdNdE51TEpxZ0hHNU5GNE55WG9hZmZkbzlLTlBsNGk2akFBZmdfZHpNVGlYWlhLLXRjTUg3eHB3eQ?oc=5\" target=\"_blank\">TrumpRx claims the world's lowest drug prices. A new report raises doubts</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Yahoo</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNSVJzRG9rOGhMUmZId1dINkVDZWlyendSQlAzWWVETWlraDVpNkFnYm1uNVloQ0szVVFUNWdGbGg0NC16T0lyRHl2TUl1bHQ2U2dKX0c5ekhhWmdKNmdPeVdNdE51TEpxZ0hHNU5GNE55WG9hZmZkbzlLTlBsNGk2akFBZmdfZHpNVGlYWlhLLXRjTUg3eHB3eQ?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.027637+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_2fee0a725fb24ecf",
+      "title": "Hotfixes: September 24, 2026 \u2014 World of Warcraft - Blizzard News",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMigAFBVV95cUxQa3NWSDhVVG1TeVRmcUQ2RW0xZTJhNU5lWi0yT3Z1Mk9McURTV3ZBV1VTbEdxR0R0UDR1dUczX2lDam4tRUo5b1ZuZXg3WlRsejNKVWVOcDNwMTJvUjYxU19pdlV6NVJiRHR6UldaSXZHVXc3RXBpcXZFUV9xdDRoSA?oc=5\" target=\"_blank\">Hotfixes: September 24, 2026 \u2014 World of Warcraft</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Blizzard News</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQa3NWSDhVVG1TeVRmcUQ2RW0xZTJhNU5lWi0yT3Z1Mk9McURTV3ZBV1VTbEdxR0R0UDR1dUczX2lDam4tRUo5b1ZuZXg3WlRsejNKVWVOcDNwMTJvUjYxU19pdlV6NVJiRHR6UldaSXZHVXc3RXBpcXZFUV9xdDRoSA?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.028634+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_afd3069119e9a155",
+      "title": "The 2027 Best Colleges Rankings Are Out | Best Colleges | U.S. News - U.S. News & World Report",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMiiwFBVV95cUxPTFRwaG1WNWdyTlZKX1BnWmRuMjNrRzRuVS1icHdEM3lyWHd6enpPN3lKeTNlM01oU2UzY0tLc2ZIQnJFRDM0Y1UwNUtqMTN2ejdMS29IVFowYVg5blVHQVNQVDZPXzRwR3VzNnJkZHVmT3FYU3RobUlMRXVTUkU1N2RPeDdicHM3OE04?oc=5\" target=\"_blank\">The 2027 Best Colleges Rankings Are Out | Best Colleges | U.S. News</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">U.S. News & World Report</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPTFRwaG1WNWdyTlZKX1BnWmRuMjNrRzRuVS1icHdEM3lyWHd6enpPN3lKeTNlM01oU2UzY0tLc2ZIQnJFRDM0Y1UwNUtqMTN2ejdMS29IVFowYVg5blVHQVNQVDZPXzRwR3VzNnJkZHVmT3FYU3RobUlMRXVTUkU1N2RPeDdicHM3OE04?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.030635+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_6f704cb32c787af2",
+      "title": "Watch: Trump says Iran war will end 'immediately' after US midterm elections - BBC",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMiV0FVX3lxTE84dHFTZUp2ajRGcGFzRzdJV3M1SmJaODBodGN1OXE5cFFkMGZNMlJvSXF4ajlJbGhKa29RUVRYdTdtNDgtTDZfNWlDWW0zTmxJSWF0UjRERQ?oc=5\" target=\"_blank\">Watch: Trump says Iran war will end 'immediately' after US midterm elections</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">BBC</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE84dHFTZUp2ajRGcGFzRzdJV3M1SmJaODBodGN1OXE5cFFkMGZNMlJvSXF4ajlJbGhKa29RUVRYdTdtNDgtTDZfNWlDWW0zTmxJSWF0UjRERQ?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.031635+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_e802b639d21fd460",
+      "title": "U.S. News & World Report Announces 2026\u20132027 Best Cancer Hospitals - The ASCO Post",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMirgFBVV95cUxPeVBwRFN0MklUVDh0aHIxRlZIVDgzYmp2R0l5OW8wa3VsNTV2MEdSZ0FTQnotZlQydVM5ZWN1N2NaWFQxNnVGZ0lzejY1RXQzMzRSTFp6NTU1WEg3a3FqcXZXZVA4WWVJNXpPWkRkWDdVekh1V2lpcW0wOWVRcjQ3RWYyUkJuWnJ6TVdNNUNuUkV4U0QyQWJXWXhaaGZWLTZ1Yk1qT3NKSzZnVWg1NHc?oc=5\" target=\"_blank\">U.S. News & World Report Announces 2026\u20132027 Best Cancer Hospitals</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">The ASCO Post</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPeVBwRFN0MklUVDh0aHIxRlZIVDgzYmp2R0l5OW8wa3VsNTV2MEdSZ0FTQnotZlQydVM5ZWN1N2NaWFQxNnVGZ0lzejY1RXQzMzRSTFp6NTU1WEg3a3FqcXZXZVA4WWVJNXpPWkRkWDdVekh1V2lpcW0wOWVRcjQ3RWYyUkJuWnJ6TVdNNUNuUkV4U0QyQWJXWXhaaGZWLTZ1Yk1qT3NKSzZnVWg1NHc?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.034637+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_c58c3bcefd590011",
+      "title": "RAW: TODAY IN HISTORY SEPT 25 LITTLE ROCK NINE - KXLY.com",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMi2wFBVV95cUxPMW1fZFNtYzhVdTUyQjk4ODJyZzdZVVF2NHJPRmNLbzNXUVU1ZkRwV1JpblRCVExibV9Od2RoNXpLOGVFb3BYdVhjWExhOUpOTGMwZTI0dGVzaXFDTUFwbnc0Z0lfOEwwRF9jdXdyVTExeXd4d2lwRkFOZXhDYVRsYk05anV5eWZkcGlmYktiVHJiRXdCbjF1QVFTTGFIZzRMTzg0eFkya3ZzNnZsSC1iTk9YekdMYUhkMHU4R0lzU0VQT25hUlloWVdqQkJxczhHVjlOek5GQVAtREk?oc=5\" target=\"_blank\">RAW: TODAY IN HISTORY SEPT 25 LITTLE ROCK NINE</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">KXLY.com</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxPMW1fZFNtYzhVdTUyQjk4ODJyZzdZVVF2NHJPRmNLbzNXUVU1ZkRwV1JpblRCVExibV9Od2RoNXpLOGVFb3BYdVhjWExhOUpOTGMwZTI0dGVzaXFDTUFwbnc0Z0lfOEwwRF9jdXdyVTExeXd4d2lwRkFOZXhDYVRsYk05anV5eWZkcGlmYktiVHJiRXdCbjF1QVFTTGFIZzRMTzg0eFkya3ZzNnZsSC1iTk9YekdMYUhkMHU4R0lzU0VQT25hUlloWVdqQkJxczhHVjlOek5GQVAtREk?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.037637+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_73738fa1c9ebf2ab",
+      "title": "David Muir on overcoming a 'polarizing time' to be America's #1 nightly newscast | Exclusive - USA Today",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMi0gFBVV95cUxOWXBmZXR5RldrLUtPd3pMTEh3dVhQbl84d241VHdnS0F4R2R6dU1GT3l1bVpBLU9tbXdUNnlNYUM5bjB4RXozakViZHJsWkY1R0FWazdMWnFWODV6U2FOTTdFdThxcUpTMk9qaWxHSTNmVTNUTm1CZWpVWXJFNFRlemNXOWtZOGxlbW0zSHdUaVJoXzJFWTBKNFlOem1Fb1JqMkYyVzBrUzROdVhUREVwVnRtV201YmZvcHhjM2pjSndRWWlOVFd6TUlXY3UxUHFCRXc?oc=5\" target=\"_blank\">David Muir on overcoming a 'polarizing time' to be America's #1 nightly newscast | Exclusive</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">USA Today</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxOWXBmZXR5RldrLUtPd3pMTEh3dVhQbl84d241VHdnS0F4R2R6dU1GT3l1bVpBLU9tbXdUNnlNYUM5bjB4RXozakViZHJsWkY1R0FWazdMWnFWODV6U2FOTTdFdThxcUpTMk9qaWxHSTNmVTNUTm1CZWpVWXJFNFRlemNXOWtZOGxlbW0zSHdUaVJoXzJFWTBKNFlOem1Fb1JqMkYyVzBrUzROdVhUREVwVnRtV201YmZvcHhjM2pjSndRWWlOVFd6TUlXY3UxUHFCRXc?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.039635+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_132c7f02a4124ad6",
+      "title": "Current & Breaking News | National & World Updates - Time Magazine",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMivgFBVV95cUxNa0FoRkNfcXlWem52eG9rYjZRbjdnbG0za1d5dkRpaFlUOWhWLWxwYndjalR2bGhCaTU5eGNKWDVCMlZabVFlQ1JwbzhJNEtmV2ZJWkNGRXU1dlZKUkJDNTFHUGhTVzZLMHVqRVhVZk8tdEp6QVpRV21vWmZyTVRPQ0trWlBfNnc3ME53eHlWUlZFMW5TcGFlM2NmbHJUTFdJU1NRTlpUNm90blA4el90T21MMzNiSW9yeThpMGd3?oc=5\" target=\"_blank\">Current & Breaking News | National & World Updates</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Time Magazine</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNa0FoRkNfcXlWem52eG9rYjZRbjdnbG0za1d5dkRpaFlUOWhWLWxwYndjalR2bGhCaTU5eGNKWDVCMlZabVFlQ1JwbzhJNEtmV2ZJWkNGRXU1dlZKUkJDNTFHUGhTVzZLMHVqRVhVZk8tdEp6QVpRV21vWmZyTVRPQ0trWlBfNnc3ME53eHlWUlZFMW5TcGFlM2NmbHJUTFdJU1NRTlpUNm90blA4el90T21MMzNiSW9yeThpMGd3?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.041683+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_015c721227c39057",
+      "title": "World | Latest News & Updates - BBC",
+      "summary": "# News\n\n# World\n\nA damaged business centre in Kyiv, Ukraine, following a Russian drone strike. Photo: 25 September 2026\n\n## Russia targeting 'ordinary life' with attacks on Ukraine's data centres, Zelensky says\n\nSuch strikes aim to disrupt \"people's ability to stay connected, study, work\", says Ukraine's president.\n\nTwo FBI agents in Washington DC\n\n## Special agents' blood and urine test results stolen in FBI hack [...] Australia, which has strict social media restrictions and has proposed controls on algorithms and smart glasses, announced the breach at the UN.\n\nUS President Donald Trump and Chinese leader Xi Jinping exchange smiles as they greet each other before a meeting. \n\n## Trump and Xi come face-to-face as US and China battle to win the AI race\n\nThe US and China are vying for AI supremacy while seeking to keep it under human control.\n\nA horse and buggy carriage drives by [...] Benjamin Netanyahu split screen with some empty UN seats.\n\n## Watch: UN delegates walk out of Netanyahu speech\n\nThe Israeli delegation cheered in support during Netanyahu's speech. Nada Tawfik in New York explains what happened.\n\nUS President Donald Trump (R) and Chinese President Xi Jinping (L) at Joint Base Andrews, Maryland, USA, 23 September 2026. US President Donald Trump and Chinese President Xi Jinping are scheduled to hold bilateral talks during Xi's state visit to the United States.",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://www.bbc.com/news/world",
+      "first_seen_at": "2026-09-26T08:42:56.954444+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.964273+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_cb1191f6c302adb7",
+      "title": "International News | Latest World News, Videos & Photos",
+      "summary": "### It's been an intense hurricane season in Pacific and there's still a long way to go\n\n### 'The blockade is complete': Locals flee occupied south Ukraine as hunger deepens\n\n### Explosion near Acropolis in Greece injures at least 2 people and collapses a building\n\n### Latest Videos\n\n## Pope Leo on historic visit to France\n\n## Police rescue cattle from floodwaters in Chile\n\n## Raging rhino attacks safari car\n\n## Magpie relentlessly attacks Syndey jogger\n\n## Euthanasia: Right to Die? [...] ## China 'cannot compete with us' on AI says tech expert\n\nHudon Institutes' Tom Duesterberg shares what he thinks China's main weakness is when it comes to AI.\n\n## Six-year-old girl sets Rubik's Cube women's world record\n\nA six-year-old girl has set the new women's world record for solving a Rubik's Cube-- smashing the record by solving it in under 4.5 seconds. David Muir reports.\n\n## Analyst on how US in a 'prolonged war' benefits China [...] ## Growing excitement in Paris ahead of Pope Leo's visit\n\n## Massive fire destroys warehouse in Spain\n\n## Israeli Prime Minister Benjamin Netanyahu speaks at UN General Assembly\n\n## Netanyahu addresses United Nations General Assembly\n\n### Latest Stories\n\n## Benjamin Netanyahu addresses U.N., some delegates walk out\n\nDozens of delegates walked out as Israeli Prime Minister Benjamin Netanyahu began his speech to global leaders at the United Nations General Assembly in New York City on Thursday.",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://abcnews.com/international",
+      "first_seen_at": "2026-09-26T08:42:56.954444+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.966274+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_ba4320656bdee6d5",
+      "title": "Breaking News, World News and Video from Al Jazeera",
+      "summary": "LOS ANGELES, CALIFORNIA - SEPTEMBER 19: Joshua Van of Myanmar celebrates after his Flyweight Championship unanimous decision win against Alexandre Pantoja of Brazil during UFC 331: Van v Pantoja 2 at Crypto.com Arena on September 19, 2026 in Los Angeles, California. Luke Hales/Getty Images/AFP (Photo by Luke Hales / GETTY IMAGES NORTH AMERICA / Getty Images via AFP)\n ### Ed Sheeran calls Gaza situation \u2018unjustifiable\u2019 after Palestine controversy [...] HIROSHIMA, JAPAN - SEPTEMBER 11: Toshisuke Kanazawa, a 90-year-old bodybuilder, trains in his gym in Hiroshima, Japan, on September 11, 2026. Kanazawa, Japan's oldest competitive bodybuilder and a 19-time bodybuilding champion, who turned 90 on August 29 won the All Japan Masters Fitness Championship last month. Kanazawa and his fellow competitors actively train as bodybuilders throughout their lives. Japan has the world's oldest population, with a record 29.4% of its 123 million residents [...] ![Plumes of smoke rise from fires at an oil refinery following what the authorities say is a Ukrainian drone strike in Moscow, Russia, on September 20, 2026 [Reuters]](/wp-content/uploads/2026/09/2026-09-20T042905Z_1824787393_RC2QMNA5QBAK_RTRMADP_3_UKRAINE-CRISIS-RUSSIA-REFINERY-1789884302.jpg?resize=770%2C513&quality=80)\n ## Turkiye backs Saudi Arabia\u2019s security amid escalating Houthi attacks: FM",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://www.aljazeera.com/",
+      "first_seen_at": "2026-09-26T08:42:56.954444+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.969275+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_81118a7b3ad9efce",
+      "title": "NBC News - Breaking Headlines and Video Reports on World ...",
+      "summary": "## More than a million people expected to see pope on France visit\n\nPope Leo is spending four intense days in Paris, the Catholic shrine at Lourdes and the northeastern city of Metz.\n\n## Putin\u2019s party secures a record number of seats in Russia\u2019s wartime election\n\n## An explosion near the Acropolis in Greece injures at least 2 people and collapses a building\n\n## Nepal\u2019s leader, at U.N., says floods serve as a \u2018warning to the world\u2019 about climate change [...] ## Nepal\u2019s leader, at U.N., says floods serve as a \u2018warning to the world\u2019 about climate change\n 8h ago\n\n  ## Bijan Robinson runs roughshod over Packers as Falcons breeze to 35-14 victory\n 9h ago\n\n  ## Pittsburgh pediatric doctor fatally stabbed and wife wounded in attack as they slept\n 9h ago\n\n  ## New Jersey\u2019s governor calls on her lieutenant governor to resign over ethics report\n 11h ago\n\n  ## Trump rolls out red carpets for Xi, though he has portrayed China as a global menace\n 11h ago [...] ## Trump seeks to impress Xi Jinping and Bill Gates calls for AI oversight: Morning Rundown\n 1h ago\n\n  ## Bill Gates says AI companies self-regulating isn\u2019t enough and governments should be involved\n 1h ago\n\n  ## Putin\u2019s party secures a record number of seats in Russia\u2019s wartime election\n 2h ago\n\n  ## Inside NBC News\u2019 polling averages: Democrats enjoy biggest lead yet in the race for Congress\n 2h ago\n\n  ## Japan says Trump voiced concern over weak yen in summit with PM Sanae Takaichi\n 3h ago",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://www.nbcnews.com/",
+      "first_seen_at": "2026-09-26T08:42:56.954444+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.971274+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_28a45ad2234d9ba6",
+      "title": "The Washington Post - Breaking news and latest headlines ...",
+      "summary": "National\n\n## Asylum seekers thought they had a haven in the U.S. Then Trump returned.\n\n## Bob Pettit, basketball great who was named the NBA\u2019s first MVP, dies at 93\n\n## Students sue Education Dept., claiming it reported $4.6B in canceled loans as debt\n\n## Former Virginia youth minister pleads not guilty in sex abuse case\n\nWorld\n\n## An unabashed Netanyahu assails critics in U.N. speech as election nears\n\n## Ethiopia\u2019s last civil war killed over half a million. Another could be starting. [...] ## Guests at state dinner honoring Chinese President Xi Jinping include Elon Musk, Sam Altman\n\n## A poet became a songwriter. The crafts are more distinct than you would think.\n\n## State dinners were once grand public moments. Under Trump, they\u2019re private affairs.\n\nArts & Entertainment\n\n## For \u2018Succession\u2019s\u2019 Brian Cox, the indignation isn\u2019t an act\n\n## Vote for the best sports bar in the D.C. area\n\n## Macklemore announces \u2018Free Palestine\u2019 tour after Ed Sheeran dismissal [...] Once known for using cheap labor to produce inexpensive clothes and toys, Chinese factories increasingly make some of the world\u2019s most sophisticated products.\n\nBy David J. Lynch\n\n## The surprise winners from record-high diesel prices\n\nIt isn\u2019t just big oil companies that are benefitting from the highest diesel prices ever seen.\n\nBy Todd C. Frankel\n\n\n\n## As Houthis capitalize on U.S-led war with Iran, fighting engulfs Yemen",
+      "topic": "general",
+      "source_ids": [
+        "tavily"
+      ],
+      "url": "https://www.washingtonpost.com/",
+      "first_seen_at": "2026-09-26T08:42:56.954444+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.954275+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_941aa6d9c3f90b50",
+      "title": "Oh Lord, AI Reporters Are Actually Breaking Big News",
+      "summary": "Last week, an AI newsroom beat mainstream journalists\u2014including WIRED\u2014to a story about OpenAI and hacking. It\u2019s just the beginning.",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.wired.com/story/ai-newsrooms-are-breaking-news-now-haha-im-in-danger",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.983276+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_111787c57df79454",
+      "title": "BREAKING: Trump-Appointed Judge Orders White House To Unban CNN, MS NOW, and Politico",
+      "summary": "A federal judge blocked President Donald Trump's order banning CNN, MS NOW, and Politico from the White House. The post ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.msn.com/en-us/news/other/breaking-trump-appointed-judge-orders-white-house-to-unban-cnn-ms-now-and-politico/ar-AA2cRLSI?ocid=BingNewsVerp",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.990397+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_5c1dcda8b43a4e70",
+      "title": "World in Brief: Trump again threatens to \u201cannihilate\u201d Iran; Tigrayan forces seize airport",
+      "summary": "Donald Trump told the UN General Assembly that he could either make a deal with Iran to end the war or he could \u201cannihilate ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.economist.com/the-world-in-brief/2026/09/23/a03731d9-dc79-41b5-bd27-4e39a1cd391c",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.995604+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_bdb4f1739c8349f0",
+      "title": "FIFA's Infantino pledges culture of dialogue after uproar over secretive World Cup sell-off plan",
+      "summary": "FIFA\u2019s embattled president Gianni Infantino said Thursday he is committed to a fresh culture of openness at the soccer body that is \u201cnot about generating positive headlines.\u201d Two months into a deep ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.msn.com/en-us/news/other/fifa-s-infantino-pledges-culture-of-dialogue-after-uproar-over-secretive-world-cup-sell-off-plan/ar-AA2cUrtV?ocid=BingNewsVerp",
+      "first_seen_at": "2026-09-26T08:43:00.292686+00:00",
+      "latest_seen_at": "2026-09-26T08:44:49.273977+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_fe997841cc4b7e48",
+      "title": "BREAKING NEWS: Washington Homecoming King and Queen Crowned - KCII Radio Washington, Iowa",
+      "summary": "<a href=\"https://news.google.com/rss/articles/CBMinwFBVV95cUxNTkdMSGtQYUg0Z0NhWlFMeWhuazdJd1N2eVdMY1lkbTBqTzRxSU90MU5NclZmakhQR1l3a01vWjUtYUt6SVVuV2RKT2FCaUQ0aE9ZOTR6MW05UGVTRENJZUZfbG4zRm1SV2RWRjJ0a1VHUVo2bXBldWMycTFOZVUtaDd5TG5yVGJzdWNkTERjRHRWMFNTOER1bG1ZM0VZZlE?oc=5\" target=\"_blank\">BREAKING NEWS: Washington Homecoming King and Queen Crowned</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">KCII Radio Washington, Iowa</font>",
+      "topic": "general",
+      "source_ids": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNTkdMSGtQYUg0Z0NhWlFMeWhuazdJd1N2eVdMY1lkbTBqTzRxSU90MU5NclZmakhQR1l3a01vWjUtYUt6SVVuV2RKT2FCaUQ0aE9ZOTR6MW05UGVTRENJZUZfbG4zRm1SV2RWRjJ0a1VHUVo2bXBldWMycTFOZVUtaDd5TG5yVGJzdWNkTERjRHRWMFNTOER1bG1ZM0VZZlE?oc=5",
+      "first_seen_at": "2026-09-26T08:43:03.328121+00:00",
+      "latest_seen_at": "2026-09-26T08:44:49.288977+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_36b3f9777bdd5919",
+      "title": " [ \uc18d\ubcf4 ] \uae40\ubbfc\uc11d , \u8207\uc804\ub300 \uac15\uc6d0 \u00b7 TK \ud569\uc0b0 \ub2f9\uc6d0\ud22c\ud45c\uc11c \uc2b9\ub9ac",
+      "summary": "",
+      "topic": "general",
+      "source_ids": [
+        "gdelt"
+      ],
+      "url": "https://www.busan.com/view/busan/view.php?code=2026080918270234814",
+      "first_seen_at": "2026-09-26T08:44:49.241897+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.043634+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_18256121e76cf99f",
+      "title": "Lirik Lagu Breaking News - Louis The Child ft . RAYE",
+      "summary": "",
+      "topic": "general",
+      "source_ids": [
+        "gdelt"
+      ],
+      "url": "https://manado.tribunnews.com/lifestyle/1890512/lirik-lagu-breaking-news-louis-the-child-ft-raye",
+      "first_seen_at": "2026-09-26T08:44:49.241897+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.044634+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_de77ae6db49f61b1",
+      "title": "Breaking News | The Jerusalem Post",
+      "summary": "",
+      "topic": "general",
+      "source_ids": [
+        "gdelt"
+      ],
+      "url": "http://www.jpost.com/breaking-news",
+      "first_seen_at": "2026-09-26T08:44:49.241897+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.046634+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_06a1ca4eaa529eb2",
+      "title": "Man hunted after attack in Whiston - live updates",
+      "summary": "",
+      "topic": "general",
+      "source_ids": [
+        "gdelt"
+      ],
+      "url": "https://www.liverpoolecho.co.uk/news/liverpool-news/armed-police-live-whiston-estate-34344748",
+      "first_seen_at": "2026-09-26T08:44:49.241897+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.047634+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_a764b1559ff1ce3f",
+      "title": "Liverpool John Lennon Airport incident live after man crashes following  medical episode  ",
+      "summary": "",
+      "topic": "general",
+      "source_ids": [
+        "gdelt"
+      ],
+      "url": "https://www.liverpoolecho.co.uk/news/liverpool-news/liverpool-john-lennon-airport-incident-34352842",
+      "first_seen_at": "2026-09-26T08:44:49.241897+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.049634+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_2e80d69eab10a1dc",
+      "title": " [ \uc18d\ubcf4 ] TSMC  \uad6c\ub9c8\ubaa8\ud1a0 \uac15\uc9c4 \uad00\ub828 \uacf5\uc7a5 \uc0c1\ud669 \ud655\uc778 \uc911  ",
+      "summary": "",
+      "topic": "general",
+      "source_ids": [
+        "gdelt"
+      ],
+      "url": "https://www.busan.com/view/busan/view.php?code=2026072816582789722",
+      "first_seen_at": "2026-09-26T08:44:49.241897+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.051636+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_ac591f615bc4113b",
+      "title": "Wild Headlines , Legal Drama & A Shocking Problem at Mount Everest | 96 . 7 KISS FM",
+      "summary": "",
+      "topic": "general",
+      "source_ids": [
+        "gdelt"
+      ],
+      "url": "https://967kissfm.iheart.com/featured/the-jubal-show/content/2026-09-04-1119-ninas-whats-trending-on-t-wild-headlines-legal-drama-a-shocking-proble",
+      "first_seen_at": "2026-09-26T08:44:49.241897+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.052699+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_4a0bb9e2532ed2dd",
+      "title": "Wild Headlines , Legal Drama & A Shocking Problem at Mount Everest | V101 . 1",
+      "summary": "",
+      "topic": "general",
+      "source_ids": [
+        "gdelt"
+      ],
+      "url": "https://v1011sacramento.iheart.com/featured/the-jubal-show/content/2026-09-04-1119-ninas-whats-trending-on-t-wild-headlines-legal-drama-a-shocking-proble",
+      "first_seen_at": "2026-09-26T08:44:49.241897+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.054635+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_9ca36d2dc36bc036",
+      "title": "Wild Headlines , Legal Drama & A Shocking Problem at Mount Everest | HITS 100 . 3",
+      "summary": "",
+      "topic": "general",
+      "source_ids": [
+        "gdelt"
+      ],
+      "url": "https://hitscarolina.iheart.com/featured/the-jubal-show/content/2026-09-04-1119-ninas-whats-trending-on-t-wild-headlines-legal-drama-a-shocking-proble",
+      "first_seen_at": "2026-09-26T08:44:49.241897+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.055713+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_54d0c8bcad24b9a5",
+      "title": "Wild Headlines , Legal Drama & A Shocking Problem at Mount Everest | Z107 . 7",
+      "summary": "",
+      "topic": "general",
+      "source_ids": [
+        "gdelt"
+      ],
+      "url": "https://z1077.iheart.com/featured/the-jubal-show/content/2026-09-04-1119-ninas-whats-trending-on-t-wild-headlines-legal-drama-a-shocking-proble",
+      "first_seen_at": "2026-09-26T08:44:49.241897+00:00",
+      "latest_seen_at": "2026-09-26T08:49:12.057652+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_193a68eb956f4b90",
+      "title": "World in Brief: Trump again threatens to \u201cannihilate\u201d Iran; Tigrayan forces launch new war",
+      "summary": "Tigrayan forces said they had \u201centered a defensive war\u201d against Ethiopia\u2019s government, thus ending four years of peace ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.economist.com/the-world-in-brief/2026/09/23/10c70c6a-a86c-4eba-8f8b-1d2a1ac6adce",
+      "first_seen_at": "2026-09-26T08:48:51.262526+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.992391+00:00",
+      "is_published": false
+    },
+    {
+      "story_id": "story_8b96ef1bcd5aba96",
+      "title": "World in Brief: Iran\u2019s president hits back at Trump; AI bosses to brief UN",
+      "summary": "At the UN General Assembly, Iran\u2019s president also accused America of breaking international law by striking civilian targets, ...",
+      "topic": "general",
+      "source_ids": [
+        "ddgs"
+      ],
+      "url": "https://www.economist.com/the-world-in-brief/2026/09/23/0dc8210f-d589-42b4-b4f2-883d9c36d42e",
+      "first_seen_at": "2026-09-26T08:48:51.262526+00:00",
+      "latest_seen_at": "2026-09-26T08:49:11.998601+00:00",
+      "is_published": false
+    }
+  ],
+  "publications": [
+    {
+      "publication_id": "pub_story_test1_1790412721",
+      "story_id": "story_test1",
+      "platform": "threads",
+      "status": "FAILED",
+      "published_at": "2026-09-26T08:52:01.358424+00:00",
+      "run_id": "story_test1"
+    },
+    {
+      "publication_id": "pub_story_test1_1790412825",
+      "story_id": "story_test1",
+      "platform": "threads",
+      "status": "FAILED",
+      "published_at": "2026-09-26T08:53:45.478740+00:00",
+      "run_id": "story_test1"
+    },
+    {
+      "publication_id": "pub_story_f06e8c960a266120_1790413022",
+      "story_id": "story_f06e8c960a266120",
+      "platform": "threads",
+      "status": "FAILED",
+      "published_at": "2026-09-26T08:57:02.374849+00:00",
+      "run_id": "story_f06e8c960a266120"
+    },
+    {
+      "publication_id": "pub_story_f06e8c960a266120_1790413133",
+      "story_id": "story_f06e8c960a266120",
+      "platform": "threads",
+      "status": "DRY_RUN",
+      "published_at": "2026-09-26T08:58:53.751071+00:00",
+      "run_id": "story_f06e8c960a266120"
+    },
+    {
+      "publication_id": "pub_story_f06e8c960a266120_1790413544",
+      "story_id": "story_f06e8c960a266120",
+      "platform": "threads",
+      "status": "FAILED",
+      "published_at": "2026-09-26T09:05:44.825789+00:00",
+      "run_id": "story_f06e8c960a266120"
+    },
+    {
+      "publication_id": "pub_story_f06e8c960a266120_1790414004",
+      "story_id": "story_f06e8c960a266120",
+      "platform": "threads",
+      "status": "DRY_RUN",
+      "published_at": "2026-09-26T09:13:24.036503+00:00",
+      "run_id": "story_f06e8c960a266120"
+    },
+    {
+      "publication_id": "pub_story_f06e8c960a266120_1790419568",
+      "story_id": "story_f06e8c960a266120",
+      "platform": "threads",
+      "status": "FAILED",
+      "published_at": "2026-09-26T10:46:08.116317+00:00",
+      "run_id": "story_f06e8c960a266120"
+    },
+    {
+      "publication_id": "pub_report_story_00f646448c67c320_1790419888",
+      "story_id": "story_00f646448c67c320",
+      "platform": "threads",
+      "status": "DRY_RUN",
+      "published_at": "2026-09-26T10:51:28.868869+00:00",
+      "run_id": "story_00f646448c67c320"
+    }
+  ]
+}

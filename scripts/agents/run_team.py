@@ -1,10 +1,9 @@
-﻿"""Team graph CLI.
+"""Team graph CLI.
 
 Usage:
-    python scripts/agents/run_team.py ollama gpt-oss:120b "Tesla Model Y"
+    python scripts/agents/run_team.py PROVIDER MODEL [TOPIC]
 """
 from __future__ import annotations
-
 import sys
 from pathlib import Path
 
@@ -20,7 +19,7 @@ def main() -> None:
     provider = sys.argv[1] if len(sys.argv) > 1 else "ollama"
     model_id = sys.argv[2] if len(sys.argv) > 2 else "gpt-oss:120b"
     topic = sys.argv[3] if len(sys.argv) > 3 else None
-    sys.exit(run_team(provider, model_id, topic=topic))
+    sys.exit(run_team(provider, model_id, topic=topic, mode="synthetic"))
 
 
 if __name__ == "__main__":

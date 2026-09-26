@@ -1,0 +1,318 @@
+{
+  "run_id": "run_a01cd66985e6",
+  "outcome": "PASS",
+  "state": {
+    "run_id": "run_a01cd66985e6",
+    "story_id": "story_00f646448c67c320",
+    "topic": "news",
+    "seed": {
+      "story_id": "story_a01cd66985e6",
+      "title": "Top World News - Free download and install on Windows",
+      "summary": "Latest developments regarding: Top World News - Free download and install on Windows",
+      "topic": "news"
+    },
+    "provider": "ollama",
+    "model_id": "gpt-oss:120b",
+    "discovery": {
+      "run_id": "run_a01cd66985e6",
+      "created_at": "2026-09-26T10:51:11.755705Z",
+      "candidates": [
+        {
+          "story_id": "story_00f646448c67c320",
+          "title": "Top World News - Free download and install on Windows",
+          "summary": "Latest developments regarding: Top World News - Free download and install on Windows",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_a01cd66985e6",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_00f646448c67c320",
+      "assessments": [
+        {
+          "story_id": "story_00f646448c67c320",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_a01cd66985e6",
+      "created_at": "2026-09-26T10:51:16.794743Z",
+      "story_id": "story_00f646448c67c320",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "Microsoft Start is a free news app built into Windows 11's taskbar that provides a customizable news dashboard without opening a browser.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "10 Best Free News Apps in 2026 (Tested & Ranked) \u2014 Microsoft Start is the most underrated option for professionals. Built into Windows 11's taskbar, it delivers a customizable news dashboard without opening a browser. The integration with Microsoft Edge and Microsoft 365 means you can go from reading a business headline to opening a related Excel\u2026",
+          "url": "https://www.nearhub.us/blog/best-10-free-news-apps",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "World News: Breaking & Local - Apps on Google Play \u2014 Content rating Content rating Screenshot image Screenshot image Screenshot image Screenshot image Screenshot image Screenshot image Screenshot image Screenshot image Screenshot image Screenshot image Screenshot image Screenshot image Screenshot image Screenshot image Screenshot image Screenshot\u2026",
+          "url": "https://play.google.com/store/apps/details?hl=en_US&id=com.world.news.alap",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_3",
+          "source_id": "s3",
+          "quote": "Best news apps for global unbiased news? Preferably one that has a lot of filtering features. Thank you ! :\u2026 \u2014 Skip to main contentBest news apps for global unbiased news? Preferably one that has a lot of filtering features. Thank you ! : r/geopolitics Open menu Open navigation so make sure you always look at multiple sources before you make any judgements. [deleted] \u20223y ago Comment removed by moderator\u2026",
+          "url": "https://www.reddit.com/r/geopolitics/comments/15rh6lu/best_news_apps_for_global_unbiased_news",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_4",
+          "source_id": "s4",
+          "quote": "The 5 best news apps in 2026 \u2014 Google News price: Free; you may have to pay to view certain stories, depending on the source. Yahoo News is another good cross-platform option for accessing a variety of sources. It has a well-designed feed and convenient audio daily digest, with the option to set your own interests, blocked\u2026",
+          "url": "https://zapier.com/blog/best-news-apps",
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": "Only ev_1 provides factual information about a news app available on Windows; other evidence pertains to Android or general news app lists."
+    },
+    "verification": {
+      "run_id": "run_a01cd66985e6",
+      "created_at": "2026-09-26T12:34:56Z",
+      "story_id": "story_00f646448c67c320",
+      "verifications": [
+        {
+          "claim_id": "claim_1",
+          "status": "SUPPORTED",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "contradictions": [],
+          "notes": "The evidence explicitly states that Microsoft Start is a free news app built into Windows 11's taskbar, offering a customizable news dashboard without opening a browser."
+        }
+      ],
+      "blocking": false,
+      "escalate": false,
+      "notes": "All claims are supported by the provided evidence."
+    },
+    "editorial": {
+      "run_id": "run_a01cd66985e6",
+      "created_at": "2026-09-26T00:00:00Z",
+      "story_id": "story_00f646448c67c320",
+      "central_event": "Microsoft has integrated the free Microsoft Start news app into the Windows 11 taskbar, offering a customizable news dashboard.",
+      "allowed_claim_ids": [
+        "claim_1"
+      ],
+      "blocked_claim_ids": [],
+      "must_include": [
+        "Microsoft Start is a free news app built into Windows 11's taskbar.",
+        "It provides a customizable news dashboard without opening a browser."
+      ],
+      "optional": [],
+      "do_not_include": [
+        "Speculation about future features",
+        "Unverified claims",
+        "Forecasts about adoption rates"
+      ],
+      "attribution_notes": "Fact based on verified claim_1.",
+      "uncertainty_notes": "None.",
+      "framing": "Readers should view Microsoft Start as a convenient, built\u2011in way to stay updated on news without needing a separate browser tab."
+    },
+    "tone": {
+      "run_id": "run_a01cd66985e6",
+      "created_at": "2026-09-26T12:34:56Z",
+      "story_id": "story_00f646448c67c320",
+      "tone": "INFORMATIVE",
+      "rationale": "The story reports a product integration without opinion, so a neutral, declarative tone best conveys the information.",
+      "constraints": []
+    },
+    "draft": {
+      "run_id": "run_a01cd66985e6",
+      "created_at": "2026-09-26T10:51:27.113232Z",
+      "story_id": "story_00f646448c67c320",
+      "headline": "Microsoft has integrated the free Microsoft Start news app into the Windows 11 taskbar, offering a customizable news...",
+      "body": "Microsoft has integrated the free Microsoft Start news app into the Windows 11 taskbar, offering a customizable news dashboard. Microsoft Start is a free news app built into Windows 11's taskbar. It provides a customizable news dashboard without opening a browser.",
+      "source_reference": "",
+      "claim_ids": [
+        "claim_1"
+      ],
+      "tone": "INFORMATIVE",
+      "warnings": []
+    },
+    "post": {
+      "run_id": "run_a01cd66985e6",
+      "created_at": "2026-09-26T00:00:00Z",
+      "story_id": "story_00f646448c67c320",
+      "platform": "threads",
+      "text": "Microsoft has integrated the free Microsoft Start news app into the Windows 11 taskbar, offering a customizable news...\n\nMicrosoft has integrated the free Microsoft Start news app into the Windows 11 taskbar, offering a customizable news dashboard. Microsoft Start is a free news app built into Windows 11's taskbar. It provides a customizable news dashboard without opening a browser.",
+      "char_count": 385,
+      "claim_ids": [
+        "claim_1"
+      ],
+      "source_reference": "",
+      "warnings": []
+    },
+    "validation": {
+      "run_id": "run_a01cd66985e6",
+      "created_at": "2026-09-26T10:51:28.859386Z",
+      "story_id": "story_00f646448c67c320",
+      "state": "PASS",
+      "errors": [],
+      "warnings": [],
+      "notes": ""
+    },
+    "publication": {
+      "run_id": "run_a01cd66985e6",
+      "created_at": "2026-09-26T10:51:28.865871Z",
+      "story_id": "story_00f646448c67c320",
+      "publication_id": "pub_ffb96ec09752",
+      "platform": "threads",
+      "external_id": null,
+      "url": null,
+      "published_at": null,
+      "status": "SKIPPED_DRY_RUN",
+      "error": null
+    },
+    "iteration": {
+      "research": 1
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "publisher",
+    "outcome": "PASS",
+    "blockers": [],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: 'Top World News - Free download and install on Windows'",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:51:11.755705+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:51:13.020640+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 1 claims with 4 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T10:51:16.794743+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "All claims have verbatim support.",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:51:16.798809+00:00"
+    },
+    {
+      "from_agent": "verification",
+      "to_agent": "editorial",
+      "kind": "HANDOFF",
+      "content": "1 supported, 0 unsupported.",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:51:18.603168+00:00"
+    },
+    {
+      "from_agent": "editorial",
+      "to_agent": "tone",
+      "kind": "HANDOFF",
+      "content": "Central event: Microsoft has integrated the free Microsoft Start news app into the Windows 11 taskbar, offering a customizable news das",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:51:20.821243+00:00"
+    },
+    {
+      "from_agent": "tone",
+      "to_agent": "writer",
+      "kind": "INFO",
+      "content": "Tone: INFORMATIVE",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:51:22.026462+00:00"
+    },
+    {
+      "from_agent": "writer",
+      "to_agent": "platform_adapter",
+      "kind": "HANDOFF",
+      "content": "Draft ready (264 chars)",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:51:27.114226+00:00"
+    },
+    {
+      "from_agent": "platform_adapter",
+      "to_agent": "validation",
+      "kind": "HANDOFF",
+      "content": "Post adapted (385 chars)",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:51:28.858387+00:00"
+    },
+    {
+      "from_agent": "validation",
+      "to_agent": "publisher",
+      "kind": "HANDOFF",
+      "content": "OK",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:51:28.859386+00:00"
+    },
+    {
+      "from_agent": "quota_gate",
+      "to_agent": "publisher",
+      "kind": "HANDOFF",
+      "content": "quota ok",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:51:28.864870+00:00"
+    },
+    {
+      "from_agent": "publisher",
+      "to_agent": "all",
+      "kind": "DONE",
+      "content": "Publication: SKIPPED_DRY_RUN (live=False)",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:51:28.865871+00:00"
+    }
+  ]
+}

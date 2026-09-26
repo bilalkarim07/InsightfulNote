@@ -1,0 +1,146 @@
+{
+  "run_id": "run_42f1c466bf32",
+  "outcome": "INSUFFICIENT_EVIDENCE",
+  "state": {
+    "run_id": "run_42f1c466bf32",
+    "story_id": "story_f06e8c960a266120",
+    "topic": "news",
+    "seed": {
+      "story_id": "story_42f1c466bf32",
+      "title": "Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+      "summary": "Latest developments regarding: Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+      "topic": "news"
+    },
+    "provider": "ollama",
+    "model_id": "gpt-oss:120b",
+    "discovery": {
+      "run_id": "run_42f1c466bf32",
+      "created_at": "2026-09-26T09:05:38.195039Z",
+      "candidates": [
+        {
+          "story_id": "story_f06e8c960a266120",
+          "title": "Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+          "summary": "Latest developments regarding: Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_42f1c466bf32",
+      "created_at": "2026-09-26T00:00:00Z",
+      "story_id": "story_f06e8c960a266120",
+      "assessments": [
+        {
+          "story_id": "story_f06e8c960a266120",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_42f1c466bf32",
+      "created_at": "2026-09-26T09:05:44.820782Z",
+      "story_id": "story_f06e8c960a266120",
+      "claims": [],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "'The Abrams Report' for Jan. 4th \u2014 COSBY: You bet. ABRAMS: All right. Rita is going to have more on this tonight at 9:00 p.m. Eastern. Rita thanks a lot. Now the question, how and why did that one miner survive? Twenty-seven-year-old Randal McCloy, the sole survivor, rushed to the hospital in critical condition. Doctors hopeful\u2026",
+          "url": "https://www.nbcnews.com/id/wbna10722387",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "City residents say pedestrian safety concerns go unanswered \u2014 kA 5:ClQ=ECQm\u201c}62C3J C6D:56?E:2= DEC66ED 4@?E:?F6 E@ @A6C2E6 H:E9:? 6IA64E65 ?6:893@C9@@5 4@?5:E:@?D[\u201d v2GF=:4 D2:5] \u201cr:EJ DE277 92G6 >6E H:E9 C6D:56?ED 2?5 4@?E:?F6 E@ C6DA@?5 E@ BF6DE:@?D 2?5 4@?46C?D H9:=6 >@?:E@C:?8 E96 4@CC:5@CVD A6C7@C>2?46]\u201dk^Am kA 5:ClQ=ECQmqFE r@==:6C 5@6D?\u2019E 3FJ :E]k^Am\u2026",
+          "url": "https://roanoke.com/news/state-regional/crime-courts/article_73e28822-ba80-526e-923c-772021ef67cc.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_3",
+          "source_id": "s3",
+          "quote": "Montana DEQ plans to repair failed Red Lodge mine drain \u2014 Meet Sacagawea, Sarah Bickford, Jeannette Rankin, Evelyn Cameron, Alice Greenough and Minnie Two Shoes, women whose stories helped shape Monta\u2026 ### Watch Now: Related Video ### US: Xi leaves White House after concluding talks with Trump. Sterling wildlife rehabber Sally Beckwith cares for baby\u2026",
+          "url": "https://billingsgazette.com/news/state-regional/article_faabd4d4-abea-4726-8e78-6bcd9a9f0c25.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_4",
+          "source_id": "s4",
+          "quote": "Living History | \u2014 > Our year was 1848. Several historic houses had been moved from northeast Ohio and arranged around a village green: this was our fake town. Visitors were free to roam the site, spending as little or as much time as they choose interacting with its townspeople. A family was cast in each house, and\u2026",
+          "url": "https://fourpoundsflour.com/category/living-history",
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": "The provided evidence items (ev_1, ev_2, ev_3, ev_4) do not contain any information related to the fact-check of the alleged breaking news video titled 'Sad News: 30 Minutes Ago In Ohio,...'. Therefore, no factual claims can be extracted for the given topic."
+    },
+    "iteration": {
+      "research": 1
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "research_gate",
+    "outcome": "INSUFFICIENT_EVIDENCE",
+    "blockers": [
+      "no claims produced"
+    ],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: \"Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...\"",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:05:38.196034+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:05:39.250676+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 0 claims with 4 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T09:05:44.820782+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "Research produced no claims.",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:05:44.821784+00:00"
+    }
+  ]
+}

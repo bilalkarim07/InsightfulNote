@@ -1,21 +1,30 @@
-﻿"""Shared helper: invoke a ChatOpenAI-compatible client with structured output.
+"""Shared helper: invoke a ChatOpenAI-compatible client with structured output.
 
-Tries methods in order:
-  1. json_schema       — if provider enforces it
-  2. function_calling  — uses tools under the hood (Ollama Cloud path)
-  3. json_mode         — last resort
+Cascade order:
+  1. preferred_method (verified)    - if provided
+  2. json_schema                    - if provider enforces it
+  3. function_calling               - tools under the hood
+  4. json_mode                      - last resort
 
-Every method falls back to extracting JSON from the raw response.
-Field-name aliases heal a whitelist of common variants.
-Schema-aware pruning drops fields that don't belong on a nested object.
+Handles:
+  - wrapped objects
+  - bare lists (auto-wrapped into the schema's single list field)
+  - missing run_id/story_id (auto-filled from context)
+  - common field aliases (verdict -> status, note -> notes, ...)
+  - extra fields on nested models (pruned)
 """
 from __future__ import annotations
 
+import json
 from typing import Any, Type, Union, get_args, get_origin
 
 from pydantic import BaseModel
 
-from core.llm._json import extract_first_json
+from core.llm._json import (
+    extract_first_json,
+    strip_markdown_fences,
+    strip_thinking_blocks,
+)
 
 
 class StructuredOutputError(RuntimeError):
@@ -50,46 +59,21 @@ def _raw_content(raw: Any) -> str:
     return str(text)
 
 
-# ── Field-name normalization (whitelist only) ───────────────────
-
 _FIELD_ALIASES: dict[str, str] = {
-    # Verification
-    "note": "notes",
-    "reasoning": "notes",
-    "explanation": "notes",
-    "reason": "notes",
-    "verification": "status",
-    "verdict": "status",
-    "verification_status": "status",
-    "verification_result": "status",
-    # Research
-    "claim": "text",
-    "claim_text": "text",
-    "statement": "text",
-    "sources": "evidence_ids",
-    "source_ids": "evidence_ids",
-    "evidence": "evidence_ids",
-    "supporting_evidence": "evidence_ids",
-    # Editorial
+    "note": "notes", "reasoning": "notes", "explanation": "notes", "reason": "notes",
+    "verification": "status", "verdict": "status",
+    "verification_status": "status", "verification_result": "status",
+    "claim": "text", "claim_text": "text", "statement": "text",
+    "sources": "evidence_ids", "source_ids": "evidence_ids",
+    "evidence": "evidence_ids", "supporting_evidence": "evidence_ids",
     "event": "central_event",
-    "allowed_claims": "allowed_claim_ids",
-    "blocked_claims": "blocked_claim_ids",
-    "must": "must_include",
-    "forbidden": "do_not_include",
-    # Writing
-    "title": "headline",
-    "content": "body",
-    "text_body": "body",
+    "allowed_claims": "allowed_claim_ids", "blocked_claims": "blocked_claim_ids",
+    "must": "must_include", "forbidden": "do_not_include",
+    "title": "headline", "content": "body", "text_body": "body", "article": "body", "summary": "body",
     "claims_used": "claim_ids",
-    # Platform
-    "post": "text",
-    "post_text": "text",
-    "character_count": "char_count",
-    "chars": "char_count",
-    # Selection
-    "decision": "state",
-    "priority_score": "priority",
-    # Tone
+    "post": "text", "post_text": "text",
+    "character_count": "char_count", "chars": "char_count",
+    "decision": "state", "priority_score": "priority",
     "tone_type": "tone",
 }
 
@@ -108,10 +92,7 @@ def _normalize(data: Any) -> Any:
     return data
 
 
-# ── Schema-aware pruning ────────────────────────────────────────
-
 def _inner_model(annotation: Any) -> Type[BaseModel] | None:
-    """If the annotation is `X` or `list[X]` or `Optional[X]`, return X if it's a BaseModel."""
     if annotation is None:
         return None
     origin = get_origin(annotation)
@@ -121,53 +102,82 @@ def _inner_model(annotation: Any) -> Type[BaseModel] | None:
             if inner is not None:
                 return inner
         return None
-    if origin is list or origin is tuple or origin is set:
+    if origin in (list, tuple, set):
         args = get_args(annotation)
-        if args:
-            return _inner_model(args[0])
-        return None
+        return _inner_model(args[0]) if args else None
     if isinstance(annotation, type) and issubclass(annotation, BaseModel):
         return annotation
     return None
 
 
 def _prune_to_schema(schema: Type[BaseModel], data: Any) -> Any:
-    """Recursively drop keys not present in the Pydantic schema.
-
-    LLMs often add extra fields to nested objects (created_at, is_forecast,
-    confidence) that belong on other contracts. We drop them silently because
-    the top-level validation already ensures the correct fields are present.
-    """
     if isinstance(data, list):
         return [_prune_to_schema(schema, item) for item in data]
     if not isinstance(data, dict):
         return data
-
     model_fields = schema.model_fields
     out: dict[str, Any] = {}
     for k, v in data.items():
         if k not in model_fields:
             continue
         sub = _inner_model(model_fields[k].annotation)
-        if sub is not None:
-            out[k] = _prune_to_schema(sub, v)
-        else:
-            out[k] = v
+        out[k] = _prune_to_schema(sub, v) if sub is not None else v
     return out
 
 
-def _try_parse(schema: Type[BaseModel], raw: Any) -> BaseModel | None:
+def _list_field_names(schema: Type[BaseModel]) -> list[str]:
+    return [
+        name for name, info in schema.model_fields.items()
+        if get_origin(info.annotation) in (list, tuple, set)
+    ]
+
+
+def _try_parse(
+    schema: Type[BaseModel],
+    raw: Any,
+    context: dict | None = None,
+) -> BaseModel | None:
+    """Parse an LLM response into the schema."""
     text = _raw_content(raw)
     if not text:
         return None
-    data = extract_first_json(text)
+
+    stripped = strip_markdown_fences(strip_thinking_blocks(text))
+
+    data = None
+    try:
+        data = json.loads(stripped)
+    except Exception:
+        pass
+    if data is None:
+        data = extract_first_json(stripped)
     if data is None:
         return None
+
+    if isinstance(data, list):
+        list_fields = _list_field_names(schema)
+        if len(list_fields) == 1:
+            wrapped: dict[str, Any] = {list_fields[0]: data}
+            if context:
+                for k, v in context.items():
+                    if k in schema.model_fields:
+                        wrapped.setdefault(k, v)
+            data = wrapped
+        else:
+            return None
+
     data = _normalize(data)
     data = _prune_to_schema(schema, data)
+
+    if context and isinstance(data, dict):
+        for key in ("run_id", "story_id"):
+            if key in schema.model_fields and not data.get(key):
+                if key in context and context[key]:
+                    data[key] = context[key]
+
     try:
         return schema.model_validate(data)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return None
 
 
@@ -177,23 +187,30 @@ def invoke_structured(
     prompt: str,
     *,
     supports_json_schema: bool = True,
+    preferred_method: str | None = None,
+    context: dict | None = None,
 ) -> tuple[BaseModel, str]:
+    """Return (parsed_model, method_used)."""
     errors: dict[str, str] = {}
     raw_previews: dict[str, str] = {}
 
     methods: list[str] = []
-    if supports_json_schema:
+    if preferred_method:
+        methods.append(preferred_method)
+    if supports_json_schema and "json_schema" not in methods:
         methods.append("json_schema")
-    methods.extend(["function_calling", "json_mode"])
+    for m in ("function_calling", "json_mode"):
+        if m not in methods:
+            methods.append(m)
+
+    suffix = chr(10) + chr(10) + "Respond with valid JSON only, no markdown fences."
 
     for method in methods:
         try:
             if method == "json_mode":
                 out = client.with_structured_output(
                     schema, method="json_mode", include_raw=True,
-                ).invoke(
-                    prompt + "\n\nRespond with valid JSON only, no markdown fences."
-                )
+                ).invoke(prompt + suffix)
             else:
                 out = client.with_structured_output(
                     schema, method=method, include_raw=True,
@@ -206,20 +223,20 @@ def invoke_structured(
             if parsed is not None and isinstance(parsed, schema):
                 return parsed, method
 
-            recovered = _try_parse(schema, raw)
+            recovered = _try_parse(schema, raw, context=context)
             if recovered is not None:
                 return recovered, f"{method}+recovered"
 
             errors[method] = "native parsed=None, raw recovery failed"
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             errors[method] = f"{type(exc).__name__}: {str(exc)[:200]}"
             continue
 
     detail_lines = [f"  {m}: {errors.get(m, 'unknown')}" for m in methods]
     raw_lines = [f"  {m} raw: {raw_previews.get(m, '<no raw>')}" for m in methods]
     raise StructuredOutputError(
-        "All structured-output methods failed.\n"
-        + "\n".join(detail_lines)
-        + "\n--- raw outputs ---\n"
-        + "\n".join(raw_lines)
+        "All structured-output methods failed." + chr(10)
+        + chr(10).join(detail_lines)
+        + chr(10) + "--- raw outputs ---" + chr(10)
+        + chr(10).join(raw_lines)
     )

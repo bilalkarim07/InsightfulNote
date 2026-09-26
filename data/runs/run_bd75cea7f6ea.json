@@ -1,0 +1,184 @@
+{
+  "run_id": "run_bd75cea7f6ea",
+  "outcome": "INSUFFICIENT_EVIDENCE",
+  "state": {
+    "run_id": "run_bd75cea7f6ea",
+    "story_id": "story_f06e8c960a266120",
+    "topic": "news",
+    "seed": {
+      "story_id": "story_bd75cea7f6ea",
+      "title": "Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+      "summary": "Latest developments regarding: Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+      "topic": "news"
+    },
+    "provider": "ollama",
+    "model_id": "gpt-oss:120b",
+    "discovery": {
+      "run_id": "run_bd75cea7f6ea",
+      "created_at": "2026-09-26T10:45:57.381361Z",
+      "candidates": [
+        {
+          "story_id": "story_f06e8c960a266120",
+          "title": "Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+          "summary": "Latest developments regarding: Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_bd75cea7f6ea",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f06e8c960a266120",
+      "assessments": [
+        {
+          "story_id": "story_f06e8c960a266120",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_bd75cea7f6ea",
+      "created_at": "2026-09-26T10:46:08.108324Z",
+      "story_id": "story_f06e8c960a266120",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "The short video titled \"Sad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As...\" is AI\u2011generated and not a real news clip.",
+          "evidence_ids": [
+            "ev_3"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_2",
+          "text": "No announcement was made by JD Vance confirming any such news in Ohio, contrary to the video\u2019s claim.",
+          "evidence_ids": [
+            "ev_3"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_3",
+          "text": "Lead Stories lists the video as a fake breaking\u2011news clickbait headline in its fact\u2011check coverage.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "Fact Check: Video Does NOT Show The \"Strange Behavior ... \u2014 Get more fact-checks in your Google Search results by setting up leadstories.com as one of your preferred sources. ## Most Read Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As...' Is AI-Generated Clickbait Headline Tease ## Fact Check: FAKE\u2026",
+          "url": "https://leadstories.com/hoax-alert/2026/02/fact-check-on-twitter-video-does-not-show-woman-strange-behavior-at-white-house.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "Fact Check: FAKE Screenshot Swaps Photo Of Real CNN Article 'Cuckolding Can Be Positive For Some Couples' | Lead Stories \u2014 Get more fact-checks in your Google Search results by setting up leadstories.com as one of your preferred sources. ## Most Read Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As...' Is AI-Generated Clickbait Headline Tease ## Fact Check: FAKE\u2026",
+          "url": "https://leadstories.com/hoax-alert/2026/09/fact-check-fake-photo-used-real-cnn-article-cuckolding-positive-some-couples.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_3",
+          "source_id": "s3",
+          "quote": "30 Minutes Ago In Ohio, JD Vance Was Confirmed As...' Is ... \u2014 No, that's not true: The short video clip is AI-generated and there was no such announcement made by Vance. These clickbait posts on Facebook",
+          "url": "https://www.yahoo.com/news/politics/articles/fact-check-fake-breaking-news-070114474.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_4",
+          "source_id": "s4",
+          "quote": "Springfield pet-eating hoax \u2014 While the migrants have had a positive economic impact on the city, the rapid growth of its immigrant population has strained public resources. In July 2024, Springfield city manager Bryan Heck sent a letter to the Senate Banking and Housing Committee asking for federal assistance to address the\u2026",
+          "url": "https://en.wikipedia.org/wiki/Springfield_pet-eating_hoax",
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": ""
+    },
+    "iteration": {
+      "research": 1
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "research_gate",
+    "outcome": "INSUFFICIENT_EVIDENCE",
+    "blockers": [
+      "claim claim_2: no verbatim support",
+      "claim claim_3: no verbatim support"
+    ],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: \"Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...\"",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:45:57.382274+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:46:02.130441+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 3 claims with 4 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T10:46:08.108324+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "claim claim_2: no verbatim support; claim claim_3: no verbatim support",
+      "iteration": 0,
+      "created_at": "2026-09-26T10:46:08.112329+00:00"
+    }
+  ]
+}

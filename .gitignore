@@ -13,3 +13,6 @@ wheels/
 # NewsRoom runtime data
 data/slices/
 data/model_capabilities.json
+
+# Explicitly track the manifest (it IS committed).
+!data/model_capabilities_manifest.json

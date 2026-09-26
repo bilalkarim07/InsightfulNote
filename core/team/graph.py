@@ -7,6 +7,7 @@ This is not a pipeline. Every node can:
   - decide the run is done
 """
 from __future__ import annotations
+import re
 
 import json
 from pathlib import Path
@@ -63,13 +64,21 @@ def _model(state: TeamState):
     return get_chat_model(entry, timeout=180)
 
 
-def _structured(client, schema, prompt: str, provider: str):
+def _structured(client, schema, prompt: str, provider: str, context: dict | None = None):
     supports_schema = provider != "ollama"
     try:
-        return invoke_structured(client, schema, prompt, supports_json_schema=supports_schema)
+        return invoke_structured(
+            client, schema, prompt,
+            supports_json_schema=supports_schema,
+            context=context,
+        )
     except StructuredOutputError:
         terse = prompt + "\n\nReturn ONLY the JSON object, no prose."
-        return invoke_structured(client, schema, terse, supports_json_schema=supports_schema)
+        return invoke_structured(
+            client, schema, terse,
+            supports_json_schema=supports_schema,
+            context=context,
+        )
 
 
 _STOPWORDS = {
@@ -108,6 +117,11 @@ def _trace(node: str, out: TeamState, messages: list[dict]) -> TeamState:
 
 
 
+def _escalated(state: TeamState) -> bool:
+    """Return True if any prior node marked the run as ESCALATE."""
+    return state.get("outcome") == "ESCALATE"
+
+
 def _safe_node(fn):
     """Wrap a graph node with observability + exception safety.
 
@@ -125,6 +139,11 @@ def _safe_node(fn):
                        provider=provider, model_id=model_id):
                 return fn(state)
         except Exception as exc:  # noqa: BLE001
+            import traceback
+            print(f"  [{node_name}] FAILED: {type(exc).__name__}: {str(exc)[:300]}")
+            print(f"  [{node_name}] traceback:")
+            for line in traceback.format_exc().splitlines()[-6:]:
+                print(f"    {line}")
             return _trace(node_name, state, [
                 msg(node_name, "all", "BLOCKER",
                     f"{type(exc).__name__}: {str(exc)[:300]}"),
@@ -141,6 +160,9 @@ def _safe_node(fn):
 
 
 def node_discovery(state: TeamState) -> TeamState:
+    # Short-circuit: upstream failure → skip this node.
+    if state.get("outcome") == "ESCALATE":
+        return state
     client = _model(state)
     seed = state["seed"]
     run_id, story_id = state["run_id"], state["story_id"]
@@ -163,6 +185,9 @@ def node_discovery(state: TeamState) -> TeamState:
 
 
 def node_source_intel(state: TeamState) -> TeamState:
+    # Short-circuit: upstream failure → skip this node.
+    if state.get("outcome") == "ESCALATE":
+        return state
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
     prompt = (
@@ -180,6 +205,9 @@ def node_source_intel(state: TeamState) -> TeamState:
 
 def node_research(state: TeamState) -> TeamState:
     """Research — deterministic evidence, LLM-only-for-claims."""
+    # Short-circuit: upstream failure → skip this node.
+    if state.get("outcome") == "ESCALATE":
+        return state
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
     seed = state.get("seed") or {}
@@ -326,6 +354,9 @@ Return JSON only, no prose, no markdown fences.
 
 def node_research_gate(state: TeamState) -> TeamState:
     """Deterministic. Blocks if research produced no claims or verbatim fails."""
+    # Short-circuit: upstream failure → skip this node.
+    if state.get("outcome") == "ESCALATE":
+        return state
     research = ResearchResult.model_validate(state["research"])
     evidence_by_id = {e.evidence_id: e.quote for e in research.evidence}
     gate_errors: list[str] = []
@@ -361,6 +392,9 @@ def node_research_gate(state: TeamState) -> TeamState:
 
 def node_verification(state: TeamState) -> TeamState:
     """Verification - judges claims against the evidence they cite."""
+    # Short-circuit: upstream failure → skip this node.
+    if state.get("outcome") == "ESCALATE":
+        return state
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
     research = ResearchResult.model_validate(state["research"])
@@ -398,7 +432,22 @@ def node_verification(state: TeamState) -> TeamState:
         + "Return JSON matching VerificationResult exactly, one per claim."
     )
 
-    result, _ = _structured(client, VerificationResult, prompt, state["provider"])
+    result, _ = _structured(
+        client, VerificationResult, prompt, state["provider"],
+        context={"run_id": run_id, "story_id": story_id},
+    )
+
+    # Deterministic backfill: every verification must cite the claim's
+    # evidence. If the LLM left evidence_ids empty, copy from the claim it
+    # judged so the published artefact remains traceable to sources.
+    claims_by_id = {c.claim_id: c for c in research.claims}
+    for _v in result.verifications:
+        if _v.evidence_ids and all(eid for eid in _v.evidence_ids):
+            continue
+        _claim = claims_by_id.get(_v.claim_id)
+        if _claim and _claim.evidence_ids:
+            _v.evidence_ids = list(_claim.evidence_ids)
+
     print("  [verification] " + str(len(result.verifications)) + " verification(s)")
 
     unsupported = [
@@ -427,6 +476,8 @@ def node_verification(state: TeamState) -> TeamState:
 
 def node_editorial(state: TeamState) -> TeamState:
     """Editorial — decides what the story is actually about."""
+    if state.get("outcome") == "ESCALATE":
+        return state
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
     research = ResearchResult.model_validate(state["research"])
@@ -466,7 +517,10 @@ def node_editorial(state: TeamState) -> TeamState:
         + "Return JSON matching EditorialDecision exactly."
     )
 
-    result, _ = _structured(client, EditorialDecision, prompt, state["provider"])
+    result, _ = _structured(
+        client, EditorialDecision, prompt, state["provider"],
+        context={"run_id": run_id, "story_id": story_id},
+    )
     print("  [editorial] central_event=" + repr(result.central_event[:80]))
     print("  [editorial] allowed=" + str(result.allowed_claim_ids))
 
@@ -486,6 +540,8 @@ def node_editorial(state: TeamState) -> TeamState:
 
 def node_tone(state: TeamState) -> TeamState:
     """Tone — chooses presentation tone based on subject sensitivity."""
+    if state.get("outcome") == "ESCALATE":
+        return state
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
 
@@ -521,7 +577,10 @@ def node_tone(state: TeamState) -> TeamState:
         + "Return JSON matching ToneDecision exactly."
     )
 
-    result, _ = _structured(client, ToneDecision, prompt, state["provider"])
+    result, _ = _structured(
+        client, ToneDecision, prompt, state["provider"],
+        context={"run_id": run_id, "story_id": story_id},
+    )
     print("  [tone] " + result.tone.value + " — " + result.rationale[:80])
 
     return _trace("tone", state, [
@@ -531,6 +590,8 @@ def node_tone(state: TeamState) -> TeamState:
 
 def node_writer(state: TeamState) -> TeamState:
     """Writer — writes using ONLY approved claims, in the chosen tone."""
+    if state.get("outcome") == "ESCALATE":
+        return state
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
     research = ResearchResult.model_validate(state["research"])
@@ -584,8 +645,25 @@ def node_writer(state: TeamState) -> TeamState:
         + "Return JSON matching WriterDraft exactly."
     )
 
-    result, _ = _structured(client, WriterDraft, prompt, state["provider"])
-    print("  [writer] " + str(len(result.body)) + " chars, " + str(len(result.claim_ids)) + " claims")
+    result, _ = _structured(
+        client, WriterDraft, prompt, state["provider"],
+        context={"run_id": run_id, "story_id": story_id},
+    )
+
+    # Deterministic fallback: if the LLM omitted headline, derive it from the
+    # first sentence of the body. Never crash the pipeline over a missing field.
+    if not (result.headline or "").strip():
+        body = (result.body or "").strip()
+        if body:
+            first = re.split(r"(?<=[.!?])\s+", body, maxsplit=1)[0].strip()
+            if len(first) > 120:
+                first = first[:117].rsplit(" ", 1)[0] + "..."
+            result.headline = first
+            print(f"  [writer] headline derived from body: {first[:80]!r}")
+        else:
+            print("  [writer] WARNING: no body and no headline produced")
+
+    print("  [writer] " + str(len(result.body)) + " chars, " + str(len(result.claim_ids)) + " claims, headline=" + (result.headline[:40] if result.headline else "<empty>"))
 
     return _trace("writer", state, [
         msg("writer", "platform_adapter", "HANDOFF",
@@ -594,6 +672,8 @@ def node_writer(state: TeamState) -> TeamState:
 
 
 def node_platform_adapter(state: TeamState) -> TeamState:
+    if state.get("outcome") == "ESCALATE":
+        return state
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
     draft = WriterDraft.model_validate(state["draft"])
@@ -612,7 +692,22 @@ Rules:
 Return JSON matching PlatformPost exactly. The `text` field must be the
 ACTUAL adapted post text. The `char_count` field is ignored (we recompute).
 """.strip()
-    result, _ = _structured(client, PlatformPost, prompt, state["provider"])
+    result, _ = _structured(
+        client, PlatformPost, prompt, state["provider"],
+        context={"run_id": run_id, "story_id": story_id},
+    )
+
+    # Deterministic traceability: the LLM cannot drop claim provenance.
+    # post.claim_ids must be a superset of draft.claim_ids so the published
+    # artefact can always be traced back to approved claims.
+    if not result.claim_ids:
+        result.claim_ids = list(draft.claim_ids)
+    else:
+        for cid in draft.claim_ids:
+            if cid not in result.claim_ids:
+                result.claim_ids.append(cid)
+    if not result.source_reference:
+        result.source_reference = draft.source_reference
 
     # Deterministic post-processing.
     result.char_count = len(result.text)
@@ -628,6 +723,8 @@ ACTUAL adapted post text. The `char_count` field is ignored (we recompute).
 
 def node_validation(state: TeamState) -> TeamState:
     """Deterministic. Can route back to writer or editorial, or forward to publisher."""
+    if state.get("outcome") == "ESCALATE":
+        return state
     post = PlatformPost.model_validate(state["post"])
     draft = WriterDraft.model_validate(state["draft"])
     editorial = EditorialDecision.model_validate(state["editorial"])
@@ -699,6 +796,8 @@ def node_quota_gate(state: TeamState) -> TeamState:
 
 def node_publisher(state: TeamState) -> TeamState:
     """Publish to Threads. NO token refresh — handled elsewhere."""
+    if state.get("outcome") == "ESCALATE":
+        return state
     import os
     post = PlatformPost.model_validate(state["post"])
     story_id = state.get("story_id", "")
@@ -723,8 +822,19 @@ def node_publisher(state: TeamState) -> TeamState:
                     "outcome": "PASS",
                 }
         except NotImplementedError:
-            # DB not wired yet — continue, but log it.
-            print("  [publisher] duplicate check skipped (DB stub)")
+            # Fail-closed: cannot verify duplicate → BLOCK.
+            return _trace("publisher", state, [
+                msg("publisher", "all", "BLOCKER",
+                    "duplicate check unavailable — BLOCKED (fail-closed)"),
+            ]) | {
+                "publication": PublishResult(
+                    run_id=state["run_id"], story_id=story_id,
+                    platform="threads",
+                    status="BLOCKED_DUPLICATE_CHECK_UNAVAILABLE",
+                    url=None, error="duplicate check unavailable",
+                ).model_dump(mode="json"),
+                "outcome": "BLOCKED",
+            }
 
     result = publish_threads(post.text, dry_run=dry_run)
     if result.get("status") == "PUBLISHED":
@@ -773,7 +883,13 @@ def route_after_verification(state: TeamState) -> Literal["editorial_and_tone", 
 
 
 def route_after_validation(state: TeamState) -> Literal["publisher", "writer", "editorial", "escalate"]:
-    validation = state["validation"]
+    # Short-circuit: any upstream node crashed → escalate, never crash here.
+    if state.get("outcome") == "ESCALATE":
+        return "escalate"
+    validation = state.get("validation")
+    if not validation:
+        # A node failed before validation ran. Escalate cleanly.
+        return "escalate"
     if validation["state"] == "PASS":
         return "publisher"
 
@@ -863,15 +979,22 @@ def compile_graph():
 # ── runner ────────────────────────────────────────────────────────
 
 def run_team(
-    provider: str, model_id: str, topic: str | None = None,
+    provider: str, model_id: str,
+    story_id: str | None = None,
+    mode: str = "synthetic",
+    topic: str | None = None,
     dry_run: bool = True,
 ) -> int:
     from core.team.state import new_state
     run_id = f"run_{__import__('uuid').uuid4().hex[:12]}"
     state = new_state(run_id=run_id, provider=provider, model_id=model_id, topic=topic)
+    state["dry_run"] = dry_run
+    if story_id:
+        state["story_id"] = story_id
 
     print("=" * 70)
     print(f"Team graph run — {provider}/{model_id} (topic={topic!r}, dry_run={dry_run})")
+    print(f"  mode={mode!r}  story_id={story_id!r}  dry_run={dry_run}")
     print("=" * 70)
 
     graph = compile_graph()

@@ -1,0 +1,361 @@
+{
+  "run_id": "run_22c086d59566",
+  "outcome": "PASS",
+  "state": {
+    "run_id": "run_22c086d59566",
+    "story_id": "story_f06e8c960a266120",
+    "topic": "news",
+    "seed": {
+      "story_id": "story_22c086d59566",
+      "title": "Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+      "summary": "Latest developments regarding: Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+      "topic": "news"
+    },
+    "provider": "ollama",
+    "model_id": "gpt-oss:120b",
+    "discovery": {
+      "run_id": "run_22c086d59566",
+      "created_at": "2026-09-26T09:13:00.349113Z",
+      "candidates": [
+        {
+          "story_id": "story_f06e8c960a266120",
+          "title": "Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+          "summary": "Latest developments regarding: Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_22c086d59566",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f06e8c960a266120",
+      "assessments": [
+        {
+          "story_id": "story_f06e8c960a266120",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_22c086d59566",
+      "created_at": "2026-09-26T09:13:08.588732Z",
+      "story_id": "story_f06e8c960a266120",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "LeadStories' TikTok video labels the 'Sad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As...' video as AI\u2011generated clickbait.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_2",
+          "text": "A YouTube fact\u2011check video also identifies the 'Sad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As...' clip as a fake breaking\u2011news video.",
+          "evidence_ids": [
+            "ev_2"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_3",
+          "text": "The CRBC News article provides guidance on spotting similar fake clips of the 'Sad News: 30 Minutes Ago In Ohio' video.",
+          "evidence_ids": [
+            "ev_3"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 ... \u2014 TikTok video from LeadStories (@leadstories): \u201cFact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As...' Is AI-Generated Clickbait #CheckTok #FactCheck #JDVance #DonaldTrump #MarcoRubio #Ohio ed-as-is-ai-generated.html?utm_medium=minivideo\u201d.\u2026",
+          "url": "https://www.tiktok.com/@leadstories/video/7689386399283318038",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "Fact Check: FAKE Breaking News Vid 'Sad News: 30 Minutes Ago ... \u2014 Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As...' Is AI-Generated Clickbait#CheckTok #FactCheck #J",
+          "url": "https://www.youtube.com/watch?v=MLdQM4LdHgA",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_3",
+          "source_id": "s3",
+          "quote": "Fact Check: Viral 'Sad News \u2014 30 Minutes Ago in Ohio' JD ... \u2014 How To Spot Similar Fake Clips Check whether reputable news organizations or official White House channels have reported the event. Run reverse-image or video searches to find original contexts or matching stills. Be skeptical of posts that bury links in the first comment or use urgent language\u2026",
+          "url": "https://www.crbcnews.com/articles/6ab644e7c1c07d73272e2554",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_4",
+          "source_id": "s4",
+          "quote": "Lead Stories \u2014 ## Most recent ## Fact Check: FAKE Video Shows Trump Making Kissy Faces And Sounds In Front Of Sarah Huckabee Sanders -- It Is An Altered Satire Video ## Fact Check [...] Fact Check: FAKE Video Shows Trump Making Kissy Faces And Sounds In Front Of Sarah Huckabee Sanders -- It Is An Altered Satire\u2026",
+          "url": "https://leadstories.com/",
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": ""
+    },
+    "verification": {
+      "run_id": "run_22c086d59566",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f06e8c960a266120",
+      "verifications": [
+        {
+          "claim_id": "claim_1",
+          "status": "SUPPORTED",
+          "evidence_ids": [],
+          "contradictions": [],
+          "notes": ""
+        },
+        {
+          "claim_id": "claim_2",
+          "status": "SUPPORTED",
+          "evidence_ids": [],
+          "contradictions": [],
+          "notes": ""
+        },
+        {
+          "claim_id": "claim_3",
+          "status": "SUPPORTED",
+          "evidence_ids": [],
+          "contradictions": [],
+          "notes": ""
+        }
+      ],
+      "blocking": false,
+      "escalate": false,
+      "notes": "All three claims are directly supported by the provided evidence."
+    },
+    "editorial": {
+      "run_id": "run_22c086d59566",
+      "created_at": "2026-09-26T00:00:00Z",
+      "story_id": "story_f06e8c960a266120",
+      "central_event": "A video titled \u201cSad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\u201d circulating on TikTok and YouTube has been identified as AI\u2011generated clickbait and a fake breaking\u2011news clip.",
+      "allowed_claim_ids": [
+        "claim_1",
+        "claim_2",
+        "claim_3"
+      ],
+      "blocked_claim_ids": [],
+      "must_include": [
+        "LeadStories labeled the TikTok video as AI\u2011generated clickbait.",
+        "A YouTube fact\u2011check video identified the same clip as a fake breaking\u2011news video.",
+        "The CRBC News article provides guidance on spotting similar fake clips of the \u201cSad News: 30 Minutes Ago In Ohio\u201d video."
+      ],
+      "optional": [],
+      "do_not_include": [
+        "Speculation about JD Vance\u2019s confirmation or political implications.",
+        "Unverified claims about who created the video beyond it being AI\u2011generated.",
+        "Audience reaction or impact analysis not supported by the verified claims."
+      ],
+      "attribution_notes": "Claims sourced from LeadStories, a YouTube fact\u2011check video, and a CRBC News article.",
+      "uncertainty_notes": "",
+      "framing": "Readers should view the video as a clear example of AI\u2011generated clickbait masquerading as breaking news, underscoring the importance of media\u2011literacy tools to spot disinformation."
+    },
+    "tone": {
+      "run_id": "run_22c086d59566",
+      "created_at": "2026-09-26T12:34:56Z",
+      "story_id": "story_f06e8c960a266120",
+      "tone": "INFORMATIVE",
+      "rationale": "The story is a factual fact\u2011check about a fake video, so a neutral, declarative style best conveys the information without bias.",
+      "constraints": []
+    },
+    "draft": {
+      "run_id": "run_22c086d59566",
+      "created_at": "2026-09-26T09:13:22.504189Z",
+      "story_id": "story_f06e8c960a266120",
+      "headline": "LeadStories labeled the TikTok video titled \"Sad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\" as...",
+      "body": "LeadStories labeled the TikTok video titled \"Sad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\" as AI\u2011generated clickbait. A YouTube fact\u2011check video also identified the same clip as a fake breaking\u2011news video. The CRBC News article provides guidance on spotting similar fake clips of the \"Sad News: 30 Minutes Ago In Ohio\" video.",
+      "source_reference": "",
+      "claim_ids": [
+        "claim_1",
+        "claim_2",
+        "claim_3"
+      ],
+      "tone": "INFORMATIVE",
+      "warnings": []
+    },
+    "post": {
+      "run_id": "run_22c086d59566",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "story_f06e8c960a266120",
+      "platform": "threads",
+      "text": "LeadStories labeled the TikTok video titled \u201cSad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\u201d as AI\u2011generated clickbait. A YouTube fact\u2011check video also identified the same clip as a fake breaking\u2011news video. The CRBC News article provides guidance on spotting similar fake clips of the \u201cSad News: 30 Minutes Ago In Ohio\u201d video.",
+      "char_count": 341,
+      "claim_ids": [
+        "claim_1",
+        "claim_2",
+        "claim_3"
+      ],
+      "source_reference": "",
+      "warnings": []
+    },
+    "validation": {
+      "run_id": "run_22c086d59566",
+      "created_at": "2026-09-26T09:13:24.027509Z",
+      "story_id": "story_f06e8c960a266120",
+      "state": "PASS",
+      "errors": [],
+      "warnings": [],
+      "notes": ""
+    },
+    "publication": {
+      "run_id": "run_22c086d59566",
+      "created_at": "2026-09-26T09:13:24.033493Z",
+      "story_id": "story_f06e8c960a266120",
+      "publication_id": "pub_118aaebab6d2",
+      "platform": "threads",
+      "external_id": null,
+      "url": null,
+      "published_at": null,
+      "status": "SKIPPED_DRY_RUN",
+      "error": null
+    },
+    "iteration": {
+      "research": 1
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "publisher",
+    "outcome": "PASS",
+    "blockers": [],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: \"Fact Check: FAKE Breaking News Video Titled 'Sad News: 30 Minutes Ago In Ohio,...\"",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:13:00.349113+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:13:02.032907+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 3 claims with 4 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T09:13:08.588732+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "All claims have verbatim support.",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:13:08.590656+00:00"
+    },
+    {
+      "from_agent": "verification",
+      "to_agent": "editorial",
+      "kind": "HANDOFF",
+      "content": "3 supported, 0 unsupported.",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:13:10.679957+00:00"
+    },
+    {
+      "from_agent": "editorial",
+      "to_agent": "tone",
+      "kind": "HANDOFF",
+      "content": "Central event: A video titled \u201cSad News: 30 Minutes Ago In Ohio, JD Vance Was Confirmed As\u2026\u201d circulating on TikTok and YouTube has been",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:13:13.557706+00:00"
+    },
+    {
+      "from_agent": "tone",
+      "to_agent": "writer",
+      "kind": "INFO",
+      "content": "Tone: INFORMATIVE",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:13:14.837782+00:00"
+    },
+    {
+      "from_agent": "writer",
+      "to_agent": "platform_adapter",
+      "kind": "HANDOFF",
+      "content": "Draft ready (341 chars)",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:13:22.504189+00:00"
+    },
+    {
+      "from_agent": "platform_adapter",
+      "to_agent": "validation",
+      "kind": "HANDOFF",
+      "content": "Post adapted (341 chars)",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:13:24.026499+00:00"
+    },
+    {
+      "from_agent": "validation",
+      "to_agent": "publisher",
+      "kind": "HANDOFF",
+      "content": "OK",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:13:24.027509+00:00"
+    },
+    {
+      "from_agent": "quota_gate",
+      "to_agent": "publisher",
+      "kind": "HANDOFF",
+      "content": "quota ok",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:13:24.032492+00:00"
+    },
+    {
+      "from_agent": "publisher",
+      "to_agent": "all",
+      "kind": "DONE",
+      "content": "Publication: SKIPPED_DRY_RUN (live=False)",
+      "iteration": 0,
+      "created_at": "2026-09-26T09:13:24.033493+00:00"
+    }
+  ]
+}
