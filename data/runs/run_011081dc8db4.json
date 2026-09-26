@@ -1,0 +1,223 @@
+{
+  "run_id": "run_011081dc8db4",
+  "outcome": "INSUFFICIENT_EVIDENCE",
+  "state": {
+    "run_id": "run_011081dc8db4",
+    "story_id": "bdc5a23d-4e16-42dc-8385-5e43f0c50c85",
+    "topic": "news",
+    "seed": {
+      "story_id": "bdc5a23d-4e16-42dc-8385-5e43f0c50c85",
+      "title": "CNN: Breaking News, Latest News and Videos",
+      "summary": "An assistant conducts cancer vaccine research in the lab at the Moderna Inc. headquarters in Cambridge, Massachusetts, US, on Tuesday, March 26, 2024. The forthcoming RSV shot, expected to get US regulatory approval this month, is Moderna's first chance to show the versatility of",
+      "topic": "news",
+      "sources": [
+        {
+          "id": "ni_4b808887a2ed01a1f998cc42",
+          "url": "https://www.cnn.com",
+          "title": "CNN: Breaking News, Latest News and Videos",
+          "author": null,
+          "content": null,
+          "country": null,
+          "snippet": "An assistant conducts cancer vaccine research in the lab at the Moderna Inc. headquarters in Cambridge, Massachusetts, US, on Tuesday, March 26, 2024. The forthcoming RSV shot, expected to get US regulatory approval this month, is Moderna's first chance to show the versatility of mRNA technology to more effectively treat and prevent a range of illnesses from the flu to cancer. It will be the first mRNA product for something other than Covid. Photographer: Adam Glanzman/Bloomberg via Getty [...] WASHINGTON, DC - SEPTEMBER 20: The White House is seen from the South Lawn on September 20, 2026 in Washington, DC. The Supreme Court let construction resume on the ballroom on August 31 in a 5-4 ruling. The Trump administration has also built a new heli-pad on White House grounds and is moving forward with plans for a \"triumphal arch\". (Photo by Samuel Corum/Getty Images) [...] Ukraine's President Volodymyr Zelensky during a bilateral meeting with US President Donald Trump on the sidelines of the 81st United Nations General Assembly in New York, on September 22, 2026. (Photo by Brendan SMIALOWSKI / AFP via Getty Images)",
+          "language": "en",
+          "metadata": {
+            "provider": "tavily",
+            "retrieved_at": "2026-09-26T11:53:23.612115+00:00"
+          },
+          "source_id": "f8ab5738-de74-408a-8eca-b6fc459720a4",
+          "categories": [],
+          "created_at": "2026-09-26T11:41:15.279288+00:00",
+          "updated_at": "2026-09-26T11:41:15.279288+00:00",
+          "description": "An assistant conducts cancer vaccine research in the lab at the Moderna Inc. headquarters in Cambridge, Massachusetts, US, on Tuesday, March 26, 2024. The forthcoming RSV shot, expected to get US regulatory approval this month, is Moderna's first chance to show the versatility of mRNA technology to more effectively treat and prevent a range of illnesses from the flu to cancer. It will be the first mRNA product for something other than Covid. Photographer: Adam Glanzman/Bloomberg via Getty [...] WASHINGTON, DC - SEPTEMBER 20: The White House is seen from the South Lawn on September 20, 2026 in Washington, DC. The Supreme Court let construction resume on the ballroom on August 31 in a 5-4 ruling. The Trump administration has also built a new heli-pad on White House grounds and is moving forward with plans for a \"triumphal arch\". (Photo by Samuel Corum/Getty Images) [...] Ukraine's President Volodymyr Zelensky during a bilateral meeting with US President Donald Trump on the sidelines of the 81st United Nations General Assembly in New York, on September 22, 2026. (Photo by Brendan SMIALOWSKI / AFP via Getty Images)",
+          "source_name": "tavily",
+          "content_hash": null,
+          "published_at": null,
+          "canonical_url": "https://www.cnn.com/",
+          "discovered_at": "2026-09-26T11:53:23.612115+00:00",
+          "source_domain": "",
+          "canonical_hash": null,
+          "source": {
+            "id": "f8ab5738-de74-408a-8eca-b6fc459720a4",
+            "name": "tavily",
+            "source_type": "search_api",
+            "domain": "tavily.com",
+            "base_url": null,
+            "description": null,
+            "metadata": {},
+            "is_active": true,
+            "created_at": "2026-09-26T11:41:14.961928+00:00",
+            "updated_at": "2026-09-26T11:41:14.961928+00:00"
+          }
+        }
+      ]
+    },
+    "provider": "ollama",
+    "model_id": "gpt-oss:120b",
+    "discovery": {
+      "run_id": "run_011081dc8db4",
+      "created_at": "2026-09-26T00:00:00Z",
+      "candidates": [
+        {
+          "story_id": "bdc5a23d-4e16-42dc-8385-5e43f0c50c85",
+          "title": "CNN: Breaking News, Latest News and Videos",
+          "summary": "An assistant conducts cancer vaccine research in the lab at the Moderna Inc. headquarters in Cambridge, Massachusetts, US, on Tuesday, March 26, 2024. The forthcoming RSV shot, expected to get US regulatory approval this month, is Moderna's first chance to show the versatility of",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_011081dc8db4",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "bdc5a23d-4e16-42dc-8385-5e43f0c50c85",
+      "assessments": [
+        {
+          "story_id": "bdc5a23d-4e16-42dc-8385-5e43f0c50c85",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_011081dc8db4",
+      "created_at": "2026-09-26T12:04:42.930694Z",
+      "story_id": "bdc5a23d-4e16-42dc-8385-5e43f0c50c85",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "CNN's website featured a story on March 26, 2024 about an assistant conducting cancer vaccine research at Moderna's headquarters in Cambridge, Massachusetts.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_2",
+          "text": "The CNN mobile app on Google Play is described as a destination for fact\u2011based reporting with short\u2011form videos, articles, podcasts, and live audio.",
+          "evidence_ids": [
+            "ev_2"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_3",
+          "text": "CNN's official X account @cnnbrk, created in January 2007, posts breaking news and has about 86\u202f000 posts.",
+          "evidence_ids": [
+            "ev_3"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "CNN: Breaking News, Latest News and Videos \u2014 An assistant conducts cancer vaccine research in the lab at the Moderna Inc. headquarters in Cambridge, Massachusetts, US, on Tuesday, March 26, 2024. The forthcoming RSV shot, expected to get US regulatory approval this month, is Moderna's first chance to show the versatility of mRNA technology\u2026",
+          "url": "https://www.cnn.com/",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "CNN: Live & Breaking News - Apps on Google Play \u2014 The CNN app is your destination for unrivaled, fact-based reporting. Stay informed at every turn as the story breaks through short-form videos, interactives, articles, podcasts, live audio, and more. Easily discover the the day\u2019s top news from politics, health, world news, climate, and beyond.\u2026",
+          "url": "https://play.google.com/store/apps/details?hl=en_US&id=com.cnn.mobile.android.phone",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_3",
+          "source_id": "s3",
+          "quote": "CNN Breaking News (@cnnbrk) / X \u2014 []( []( Log inSign up []( Log inSign up CNN Breaking News 86K posts Image 1: CNN Breaking News profile banner Image 2: @cnnbrk # CNN Breaking News @cnnbrk Breaking news from CNN Digital. Check @cnn for all things CNN, breaking and more. Everywhere cnn.com Joined January 2007 121 Following60M\u2026",
+          "url": "https://x.com/cnnbrk",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_4",
+          "source_id": "s4",
+          "quote": "CNN \u2014 CNN is the world leader in news and information. CNN delivers news from almost 4,000 journalists in every corner of the globe.",
+          "url": "https://www.youtube.com/user/CNN",
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": ""
+    },
+    "iteration": {
+      "research": 1
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "research_gate",
+    "outcome": "INSUFFICIENT_EVIDENCE",
+    "blockers": [
+      "claim claim_3: no verbatim support"
+    ],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: 'CNN: Breaking News, Latest News and Videos'",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:04:35.984513+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:04:37.063325+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 3 claims with 4 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T12:04:42.930694+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "claim claim_3: no verbatim support",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:04:42.934701+00:00"
+    }
+  ]
+}

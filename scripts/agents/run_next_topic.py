@@ -1,4 +1,16 @@
-"""Run the team graph on the next topic from data/topic_queue.json."""
+"""SYNTHETIC TESTING ONLY — DO NOT USE FOR PRODUCTION.
+
+This runner drives the team graph from data/topic_queue.json.
+Retained for local development, contract testing, and model
+benchmarking only.
+
+Production publishing goes through:
+  scripts/run_news_ingestion.py         (ingestion)
+  scripts/agents/run_breaking_news.py   (24/7 breaking)
+  scripts/agents/run_evening_reporting.py (evening)
+
+No GitHub Actions workflow calls this file.
+"""
 from __future__ import annotations
 import json
 import sys

@@ -1,11 +1,4 @@
-"""Supabase client singleton with a local JSONL fallback for dev.
-
-Production path: SUPABASE_URL + SUPABASE_KEY set → real Supabase.
-Fallback path:   env absent → in-memory store backed by data/local_store.json.
-
-Agents NEVER receive the raw client. They only see the semantic tools
-in core.tools.database.stories.
-"""
+"""Supabase client singleton with LocalStore fallback."""
 from __future__ import annotations
 import json
 import os
@@ -13,9 +6,15 @@ import threading
 from pathlib import Path
 from typing import Any, Optional
 
+
+class DatabaseUnavailableError(RuntimeError):
+    """Raised when Supabase is configured but unreachable, or a query fails."""
+
+
 _LOCK = threading.Lock()
 _CLIENT: Optional[Any] = None
 _MODE: str = "uninitialized"
+_STORE: Optional[Any] = None
 
 
 def _local_store_path() -> Path:
@@ -26,10 +25,7 @@ def _local_store_path() -> Path:
 
 
 class LocalStore:
-    """Minimal in-memory replacement for Supabase during development.
-
-    Persists to data/local_store.json so state survives process restarts.
-    """
+    """Development fallback so semantic tools work without Supabase."""
     def __init__(self) -> None:
         self._path = _local_store_path()
         self._data: dict[str, list[dict]] = {}
@@ -40,7 +36,19 @@ class LocalStore:
                 self._data = {}
 
     def _flush(self) -> None:
-        self._path.write_text(json.dumps(self._data, indent=2, default=str), encoding="utf-8")
+        self._path.write_text(
+            json.dumps(self._data, indent=2, default=str),
+            encoding="utf-8",
+        )
+
+    def select(self, table: str, **filters: Any) -> list[dict]:
+        rows = self._data.get(table, [])
+        if not filters:
+            return list(rows)
+        return [
+            r for r in rows
+            if all(r.get(k) == v for k, v in filters.items())
+        ]
 
     def insert(self, table: str, row: dict) -> dict:
         self._data.setdefault(table, []).append(row)
@@ -58,30 +66,40 @@ class LocalStore:
         self._flush()
         return row
 
-    def select(self, table: str, **filters: Any) -> list[dict]:
+    def delete(self, table: str, **filters: Any) -> int:
         rows = self._data.get(table, [])
+        before = len(rows)
         if not filters:
-            return list(rows)
-        out = []
-        for r in rows:
-            if all(r.get(k) == v for k, v in filters.items()):
-                out.append(r)
-        return out
+            self._data[table] = []
+        else:
+            self._data[table] = [
+                r for r in rows
+                if not all(r.get(k) == v for k, v in filters.items())
+            ]
+        removed = before - len(self._data[table])
+        self._flush()
+        return removed
 
 
-_STORE: Optional[LocalStore] = None
+def _resolve_supabase_key() -> str:
+    for name in ("SUPABASE_KEY", "SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_KEY"):
+        v = os.environ.get(name, "").strip()
+        if v:
+            return v
+    return ""
 
 
 def get_client() -> Any:
-    """Return the Supabase client, or the LocalStore if creds are absent."""
     global _CLIENT, _MODE, _STORE
     with _LOCK:
         if _MODE == "supabase":
             return _CLIENT
         if _MODE == "local":
             return _STORE
+
         url = os.environ.get("SUPABASE_URL", "").strip()
-        key = os.environ.get("SUPABASE_KEY", "").strip()
+        key = _resolve_supabase_key()
+
         if url and key:
             try:
                 from supabase import create_client  # type: ignore
@@ -89,7 +107,8 @@ def get_client() -> Any:
                 _MODE = "supabase"
                 return _CLIENT
             except Exception as exc:
-                print(f"  [db] supabase client init failed: {exc} — using local store")
+                print(f"  [db] supabase init failed: {exc} - using local store")
+
         _STORE = LocalStore()
         _MODE = "local"
         return _STORE
@@ -102,3 +121,9 @@ def mode() -> str:
 
 def is_production() -> bool:
     return mode() == "supabase"
+
+
+def raise_unavailable(op: str, exc: Exception) -> None:
+    raise DatabaseUnavailableError(
+        f"Database operation {op!r} failed: {type(exc).__name__}: {exc}"
+    ) from exc

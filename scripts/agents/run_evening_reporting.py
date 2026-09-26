@@ -92,7 +92,7 @@ def main() -> int:
         print("  Exiting with no publication (valid outcome).")
         return 0
 
-    story_id = candidate.get("story_id", "")
+    story_id = candidate.get("id", "") or candidate.get("story_id", "")
     title = candidate.get("title", "")
     sources = candidate.get("source_ids") or []
     print(f"  Selected: {story_id}")
@@ -109,18 +109,6 @@ def main() -> int:
         topic=title,
         dry_run=not live,
     )
-
-    try:
-        db.save_publication_result(story_id, {
-            "publication_id": f"pub_report_{story_id}_{int(datetime.now().timestamp())}",
-            "story_id": story_id,
-            "platform": "threads",
-            "status": "PUBLISHED" if (rc == 0 and live) else "DRY_RUN" if rc == 0 else "FAILED",
-            "published_at": _now(),
-        })
-        print("  [reporting] publication record saved")
-    except Exception as exc:
-        print(f"  [reporting] failed to persist publication: {exc}")
 
     return rc
 

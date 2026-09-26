@@ -1,0 +1,186 @@
+{
+  "run_id": "run_c46f85c58f04",
+  "outcome": "INSUFFICIENT_EVIDENCE",
+  "state": {
+    "run_id": "run_c46f85c58f04",
+    "story_id": "93a73880-197a-4a5a-8a72-23db49c11030",
+    "topic": "news",
+    "seed": {
+      "story_id": "93a73880-197a-4a5a-8a72-23db49c11030",
+      "title": "ABC uproar as David Muir's replacement drops big breaking news as fans fume 'thanks Trump'",
+      "summary": "David Muir stepped away from ABC World News Tonight over the weekend, leaving Linsey Davis in charge, and there was some shocking news coming in on the Iran war ...",
+      "topic": "news",
+      "sources": [
+        {
+          "id": "ni_ff83d79f6e9c4bafd1d377eb",
+          "url": "https://www.msn.com/en-us/news/other/abc-uproar-as-david-muir-s-replacement-drops-big-breaking-news-as-fans-fume-thanks-trump/ar-AA2cFqWH?ocid=BingNewsVerp",
+          "title": "ABC uproar as David Muir's replacement drops big breaking news as fans fume 'thanks Trump'",
+          "author": null,
+          "content": null,
+          "country": null,
+          "snippet": "David Muir stepped away from ABC World News Tonight over the weekend, leaving Linsey Davis in charge, and there was some shocking news coming in on the Iran war ...",
+          "language": "en",
+          "metadata": {
+            "provider": "ddgs",
+            "retrieved_at": "2026-09-26T12:11:52.864408+00:00"
+          },
+          "source_id": "e1ddabe5-1247-4403-936d-750657a66143",
+          "categories": [],
+          "created_at": "2026-09-26T11:53:28.60921+00:00",
+          "updated_at": "2026-09-26T11:53:28.60921+00:00",
+          "description": "David Muir stepped away from ABC World News Tonight over the weekend, leaving Linsey Davis in charge, and there was some shocking news coming in on the Iran war ...",
+          "source_name": "The Mirror US on MSN",
+          "content_hash": null,
+          "published_at": "2026-09-21T12:10:41+00:00",
+          "canonical_url": "https://www.msn.com/en-us/news/other/abc-uproar-as-david-muir-s-replacement-drops-big-breaking-news-as-fans-fume-thanks-trump/ar-AA2cFqWH?ocid=BingNewsVerp",
+          "discovered_at": "2026-09-26T12:11:52.864408+00:00",
+          "source_domain": "",
+          "canonical_hash": null,
+          "source": {
+            "id": "e1ddabe5-1247-4403-936d-750657a66143",
+            "name": "ddgs",
+            "source_type": "search_api",
+            "domain": "duckduckgo.com",
+            "base_url": null,
+            "description": null,
+            "metadata": {},
+            "is_active": true,
+            "created_at": "2026-09-26T11:41:18.331201+00:00",
+            "updated_at": "2026-09-26T11:41:18.331201+00:00"
+          }
+        }
+      ]
+    },
+    "provider": "ollama",
+    "model_id": "gpt-oss:120b",
+    "discovery": {
+      "run_id": "run_c46f85c58f04",
+      "created_at": "2026-09-26T12:47:59.881091Z",
+      "candidates": [
+        {
+          "story_id": "93a73880-197a-4a5a-8a72-23db49c11030",
+          "title": "ABC uproar as David Muir's replacement drops big breaking news as fans fume 'thanks Trump'",
+          "summary": "David Muir stepped away from ABC World News Tonight over the weekend, leaving Linsey Davis in charge, and there was some shocking news coming in on the Iran war ...",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_c46f85c58f04",
+      "created_at": "2026-09-26T00:00:00Z",
+      "story_id": "93a73880-197a-4a5a-8a72-23db49c11030",
+      "assessments": [
+        {
+          "story_id": "93a73880-197a-4a5a-8a72-23db49c11030",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_c46f85c58f04",
+      "created_at": "2026-09-26T12:48:08.916195Z",
+      "story_id": "93a73880-197a-4a5a-8a72-23db49c11030",
+      "claims": [],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "Daily Reflector, November 9, 1980 - ECU Digital Collections \u2014 6:30 Paul And .VIona ABC World News Tonight AB( World .News Happy Days Again NBC Nightly .News NB( News 0)( BS News Tic Tac Dough ABC News Ruff House Bob Newhart Show Crossroads Crocketts Victory Garden 7:00 Come To The Water Newlywed Game Sanford & Son Welcome Back Kotter M.A.S.H, Tic Tac Dough\u2026",
+          "url": "https://digital.lib.ecu.edu/94589",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "2019-pretreatment-annual-report-attachment- ... \u2014 Allan Fung. The Republicans vote next Saturday. 7. Congressman Cicilline escalated his war with Facebook in a Times op\u2010ed this week. 8. The North Kingstown Republican Town Committee has good timing: the featured speaker at the group\u2019s April 6 Lincoln Dinner is scheduled to be Stephen Moore, who\u2026",
+          "url": "https://www.narrabay.com/wp-content/uploads/2022/08/2019-pretreatment-annual-report-attachment-i.pdf",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_3",
+          "source_id": "s3",
+          "quote": "Hollywood in San Francisco: Location Shooting and the Aesthetics of Urban Decline 9781477317563 - DOKUMEN.PUB \u2014 40. \u201cMany Omens Write a Warranty That \u2018Worst is Over\u2019 for Pictures,\u201d Variety, March 1, 1961, 1, 93. 41. Gene Arneel, \u201cHome is Where You Shoot: But O\u2019Seas No Longer Cheap,\u201d Variety, June 15, 1960, 3, 16. 42. Jack Pitman, \u201cNew York Production: Helping & Hurting,\u201d Variety, November 1, 1961, 17. 43.\u2026",
+          "url": "https://dokumen.pub/hollywood-in-san-francisco-location-shooting-and-the-aesthetics-of-urban-decline-9781477317563.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_4",
+          "source_id": "s4",
+          "quote": "New Nigerian NewsPapers \u2014 Trumps COVID-19 adviser, Scott Atlas, resigns Phone manufacturers eye Nigeria as new market Agbara: Ogun industrial community under the crushing weight of bad roads Nbet: Flagrant violation of EPSR Act 2005 Dont be deceived, Lagos rep urges voters Crime rate grows as Amotekun battles funding,\u2026",
+          "url": "https://www.facebook.com/NewNigerianNewpapers/posts/some-major-newspapers-headlines-for-tuesday-december-1-2020new-nigeriancovid-19-/4370134546384283",
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": "The provided evidence does not contain any information about ABC, David Muir's replacement, breaking news, or fan reactions related to 'thanks Trump'. Therefore, no factual claims can be extracted that support the given topic."
+    },
+    "iteration": {
+      "research": 1
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "research_gate",
+    "outcome": "INSUFFICIENT_EVIDENCE",
+    "blockers": [
+      "no claims produced"
+    ],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: \"ABC uproar as David Muir's replacement drops big breaking news as fans fume 'thanks Trump'\"",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:47:59.882091+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:48:01.737289+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 0 claims with 4 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T12:48:08.916195+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "all",
+      "kind": "BLOCKER",
+      "content": "Research produced no claims.",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:48:08.919191+00:00"
+    }
+  ]
+}

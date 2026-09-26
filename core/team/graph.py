@@ -117,6 +117,10 @@ def _trace(node: str, out: TeamState, messages: list[dict]) -> TeamState:
 
 
 
+def _now_iso() -> str:
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat()
+
 def _escalated(state: TeamState) -> bool:
     """Return True if any prior node marked the run as ESCALATE."""
     return state.get("outcome") == "ESCALATE"
@@ -304,7 +308,10 @@ system already has the evidence and will attach it for you.
 
 CRITICAL RULES:
 - Output claims and notes ONLY. NO evidence array.
-- Use field name "text" (NOT "claim").
+- Use field name "text" (NOT "claim
+        + "VERBATIM RULE (critical): Each claim's text MUST share at"
+        + " least THREE consecutive content words with its evidence quote."
+        + " If you cannot satisfy this, DO NOT include that claim." + chr(10)").
 - Use field name "evidence_ids" (NOT "sources").
 - Each claim MUST cite at least one evidence_id from this exact list: {allowed_ids}
 - Text in the claim must be directly supported by the evidence block above.
@@ -331,6 +338,24 @@ Return JSON only, no prose, no markdown fences.
         valid_claims.append(c)
 
     # ── Step 5: assemble the final ResearchResult ──
+    # Filter out claims that fail the verbatim-overlap check BEFORE
+    # assembly. Partial claims shouldn't block a valid story.
+    kept_claims = []
+    dropped_claims = []
+    for c in valid_claims:
+        quotes_for_c = [
+            e.quote for e in evidence_objects
+            if e.evidence_id in c.evidence_ids
+        ]
+        n_gram = 2 if c.is_forecast else 3
+        if quotes_for_c and _verbatim_ok(c.text, quotes_for_c, n_gram):
+            kept_claims.append(c)
+        else:
+            dropped_claims.append(c.claim_id)
+    if dropped_claims:
+        print("  [research] dropped claims without verbatim support: "
+              + str(dropped_claims))
+    valid_claims = kept_claims
     result = ResearchResult(
         run_id=run_id,
         story_id=story_id,
@@ -592,6 +617,11 @@ def node_writer(state: TeamState) -> TeamState:
     """Writer — writes using ONLY approved claims, in the chosen tone."""
     if state.get("outcome") == "ESCALATE":
         return state
+
+    # Track writer retries so the loop is bounded.
+    _it = dict(state.get("iteration") or {})
+    _it["writer"] = _it.get("writer", 0) + 1
+    state = {**state, "iteration": _it}
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
     research = ResearchResult.model_validate(state["research"])
@@ -638,11 +668,21 @@ def node_writer(state: TeamState) -> TeamState:
         + tone_example + chr(10) + chr(10)
         + "Rules:" + chr(10)
         + "- Use ONLY the approved claims above." + chr(10)
-        + "- For forecasts, PRESERVE attribution (\"analysts expect\", not \"will\")." + chr(10)
-        + "- Do NOT include the tone name literally." + chr(10)
-        + "- Match the tone style, not the tone example content." + chr(10)
-        + "- claim_ids must list every claim_id you used." + chr(10) + chr(10)
-        + "Return JSON matching WriterDraft exactly."
+        + "- For forecasts, PRESERVE attribution." + chr(10)
+        + "- claim_ids must list every claim_id you used." + chr(10)
+        + "- Do NOT use the field name 'text'. Use 'body'." + chr(10) + chr(10)
+        + "Return JSON EXACTLY matching this shape:" + chr(10)
+        + "{" + chr(10)
+        + "  \"run_id\": " + repr(run_id) + "," + chr(10)
+        + "  \"story_id\": " + repr(story_id) + "," + chr(10)
+        + "  \"headline\": \"short headline (30-100 chars)\", " + chr(10)
+        + "  \"body\": \"the post body\"," + chr(10)
+        + "  \"source_reference\": \"\"," + chr(10)
+        + "  \"claim_ids\": [<claim_id strings>]," + chr(10)
+        + "  \"tone\": " + repr(tone_decision.tone.value) + "," + chr(10)
+        + "  \"warnings\": []" + chr(10)
+        + "}" + chr(10)
+        + "No other fields. No markdown. JSON only."
     )
 
     result, _ = _structured(
@@ -672,34 +712,43 @@ def node_writer(state: TeamState) -> TeamState:
 
 
 def node_platform_adapter(state: TeamState) -> TeamState:
-    if state.get("outcome") == "ESCALATE":
-        return state
+    """Platform Adapter - produces a 2-3 line Threads post."""
+    import os
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
     draft = WriterDraft.model_validate(state["draft"])
-    prompt = f"""
-Produce a PlatformPost for Threads.
-run_id="{run_id}", story_id="{story_id}", platform="threads".
 
-Headline: {draft.headline}
-Body: {draft.body}
+    max_chars = int(os.environ.get("THREADS_MAX_CHARS", "280"))
 
-Rules:
-- Preserve every fact, number, date, and attribution exactly.
-- NEVER change "Analysts expect" into "will".
-- Keep it under 500 characters if possible.
+    headline = (draft.headline or "").strip()
+    body = (draft.body or "").strip()
 
-Return JSON matching PlatformPost exactly. The `text` field must be the
-ACTUAL adapted post text. The `char_count` field is ignored (we recompute).
-""".strip()
+    prompt = (
+        "You are the Platform Adapter for Threads. Compress the draft"
+        + chr(10)
+        + "into a single cohesive post of 2-3 short sentences." + chr(10) + chr(10)
+        + "run_id = " + repr(run_id) + chr(10)
+        + "story_id = " + repr(story_id) + chr(10) + chr(10)
+        + "Draft headline: " + repr(headline) + chr(10)
+        + "Draft body: " + repr(body) + chr(10) + chr(10)
+        + "Rules:" + chr(10)
+        + "- Target 200-280 characters TOTAL. Hard max: " + str(max_chars) + "." + chr(10)
+        + "- 2-3 short sentences. No headline line. No bullet lists." + chr(10)
+        + "- Lead with the most newsworthy fact." + chr(10)
+        + "- Preserve every number, date, name, and attribution exactly." + chr(10)
+        + "- NEVER change \"analysts expect\" to \"will\"." + chr(10)
+        + "- Drop context that is not essential to the central fact." + chr(10)
+        + "- Do NOT invent facts. Do NOT add hashtags unless the draft had them."
+        + chr(10) + chr(10)
+        + "Return JSON matching PlatformPost exactly."
+    )
+
     result, _ = _structured(
         client, PlatformPost, prompt, state["provider"],
         context={"run_id": run_id, "story_id": story_id},
     )
 
-    # Deterministic traceability: the LLM cannot drop claim provenance.
-    # post.claim_ids must be a superset of draft.claim_ids so the published
-    # artefact can always be traced back to approved claims.
+    # ── Deterministic traceability ──
     if not result.claim_ids:
         result.claim_ids = list(draft.claim_ids)
     else:
@@ -709,15 +758,26 @@ ACTUAL adapted post text. The `char_count` field is ignored (we recompute).
     if not result.source_reference:
         result.source_reference = draft.source_reference
 
-    # Deterministic post-processing.
-    result.char_count = len(result.text)
-    if result.char_count > 500:
-        trimmed = result.text[:499].rsplit(" ", 1)[0] + "…"
-        result.text = trimmed
-        result.char_count = len(result.text)
+    # ── Deterministic compression if over the ceiling ──
+    text = result.text.strip()
+    if len(text) > max_chars:
+        try:
+            from core.tools.compress import compress_to_limit
+            compressed = compress_to_limit(text, limit=max_chars)
+            print("  [platform_adapter] compressed " + str(len(text))
+                  + " -> " + str(len(compressed)) + " chars")
+            text = compressed
+        except Exception as exc:
+            # Fallback: truncate on word boundary.
+            print("  [platform_adapter] compressor failed: " + type(exc).__name__)
+            text = text[:max_chars - 1].rsplit(" ", 1)[0] + chr(8230)
+
+    result.text = text
+    result.char_count = len(text)
+
     return _trace("platform_adapter", state, [
         msg("platform_adapter", "validation", "HANDOFF",
-            f"Post adapted ({result.char_count} chars)"),
+            "Post adapted (" + str(result.char_count) + " chars)"),
     ]) | {"post": result.model_dump(mode="json")}
 
 
@@ -759,7 +819,9 @@ def node_validation(state: TeamState) -> TeamState:
     if tokens and not any(tok in post.text.lower() for tok in tokens):
         errors.append(f"post lost seed subject: {seed['title']!r}")
 
-    if len(post.text) > 500:
+    import os as _os
+    _max = int(_os.environ.get("THREADS_MAX_CHARS", "280"))
+    if len(post.text) > _max:
         errors.append(f"post exceeds 500 chars: {len(post.text)}")
 
     state_out: ValidationResult = ValidationResult(
@@ -795,62 +857,93 @@ def node_quota_gate(state: TeamState) -> TeamState:
     }
 
 def node_publisher(state: TeamState) -> TeamState:
-    """Publish to Threads. NO token refresh — handled elsewhere."""
-    if state.get("outcome") == "ESCALATE":
-        return state
+    """Publish to Threads via ThreadsAPI. Never refreshes tokens."""
     import os
     post = PlatformPost.model_validate(state["post"])
     story_id = state.get("story_id", "")
+    run_id = state.get("run_id", "")
 
     live = os.environ.get("NEWSROOM_LIVE", "").strip().lower() in ("1", "true", "yes")
     dry_run = not live
 
-    # Duplicate publication check — deterministic, spec 14.
-    if live:
+    # ── Duplicate check (fail-closed) ──
+    if live and story_id:
         try:
             from core.tools.database.stories import find_duplicate_publication
             existing = find_duplicate_publication(story_id, platform="threads")
             if existing:
+                pub = PublishResult(
+                    run_id=run_id, story_id=story_id,
+                    platform="threads", status="DUPLICATE_SKIPPED", url=None,
+                )
                 return _trace("publisher", state, [
                     msg("publisher", "all", "DONE",
-                        "Duplicate publication detected — skipping."),
+                        "Duplicate publication — skipping."),
                 ]) | {
-                    "publication": PublishResult(
-                        run_id=state["run_id"], story_id=story_id,
-                        platform="threads", status="DUPLICATE_SKIPPED", url=None,
-                    ).model_dump(mode="json"),
+                    "publication": pub.model_dump(mode="json"),
                     "outcome": "PASS",
                 }
-        except NotImplementedError:
-            # Fail-closed: cannot verify duplicate → BLOCK.
+        except Exception as exc:
+            print("  [publisher] duplicate check failed: " + type(exc).__name__)
+            pub = PublishResult(
+                run_id=run_id, story_id=story_id,
+                platform="threads",
+                status="BLOCKED_DUPLICATE_CHECK_UNAVAILABLE",
+                url=None, error=str(exc),
+            )
             return _trace("publisher", state, [
                 msg("publisher", "all", "BLOCKER",
-                    "duplicate check unavailable — BLOCKED (fail-closed)"),
+                    "duplicate check unavailable — BLOCKED"),
             ]) | {
-                "publication": PublishResult(
-                    run_id=state["run_id"], story_id=story_id,
-                    platform="threads",
-                    status="BLOCKED_DUPLICATE_CHECK_UNAVAILABLE",
-                    url=None, error="duplicate check unavailable",
-                ).model_dump(mode="json"),
+                "publication": pub.model_dump(mode="json"),
                 "outcome": "BLOCKED",
             }
 
+    # ── Publish ──
+    from core.tools.publishing import publish_threads
     result = publish_threads(post.text, dry_run=dry_run)
-    if result.get("status") == "PUBLISHED":
-        from core.team import quota as quota_mod
-        quota_mod.record_publication()
-    state_out = PublishResult(
-        run_id=state["run_id"], story_id=post.story_id,
-        platform="threads", status=result["status"],
-        url=result.get("url"), error=result.get("error"),
+    status = result.get("status", "FAILED")
+    external_id = result.get("external_id")
+    url = result.get("url")
+    error = result.get("error")
+
+    pub = PublishResult(
+        run_id=run_id, story_id=story_id,
+        platform="threads", status=status,
+        external_id=external_id, url=url, error=error,
     )
+
+    # ── Persist publication record ──
+    if story_id:
+        try:
+            from core.tools.database import stories as _db
+            _db.save_publication_result(story_id, {
+                "platform": "threads",
+                "status": status,
+                "content": post.text,
+                "external_post_id": external_id,
+                "published_at": None if dry_run else _now_iso(),
+                "metadata": {"run_id": run_id, "error": error},
+            })
+            if status == "PUBLISHED":
+                _db.update_story_status(story_id, "published")
+        except Exception as exc:
+            print("  [publisher] persist failed: " + type(exc).__name__ + ": " + str(exc))
+
+    # ── Update local quota (no-op in production) ──
+    if status == "PUBLISHED":
+        try:
+            from core.team import quota as quota_mod
+            quota_mod.record_publication()
+        except Exception:
+            pass
+
     return _trace("publisher", state, [
         msg("publisher", "all", "DONE",
-            "Publication: " + result["status"] + " (live=" + str(live) + ")"),
+            "Publication: " + status + " (live=" + str(live) + ")"),
     ]) | {
-        "publication": state_out.model_dump(mode="json"),
-        "outcome": "PASS",
+        "publication": pub.model_dump(mode="json"),
+        "outcome": "PASS" if status in ("PUBLISHED", "SKIPPED_DRY_RUN") else "BLOCKED",
     }
 
 
@@ -987,11 +1080,44 @@ def run_team(
 ) -> int:
     from core.team.state import new_state
     run_id = f"run_{__import__('uuid').uuid4().hex[:12]}"
+    # ── Step 7: load real story from Supabase in production modes ──
+    production_context = None
+    if story_id and mode in ("breaking", "reporting"):
+        try:
+            from core.tools.database import stories as _db
+            _story = _db.get_story(story_id)
+            if _story:
+                _sources = _db.get_story_sources(story_id)
+                production_context = {"story": _story, "sources": _sources}
+                topic = _story.get("title", topic) or topic
+                print("  [run] loaded real story: " + str(story_id))
+                print("        title: " + str(topic)[:80])
+                print("        sources: " + str(len(_sources)))
+            else:
+                print("  [run] WARNING: story not found in DB: " + str(story_id))
+        except Exception as _exc:
+            print("  [run] context load failed: " + type(_exc).__name__ + ": " + str(_exc))
     state = new_state(run_id=run_id, provider=provider, model_id=model_id, topic=topic)
+    if production_context:
+        state["production_context"] = production_context
+        state["seed"] = {
+            "story_id": story_id,
+            "title": production_context["story"].get("title", ""),
+            "summary": production_context["story"].get("summary") or "",
+            "topic": (production_context["story"].get("metadata") or {}).get("topic") or "news",
+            "sources": production_context.get("sources", []),
+        }
     state["dry_run"] = dry_run
     if story_id:
         state["story_id"] = story_id
 
+
+    # Production modes must receive a real story_id.
+    if mode in ("breaking", "reporting") and not story_id:
+        print("  [run] ERROR: PRODUCTION MODE requires a valid story_id")
+        print("  [run]        got: " + repr(story_id))
+        print("  [run] ABORTING")
+        return 2
     print("=" * 70)
     print(f"Team graph run — {provider}/{model_id} (topic={topic!r}, dry_run={dry_run})")
     print(f"  mode={mode!r}  story_id={story_id!r}  dry_run={dry_run}")

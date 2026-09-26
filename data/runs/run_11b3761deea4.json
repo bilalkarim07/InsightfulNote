@@ -1,0 +1,408 @@
+{
+  "run_id": "run_11b3761deea4",
+  "outcome": "PASS",
+  "state": {
+    "run_id": "run_11b3761deea4",
+    "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+    "topic": "news",
+    "seed": {
+      "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+      "title": "Breaking: Fox News joins mainstream media networks in White House boycott",
+      "summary": "Fox News and the four other major television networks have stopped shared White House pool camera coverage of President Donald Trump after the administration barred CNN from its assigned rotation. Fox ...",
+      "topic": "news",
+      "sources": [
+        {
+          "id": "ni_41cbbe933cdff682cfd96b2f",
+          "url": "https://www.msn.com/en-us/politics/government/breaking-fox-news-joins-mainstream-media-networks-in-white-house-boycott/ar-AA2cGmI6?ocid=BingNewsVerp",
+          "title": "Breaking: Fox News joins mainstream media networks in White House boycott",
+          "author": null,
+          "content": null,
+          "country": null,
+          "snippet": "Fox News and the four other major television networks have stopped shared White House pool camera coverage of President Donald Trump after the administration barred CNN from its assigned rotation. Fox ...",
+          "language": "en",
+          "metadata": {
+            "provider": "ddgs",
+            "retrieved_at": "2026-09-26T12:11:52.393652+00:00"
+          },
+          "source_id": "e1ddabe5-1247-4403-936d-750657a66143",
+          "categories": [],
+          "created_at": "2026-09-26T11:53:28.299556+00:00",
+          "updated_at": "2026-09-26T11:53:28.299556+00:00",
+          "description": "Fox News and the four other major television networks have stopped shared White House pool camera coverage of President Donald Trump after the administration barred CNN from its assigned rotation. Fox ...",
+          "source_name": "The Western Journal on MSN",
+          "content_hash": null,
+          "published_at": "2026-09-22T12:10:41+00:00",
+          "canonical_url": "https://www.msn.com/en-us/politics/government/breaking-fox-news-joins-mainstream-media-networks-in-white-house-boycott/ar-AA2cGmI6?ocid=BingNewsVerp",
+          "discovered_at": "2026-09-26T12:11:52.393652+00:00",
+          "source_domain": "",
+          "canonical_hash": null,
+          "source": {
+            "id": "e1ddabe5-1247-4403-936d-750657a66143",
+            "name": "ddgs",
+            "source_type": "search_api",
+            "domain": "duckduckgo.com",
+            "base_url": null,
+            "description": null,
+            "metadata": {},
+            "is_active": true,
+            "created_at": "2026-09-26T11:41:18.331201+00:00",
+            "updated_at": "2026-09-26T11:41:18.331201+00:00"
+          }
+        }
+      ]
+    },
+    "provider": "ollama",
+    "model_id": "gpt-oss:120b",
+    "discovery": {
+      "run_id": "run_11b3761deea4",
+      "created_at": "2026-09-26T12:37:58.263612Z",
+      "candidates": [
+        {
+          "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+          "title": "Breaking: Fox News joins mainstream media networks in White House boycott",
+          "summary": "Fox News and the four other major television networks have stopped shared White House pool camera coverage of President Donald Trump after the administration barred CNN from its assigned rotation. Fox ...",
+          "topic": "news",
+          "source_ids": [],
+          "is_breaking": true,
+          "is_emerging": false,
+          "independent_source_count": 2,
+          "first_seen_at": null,
+          "discovery_rationale": ""
+        }
+      ],
+      "notes": ""
+    },
+    "source_intel": {
+      "run_id": "run_11b3761deea4",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+      "assessments": [
+        {
+          "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+          "source_id": "s1",
+          "source_name": "",
+          "source_type": "SECONDARY",
+          "authority": "aggregated search",
+          "independence": "to be confirmed",
+          "attribution": "",
+          "confidence": null,
+          "conflicts": [],
+          "uncertainty": []
+        }
+      ],
+      "independent_reporting": false,
+      "copying_detected": false,
+      "notes": ""
+    },
+    "research": {
+      "run_id": "run_11b3761deea4",
+      "created_at": "2026-09-26T12:38:15.044555Z",
+      "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+      "claims": [
+        {
+          "claim_id": "claim_1",
+          "text": "Fox News joined other media outlets in suspending pool coverage of President Trump on September 21.",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_2",
+          "text": "The White House prevented CNN from carrying out its assigned filming duties, prompting the media pool boycott.",
+          "evidence_ids": [
+            "ev_4"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        },
+        {
+          "claim_id": "claim_3",
+          "text": "The pool decision involved ABC, CBS, NBC, and Fox News.",
+          "evidence_ids": [
+            "ev_4"
+          ],
+          "attribution": "",
+          "uncertainty": "",
+          "is_forecast": false,
+          "is_allegation": false,
+          "is_opinion": false
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "ev_1",
+          "source_id": "s1",
+          "quote": "BREAKING: Fox News Joins White House Boycott | American Center for Law and Justice \u2014 September 21 A Fox News is joining mainstream media outlets in combating a ban against CNN, MS Now, and Politico from the White House. The media (including ABC, Fox News, CNN, NBC, and CBS) responded by suspending pool coverage of President Trump. The Sekulow team discusses the media\u2019s war against\u2026",
+          "url": "https://aclj.org/breaking-fox-news-joins-white-house-boycott_3stszqognwa",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_2",
+          "source_id": "s2",
+          "quote": "\u201cFox News betrayed the President\u201d: Laura Loomer reacts after media outlet joins White House press boycott amid Trump\u2026 \u2014 On September 22, Laura Loomer slammed Fox News after the media outlet joined others in the White House press pool boycott against Trump. Earlier on September 21, Fox News, along with other news outlets like ABC, CBS, and NBC, announced the suspension of White House coverage. These publications\u2026",
+          "url": "https://www.soapcentral.com/entertainment/news-fox-news-betrayed-president-laura-loomer-reacts-media-outlet-joins-white-house-press-boycott-amid-trump-ban-cnn-ms-now-politico",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_3",
+          "source_id": "s3",
+          "quote": "\u201cFox News betrayed the President\u201d: Laura Loomer reacts after media outlet joins White House press boycott amid Trump\u2026 \u2014 On September 22, Laura Loomer slammed Fox News after the media outlet joined others in the White House press pool boycott against Trump. Earlier on September 21, Fox News, along with other news outlets like ABC, CBS, and NBC, announced the suspension of White House coverage. These publications\u2026",
+          "url": "https://www.aol.com/articles/fox-news-betrayed-president-laura-200333000.html",
+          "retrieved_at": null,
+          "context": ""
+        },
+        {
+          "evidence_id": "ev_4",
+          "source_id": "s4",
+          "quote": "Fox News goes against Donald Trump as it joins unexpected TV boycott - The Mirror US \u2014 By Fox News has joined America\u2019s other major television networks in suspending pooled coverage of President Donald Trump after the White House prevented CNN from carrying out its assigned filming duties. [...] However, it was a collective pool decision involving ABC, CBS, NBC and Fox rather than a\u2026",
+          "url": "https://www.themirror.com/entertainment/tv/fox-news-donald-trump-boycott-2033700.amp",
+          "retrieved_at": null,
+          "context": ""
+        }
+      ],
+      "missing_information": [],
+      "conflicting_claims": [],
+      "notes": ""
+    },
+    "verification": {
+      "run_id": "run_11b3761deea4",
+      "created_at": "2026-09-26T12:38:19.371529Z",
+      "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+      "verifications": [
+        {
+          "claim_id": "claim_1",
+          "status": "SUPPORTED",
+          "evidence_ids": [
+            "ev_1"
+          ],
+          "contradictions": [],
+          "notes": ""
+        },
+        {
+          "claim_id": "claim_2",
+          "status": "SUPPORTED",
+          "evidence_ids": [
+            "ev_4"
+          ],
+          "contradictions": [],
+          "notes": ""
+        },
+        {
+          "claim_id": "claim_3",
+          "status": "SUPPORTED",
+          "evidence_ids": [
+            "ev_4"
+          ],
+          "contradictions": [],
+          "notes": ""
+        }
+      ],
+      "blocking": false,
+      "escalate": false,
+      "notes": ""
+    },
+    "editorial": {
+      "run_id": "run_11b3761deea4",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+      "central_event": "On September 21, Fox News joined ABC, CBS, and NBC in suspending pool coverage of President Trump after the White House barred CNN from its assigned filming duties, prompting a media pool boycott.",
+      "allowed_claim_ids": [
+        "claim_1",
+        "claim_2",
+        "claim_3"
+      ],
+      "blocked_claim_ids": [],
+      "must_include": [
+        "Fox News joined other media outlets in suspending pool coverage of President Trump on September 21.",
+        "The White House prevented CNN from carrying out its assigned filming duties, prompting the media pool boycott.",
+        "The pool decision involved ABC, CBS, NBC, and Fox News."
+      ],
+      "optional": [],
+      "do_not_include": [
+        "Speculation about the White House's motives or political bias.",
+        "Unverified statements about future coverage decisions.",
+        "Any claims not supported by the verified sources provided."
+      ],
+      "attribution_notes": "All facts are drawn from verified claims provided.",
+      "uncertainty_notes": "No uncertainty; all listed claims are verified.",
+      "framing": "Readers should understand this as a coordinated response by major broadcasters to a White House action that restricted CNN\u2019s access, leading to a temporary suspension of the presidential media pool."
+    },
+    "tone": {
+      "run_id": "run_11b3761deea4",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+      "tone": "INFORMATIVE",
+      "rationale": "The story reports a factual political development; a neutral, declarative tone best conveys the information without editorializing.",
+      "constraints": []
+    },
+    "draft": {
+      "run_id": "run_11b3761deea4",
+      "created_at": "2026-09-26T12:38:24.673981Z",
+      "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+      "headline": "Fox News Joins ABC, CBS, NBC in Halting Trump Pool Coverage",
+      "body": "On September 21, Fox News joined other media outlets in suspending pool coverage of President Trump. The White House prevented CNN from carrying out its assigned filming duties, prompting a media pool boycott. The pool decision involved ABC, CBS, NBC, and Fox News.",
+      "source_reference": "",
+      "claim_ids": [
+        "claim_1",
+        "claim_2",
+        "claim_3"
+      ],
+      "tone": "INFORMATIVE",
+      "warnings": []
+    },
+    "post": {
+      "run_id": "run_11b3761deea4",
+      "created_at": "2026-09-26T12:00:00Z",
+      "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+      "platform": "threads",
+      "text": "Fox News Joins ABC, CBS, NBC in Halting Trump Pool Coverage\nOn September 21, Fox News joined other media outlets in suspending pool coverage of President Trump. The White House prevented CNN from carrying out its assigned filming duties, prompting a media pool boycott. The pool decision involved ABC, CBS, NBC, and Fox News.",
+      "char_count": 325,
+      "claim_ids": [
+        "claim_1",
+        "claim_2",
+        "claim_3"
+      ],
+      "source_reference": "",
+      "warnings": []
+    },
+    "validation": {
+      "run_id": "run_11b3761deea4",
+      "created_at": "2026-09-26T12:38:27.806746Z",
+      "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+      "state": "PASS",
+      "errors": [],
+      "warnings": [],
+      "notes": ""
+    },
+    "publication": {
+      "run_id": "run_11b3761deea4",
+      "created_at": "2026-09-26T12:38:28.998978Z",
+      "story_id": "52b6fc16-7151-421c-aba7-f4f479121b43",
+      "publication_id": "pub_a2299b6bc583",
+      "platform": "threads",
+      "external_id": null,
+      "url": null,
+      "published_at": null,
+      "status": "SKIPPED_DRY_RUN",
+      "error": null
+    },
+    "iteration": {
+      "research": 1,
+      "writer": 1
+    },
+    "research_questions": [],
+    "editorial_fixes": [],
+    "current_node": "publisher",
+    "outcome": "PASS",
+    "blockers": [],
+    "errors": []
+  },
+  "messages": [
+    {
+      "from_agent": "discovery",
+      "to_agent": "all",
+      "kind": "HANDOFF",
+      "content": "Selected story: 'Breaking: Fox News joins mainstream media networks in White House boycott'",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:37:58.263612+00:00"
+    },
+    {
+      "from_agent": "source_intel",
+      "to_agent": "research",
+      "kind": "HANDOFF",
+      "content": "Sources assessed. Proceed to evidence collection.",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:37:59.562236+00:00"
+    },
+    {
+      "from_agent": "research",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "Produced 3 claims with 4 evidence items.",
+      "iteration": 1,
+      "created_at": "2026-09-26T12:38:15.045554+00:00"
+    },
+    {
+      "from_agent": "research_gate",
+      "to_agent": "verification",
+      "kind": "HANDOFF",
+      "content": "All claims have verbatim support.",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:38:15.049549+00:00"
+    },
+    {
+      "from_agent": "verification",
+      "to_agent": "editorial",
+      "kind": "HANDOFF",
+      "content": "3 supported, 0 unsupported.",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:38:19.371529+00:00"
+    },
+    {
+      "from_agent": "editorial",
+      "to_agent": "tone",
+      "kind": "HANDOFF",
+      "content": "Central event: On September 21, Fox News joined ABC, CBS, and NBC in suspending pool coverage of President Trump after the White House ",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:38:21.764331+00:00"
+    },
+    {
+      "from_agent": "tone",
+      "to_agent": "writer",
+      "kind": "INFO",
+      "content": "Tone: INFORMATIVE",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:38:23.152135+00:00"
+    },
+    {
+      "from_agent": "writer",
+      "to_agent": "platform_adapter",
+      "kind": "HANDOFF",
+      "content": "Draft ready (265 chars)",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:38:24.674981+00:00"
+    },
+    {
+      "from_agent": "platform_adapter",
+      "to_agent": "validation",
+      "kind": "HANDOFF",
+      "content": "Post adapted (325 chars)",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:38:27.804746+00:00"
+    },
+    {
+      "from_agent": "validation",
+      "to_agent": "publisher",
+      "kind": "HANDOFF",
+      "content": "OK",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:38:27.806746+00:00"
+    },
+    {
+      "from_agent": "quota_gate",
+      "to_agent": "publisher",
+      "kind": "HANDOFF",
+      "content": "quota ok",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:38:28.996041+00:00"
+    },
+    {
+      "from_agent": "publisher",
+      "to_agent": "all",
+      "kind": "DONE",
+      "content": "Publication: SKIPPED_DRY_RUN (live=False)",
+      "iteration": 0,
+      "created_at": "2026-09-26T12:38:29.432343+00:00"
+    }
+  ]
+}

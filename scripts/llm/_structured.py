@@ -69,7 +69,7 @@ _FIELD_ALIASES: dict[str, str] = {
     "event": "central_event",
     "allowed_claims": "allowed_claim_ids", "blocked_claims": "blocked_claim_ids",
     "must": "must_include", "forbidden": "do_not_include",
-    "title": "headline", "content": "body", "text_body": "body", "article": "body", "summary": "body",
+    "title": "headline", "content": "body", "text_body": "body", "article": "body", "summary": "body", "text": "body",
     "claims_used": "claim_ids",
     "post": "text", "post_text": "text",
     "character_count": "char_count", "chars": "char_count",
@@ -78,11 +78,21 @@ _FIELD_ALIASES: dict[str, str] = {
 }
 
 
-def _normalize(data: Any) -> Any:
+def _normalize(data: Any, schema: Any = None) -> Any:
+    """Rename common LLM field-name variants.
+
+    Schema-aware: if the target schema has a field with the original name,
+    do NOT alias it. This lets us alias `text -> body` globally without
+    breaking PlatformPost (which uses `text` as a real field).
+    """
     if isinstance(data, dict):
         normalized: dict[str, Any] = {}
+        schema_fields = set(schema.model_fields.keys()) if schema is not None else set()
         for k, v in data.items():
-            new_key = _FIELD_ALIASES.get(k, k)
+            if schema is not None and k in schema_fields:
+                new_key = k
+            else:
+                new_key = _FIELD_ALIASES.get(k, k)
             if new_key in normalized and k != new_key:
                 continue
             normalized[new_key] = _normalize(v)
@@ -166,7 +176,7 @@ def _try_parse(
         else:
             return None
 
-    data = _normalize(data)
+    data = _normalize(data, schema=schema)
     data = _prune_to_schema(schema, data)
 
     if context and isinstance(data, dict):
