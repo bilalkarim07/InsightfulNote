@@ -43,6 +43,15 @@ def pop_topic() -> str | None:
 
 
 def main() -> None:
+    import os
+    if os.environ.get("NEWSROOM_LIVE", "").strip().lower() in ("1", "true", "yes"):
+        print("  [RETIRED] run_next_topic.py is disabled for production publishing.")
+        print("  Production publishing MUST use Supabase newsroom workflows:")
+        print("    - scripts/run_news_ingestion.py")
+        print("    - scripts/agents/run_evening_reporting.py")
+        print("    - scripts/agents/run_breaking_news.py")
+        sys.exit(1)
+
     provider = sys.argv[1] if len(sys.argv) > 1 else "ollama"
     model_id = sys.argv[2] if len(sys.argv) > 2 else "gpt-oss:120b"
     topic = pop_topic()

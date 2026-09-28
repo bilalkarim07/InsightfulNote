@@ -174,7 +174,7 @@ def _tavily_items() -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     client = TavilyClient()
     try:
-        for q in QUERIES[:2]:
+        for q in QUERIES:
             out.extend(_iter_items(client.search(q)))
     finally:
         try: client.close()
@@ -187,7 +187,7 @@ def _ddgs_items() -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     client = DDGSClient()
     try:
-        for q in QUERIES[:2]:
+        for q in QUERIES:
             out.extend(_iter_items(client.news_search(q)))
     finally:
         try: client.close()
@@ -200,7 +200,7 @@ def _google_news_items() -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     client = GoogleNewsClient()
     try:
-        for q in QUERIES[:2]:
+        for q in QUERIES:
             out.extend(_iter_items(client.search(q)))
     finally:
         try: client.close()
@@ -213,9 +213,10 @@ def _gdelt_items() -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     client = GDELTClient()
     try:
-        out.extend(_iter_items(client.search(QUERIES[0])))
-        time.sleep(5.5)
-        out.extend(_iter_items(client.search(QUERIES[1])))
+        for idx, q in enumerate(QUERIES[:4]):
+            if idx > 0:
+                time.sleep(2.0)
+            out.extend(_iter_items(client.search(q)))
     finally:
         try: client.close()
         except Exception: pass

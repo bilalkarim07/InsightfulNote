@@ -28,9 +28,21 @@ def _env_int(name: str, default: int) -> int:
         return default
 
 
+def _get_publish_timezone() -> timezone | Any:
+    tz_name = os.environ.get("NEWSROOM_PUBLISH_TIMEZONE", "America/New_York").strip()
+    if tz_name:
+        try:
+            import zoneinfo
+            return zoneinfo.ZoneInfo(tz_name)
+        except Exception:
+            pass
+    offset = _env_int("NEWSROOM_TZ_OFFSET", -5)
+    return timezone(timedelta(hours=offset))
+
+
 def _local_now() -> datetime:
-    offset = _env_int("NEWSROOM_TZ_OFFSET", 5)
-    return datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=offset)))
+    tz = _get_publish_timezone()
+    return datetime.now(timezone.utc).astimezone(tz)
 
 
 def _local_date() -> str:
@@ -70,10 +82,10 @@ def can_publish() -> tuple[bool, str, dict[str, Any]]:
 
     Fail-closed: if the Supabase query fails, returns (False, reason, state).
     """
-    max_per_day = _env_int("NEWSROOM_MAX_PER_DAY", 10)
+    max_per_day = _env_int("NEWSROOM_MAX_PER_DAY", 5)
     min_hours = _env_int("NEWSROOM_MIN_HOURS_BETWEEN", 1)
     active_start = _env_int("NEWSROOM_ACTIVE_START", 8)
-    active_end = _env_int("NEWSROOM_ACTIVE_END", 23)
+    active_end = _env_int("NEWSROOM_ACTIVE_END", 24)
 
     state: dict[str, Any] = {
         "date": _local_date(),

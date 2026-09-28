@@ -1051,7 +1051,8 @@
         ]
       },
       "first_seen_at": "2026-09-28T05:32:22.614032+00:00",
-      "last_seen_at": "2026-09-28T05:32:22.614032+00:00"
+      "last_seen_at": "2026-09-28T05:32:22.614032+00:00",
+      "_source_count": 1
     },
     {
       "id": "cb12ca43-895b-4066-bccb-cb025d7e7e78",
@@ -1065,7 +1066,65 @@
         ]
       },
       "first_seen_at": "2026-09-28T05:32:51.653524+00:00",
-      "last_seen_at": "2026-09-28T05:32:51.653524+00:00"
+      "last_seen_at": "2026-09-28T05:32:51.653524+00:00",
+      "_source_count": 1
+    },
+    {
+      "id": "d78db87e-b32b-486d-b85e-44003c44ebc1",
+      "title": "Federal Reserve Keeps Benchmark Interest Rate Unchanged at 5.25%",
+      "summary": "The Federal Reserve announced its policy decision today.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "FINANCE"
+        ]
+      },
+      "first_seen_at": "2026-09-28T06:07:10.843209+00:00",
+      "last_seen_at": "2026-09-28T06:07:10.843209+00:00",
+      "_source_count": 1
+    },
+    {
+      "id": "e43dcba5-92ed-4798-8e38-043ca371790f",
+      "title": "Breaking: International Court Issues Binding Climate Ruling on Emissions",
+      "summary": "A major international judicial ruling was issued 15 minutes ago.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "CLIMATE_ENVIRONMENT",
+          "WORLD_EVENTS"
+        ]
+      },
+      "first_seen_at": "2026-09-28T06:07:10.860689+00:00",
+      "last_seen_at": "2026-09-28T06:07:10.860689+00:00",
+      "_source_count": 2
+    },
+    {
+      "id": "dcc5b045-827b-4140-8434-6cbd8d95335d",
+      "title": "Federal Reserve Keeps Benchmark Interest Rate Unchanged at 5.25%",
+      "summary": "The Federal Reserve announced its policy decision today.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "FINANCE"
+        ]
+      },
+      "first_seen_at": "2026-09-28T06:07:37.496713+00:00",
+      "last_seen_at": "2026-09-28T06:07:37.496713+00:00",
+      "_source_count": 1
+    },
+    {
+      "id": "ef379725-c813-4948-98b0-890f0590d41a",
+      "title": "Breaking: International Court Issues Binding Climate Ruling on Emissions",
+      "summary": "A major international judicial ruling was issued 15 minutes ago.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "CLIMATE_ENVIRONMENT",
+          "WORLD_EVENTS"
+        ]
+      },
+      "first_seen_at": "2026-09-28T06:07:37.512685+00:00",
+      "last_seen_at": "2026-09-28T06:07:37.512685+00:00"
     }
   ],
   "publications": [
@@ -1188,6 +1247,24 @@
       "story_id": "298f2c32-68c5-4934-9213-c108374e32d9",
       "metadata": {},
       "id": "cb3c2a6f-af33-424f-83cf-aae131131387"
+    },
+    {
+      "platform": "threads",
+      "status": "published",
+      "content": "Federal Reserve Keeps Benchmark Interest Rate Unchanged at 5.25%",
+      "published_at": "2026-09-28T06:07:10.855696+00:00",
+      "story_id": "d78db87e-b32b-486d-b85e-44003c44ebc1",
+      "metadata": {},
+      "id": "bcfd1b91-963b-45d6-995f-83902ac55d57"
+    },
+    {
+      "platform": "threads",
+      "status": "published",
+      "content": "Federal Reserve Keeps Benchmark Interest Rate Unchanged at 5.25%",
+      "published_at": "2026-09-28T06:07:37.507683+00:00",
+      "story_id": "dcc5b045-827b-4140-8434-6cbd8d95335d",
+      "metadata": {},
+      "id": "cd8bb5c3-8101-4993-bfdc-ec1cb17fbabb"
     }
   ],
   "news_items": [
@@ -1203,6 +1280,36 @@
       "id": "ni_16b941a3cf81dbd4d0c228e4",
       "metadata": {},
       "discovered_at": "2026-09-28T05:32:51.663549+00:00"
+    },
+    {
+      "url": "https://example.com/fed-decision-today",
+      "title": "Federal Reserve Keeps Benchmark Interest Rate Unchanged at 5.25%",
+      "categories": [
+        "FINANCE"
+      ],
+      "id": "ni_397ee55cdb6dabaeebf8f34c",
+      "metadata": {},
+      "discovered_at": "2026-09-28T06:07:37.499700+00:00"
+    },
+    {
+      "url": "https://example.com/breaking-court-ruling-1",
+      "title": "Breaking: International Court Issues Binding Climate Ruling on Emissions",
+      "categories": [
+        "CLIMATE_ENVIRONMENT"
+      ],
+      "id": "ni_8d428c0c9634e1770976dfac",
+      "metadata": {},
+      "discovered_at": "2026-09-28T06:07:37.515684+00:00"
+    },
+    {
+      "url": "https://example.com/breaking-court-ruling-2",
+      "title": "International Court Rulings Announced on Global Carbon Emissions",
+      "categories": [
+        "CLIMATE_ENVIRONMENT"
+      ],
+      "id": "ni_23a93cce786b7b59c1eec68f",
+      "metadata": {},
+      "discovered_at": "2026-09-28T06:07:37.519459+00:00"
     }
   ],
   "story_sources": [
@@ -1214,6 +1321,36 @@
     {
       "story_id": "cb12ca43-895b-4066-bccb-cb025d7e7e78",
       "news_item_id": "ni_16b941a3cf81dbd4d0c228e4",
+      "relationship": "reported_by"
+    },
+    {
+      "story_id": "d78db87e-b32b-486d-b85e-44003c44ebc1",
+      "news_item_id": "ni_397ee55cdb6dabaeebf8f34c",
+      "relationship": "reported_by"
+    },
+    {
+      "story_id": "e43dcba5-92ed-4798-8e38-043ca371790f",
+      "news_item_id": "ni_8d428c0c9634e1770976dfac",
+      "relationship": "reported_by"
+    },
+    {
+      "story_id": "e43dcba5-92ed-4798-8e38-043ca371790f",
+      "news_item_id": "ni_23a93cce786b7b59c1eec68f",
+      "relationship": "reported_by"
+    },
+    {
+      "story_id": "dcc5b045-827b-4140-8434-6cbd8d95335d",
+      "news_item_id": "ni_397ee55cdb6dabaeebf8f34c",
+      "relationship": "reported_by"
+    },
+    {
+      "story_id": "ef379725-c813-4948-98b0-890f0590d41a",
+      "news_item_id": "ni_8d428c0c9634e1770976dfac",
+      "relationship": "reported_by"
+    },
+    {
+      "story_id": "ef379725-c813-4948-98b0-890f0590d41a",
+      "news_item_id": "ni_23a93cce786b7b59c1eec68f",
       "relationship": "reported_by"
     }
   ]

@@ -36,17 +36,26 @@ from schemas.taxonomy import is_rejected_category
 
 
 def select_candidate() -> dict | None:
-    """Return the top-ranked unpublished candidate, or None."""
+    """Return the top-ranked qualified breaking news candidate, or None.
+
+    Evaluates:
+      - freshness (<= 180 mins)
+      - source count / corroboration (_source_count >= 1)
+      - non-duplicate / novelty
+      - eligible category taxonomy
+    """
     candidates = db.find_unpublished_candidates(
-        max_age_minutes=360,   # stories first seen in the last 6h
-        min_source_count=1,    # at least one source (DB already has sources)
-        limit=10,
+        max_age_minutes=180,   # strict 3-hour freshness window for breaking events
+        min_source_count=1,
+        limit=15,
     )
     if not candidates:
         return None
 
-    # Filter out rejected categories (sports, celebrity, etc.)
+    # Filter out rejected categories and already published duplicates
     eligible = []
+    now_utc = datetime.now(timezone.utc)
+
     for c in candidates:
         cats = c.get("categories") or c.get("metadata", {}).get("categories") or []
         if any(is_rejected_category(cat) for cat in cats):
@@ -54,20 +63,37 @@ def select_candidate() -> dict | None:
         title = c.get("title", "")
         if any(is_rejected_category(word) for word in title.split()):
             continue
+
+        sid = c.get("id", "")
+        if sid and db.find_duplicate_publication(sid):
+            continue
+
+        # Calculate freshness age in minutes
+        first_seen = c.get("first_seen_at") or ""
+        age_mins = 999.0
+        if first_seen:
+            try:
+                ts = datetime.fromisoformat(str(first_seen).replace("Z", "+00:00"))
+                if ts.tzinfo is None:
+                    ts = ts.replace(tzinfo=timezone.utc)
+                age_mins = (now_utc - ts).total_seconds() / 60.0
+            except Exception:
+                pass
+
+        c["_age_mins"] = age_mins
         eligible.append(c)
 
     if not eligible:
         return None
 
-    # Prefer titles containing breaking/fresh cues when otherwise tied.
-    def score(r: dict) -> tuple[int, str]:
-        title = (r.get("title") or "").lower()
-        breaking_bonus = 0
-        for cue in ("breaking", "live updates", "just in", "developing"):
-            if cue in title:
-                breaking_bonus -= 1
-        return (breaking_bonus, r.get("first_seen_at") or "")
-    eligible.sort(key=score)
+    # Rank breaking candidates by multi-factor score: (source_count DESC, freshness_age ASC)
+    def breaking_rank(c: dict) -> tuple[int, float]:
+        source_count = c.get("_source_count", 1)
+        if isinstance(source_count, list):
+            source_count = len(source_count)
+        return (-int(source_count), c.get("_age_mins", 999.0))
+
+    eligible.sort(key=breaking_rank)
     return eligible[0]
 
 
