@@ -61,17 +61,42 @@ def _most_recent_publication_topic() -> str:
         return ""
 
 
+from schemas.taxonomy import is_rejected_category
+
+
 def select_candidate() -> dict | None:
-    """Select at most one story, favoring topic diversity."""
+    """Select at most one story, favoring category diversity and avoiding repetition."""
     candidates = db.find_reporting_candidates(max_age_minutes=1440, limit=30)
     if not candidates:
         return None
-    recent_topic = _most_recent_publication_topic()
-    if recent_topic:
-        diverse = [c for c in candidates if _topic_of(c) != recent_topic]
-        if diverse:
-            return diverse[0]
-    return candidates[0]
+
+    # Filter out rejected categories
+    eligible = []
+    for c in candidates:
+        cats = c.get("categories") or c.get("metadata", {}).get("categories") or []
+        if any(is_rejected_category(cat) for cat in cats):
+            continue
+        title = c.get("title", "")
+        if any(is_rejected_category(word) for word in title.split()):
+            continue
+        eligible.append(c)
+
+    if not eligible:
+        return None
+
+    # Favor category diversity based on recent category distribution
+    dist = db.get_recent_category_distribution(hours=24)
+    if dist:
+        # Sort candidates so categories with lower recent count come first (diversity bonus)
+        def diversity_score(c: dict) -> tuple[int, int]:
+            cats = c.get("categories") or c.get("metadata", {}).get("categories") or []
+            max_count = max([dist.get(str(cat).upper(), 0) for cat in cats], default=0)
+            cnt = c.get("_source_count", 0)
+            source_cnt = cnt if isinstance(cnt, int) else (len(cnt) if isinstance(cnt, (list, tuple)) else 1)
+            return (max_count, -source_cnt)
+        eligible.sort(key=diversity_score)
+
+    return eligible[0]
 
 
 def main() -> int:
@@ -102,12 +127,16 @@ def main() -> int:
     print("    seen_at:  " + str(candidate.get("first_seen_at")))
     print()
 
+    # Build editorial memory from database
+    memory = db.build_editorial_memory(story_id=story_id, query_title=title)
+
     rc = run_team(
         provider, model_id,
         story_id=story_id,
         mode="reporting",
         topic=title,
         dry_run=not live,
+        editorial_memory=memory,
     )
 
     return rc

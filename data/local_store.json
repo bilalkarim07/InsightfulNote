@@ -932,6 +932,140 @@
       "first_seen_at": "2026-09-26T08:48:51.262526+00:00",
       "latest_seen_at": "2026-09-26T08:49:11.998601+00:00",
       "is_published": false
+    },
+    {
+      "id": "89a12e03-d519-47e6-a69c-88e920afe237",
+      "title": "Test Story 2026-09-26T14:23:44.818728+00:00",
+      "summary": "Test summary",
+      "status": "published",
+      "metadata": {},
+      "first_seen_at": "2026-09-26T14:23:44.818728+00:00",
+      "last_seen_at": "2026-09-26T14:23:44.818728+00:00",
+      "updated_at": "2026-09-26T14:23:44.820728+00:00"
+    },
+    {
+      "id": "bc729e84-5240-4688-bf97-2c52b4399031",
+      "title": "Apple announces new artificial intelligence features at WWDC",
+      "summary": "Initial AI announcement.",
+      "status": "candidate",
+      "metadata": {},
+      "first_seen_at": "2026-09-26T14:23:56.018290+00:00",
+      "last_seen_at": "2026-09-26T14:23:56.018290+00:00"
+    },
+    {
+      "id": "a2990a53-a786-4617-95a5-ff47ad8eea15",
+      "title": "Apple announces new artificial intelligence features at WWDC",
+      "summary": "Initial AI announcement.",
+      "status": "candidate",
+      "metadata": {},
+      "first_seen_at": "2026-09-26T14:24:17.411102+00:00",
+      "last_seen_at": "2026-09-26T14:24:17.411102+00:00"
+    },
+    {
+      "id": "0c0d9db9-1f84-4ed1-bdbb-bb87d3547647",
+      "title": "Unanimous Vote Passed in Senate Policy Session",
+      "summary": "Senate passed new legislation today.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "GLOBAL_POLITICS"
+        ]
+      },
+      "first_seen_at": "2026-09-26T14:24:32.751130+00:00",
+      "last_seen_at": "2026-09-26T14:24:32.751130+00:00"
+    },
+    {
+      "id": "77f335cc-0668-45bd-9302-86decaa1e416",
+      "title": "WHO Releases Global Health Guidelines for Vaccine Safety",
+      "summary": "New global health standards published today.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "HEALTH"
+        ]
+      },
+      "first_seen_at": "2026-09-26T14:24:32.754125+00:00",
+      "last_seen_at": "2026-09-26T14:24:32.755126+00:00"
+    },
+    {
+      "id": "b172bd4f-1c2f-4694-8577-4ea68fecb364",
+      "title": "Breakthrough Quantum Processor Demonstrated by Researchers",
+      "summary": "A new quantum chip achieves record coherence times.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "TECHNOLOGY"
+        ]
+      },
+      "first_seen_at": "2026-09-26T14:24:32.758125+00:00",
+      "last_seen_at": "2026-09-26T14:24:32.758125+00:00"
+    },
+    {
+      "id": "298f2c32-68c5-4934-9213-c108374e32d9",
+      "title": "Unanimous Vote Passed in Senate Policy Session",
+      "summary": "Senate passed new legislation today.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "GLOBAL_POLITICS"
+        ]
+      },
+      "first_seen_at": "2026-09-26T14:24:52.833117+00:00",
+      "last_seen_at": "2026-09-26T14:24:52.833117+00:00"
+    },
+    {
+      "id": "e894e57e-0850-4c66-bbe4-cfe42b5c39eb",
+      "title": "WHO Releases Global Health Guidelines for Vaccine Safety",
+      "summary": "New global health standards published today.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "HEALTH"
+        ]
+      },
+      "first_seen_at": "2026-09-26T14:24:52.835112+00:00",
+      "last_seen_at": "2026-09-26T14:24:52.835112+00:00"
+    },
+    {
+      "id": "bb9aa759-53ff-4dd3-a139-48826900110e",
+      "title": "Breakthrough Quantum Processor Demonstrated by Researchers",
+      "summary": "A new quantum chip achieves record coherence times.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "TECHNOLOGY"
+        ]
+      },
+      "first_seen_at": "2026-09-26T14:24:52.837112+00:00",
+      "last_seen_at": "2026-09-26T14:24:52.837112+00:00"
+    },
+    {
+      "id": "a13e9c42-b88f-4311-89d4-bc99bdf947f3",
+      "title": "OpenAI Releases Next-Generation AI Reasoning Model for Science and Healthcare",
+      "summary": "OpenAI announced a new artificial intelligence model designed for scientific research.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "ARTIFICIAL_INTELLIGENCE",
+          "TECHNOLOGY"
+        ]
+      },
+      "first_seen_at": "2026-09-28T05:32:22.614032+00:00",
+      "last_seen_at": "2026-09-28T05:32:22.614032+00:00"
+    },
+    {
+      "id": "cb12ca43-895b-4066-bccb-cb025d7e7e78",
+      "title": "OpenAI Releases Next-Generation AI Reasoning Model for Science and Healthcare",
+      "summary": "OpenAI announced a new artificial intelligence model designed for scientific research.",
+      "status": "candidate",
+      "metadata": {
+        "categories": [
+          "ARTIFICIAL_INTELLIGENCE",
+          "TECHNOLOGY"
+        ]
+      },
+      "first_seen_at": "2026-09-28T05:32:51.653524+00:00",
+      "last_seen_at": "2026-09-28T05:32:51.653524+00:00"
     }
   ],
   "publications": [
@@ -998,6 +1132,89 @@
       "status": "DRY_RUN",
       "published_at": "2026-09-26T10:51:28.868869+00:00",
       "run_id": "story_00f646448c67c320"
+    },
+    {
+      "platform": "threads",
+      "status": "published",
+      "content": "Apple announces new artificial intelligence features at WWDC",
+      "external_post_id": "threads_post_123",
+      "published_at": "2026-09-26T14:23:56.020285+00:00",
+      "story_id": "bc729e84-5240-4688-bf97-2c52b4399031",
+      "metadata": {},
+      "id": "dbbc98bf-e164-423b-b303-fc0a1734b194"
+    },
+    {
+      "platform": "threads",
+      "status": "published",
+      "content": "Apple announces new artificial intelligence features at WWDC",
+      "external_post_id": "threads_post_123",
+      "published_at": "2026-09-26T14:24:17.413610+00:00",
+      "story_id": "a2990a53-a786-4617-95a5-ff47ad8eea15",
+      "metadata": {},
+      "id": "9a259504-598e-4dad-8f76-0b2933eadb5b"
+    },
+    {
+      "platform": "threads",
+      "status": "published",
+      "content": "Politics post 1",
+      "published_at": "2026-09-26T14:24:32.760125+00:00",
+      "story_id": "0c0d9db9-1f84-4ed1-bdbb-bb87d3547647",
+      "metadata": {},
+      "id": "84bc2330-d934-4fde-a076-1e2bbe9ecc3a"
+    },
+    {
+      "platform": "threads",
+      "status": "published",
+      "content": "Politics post 2",
+      "published_at": "2026-09-26T14:24:32.764128+00:00",
+      "story_id": "0c0d9db9-1f84-4ed1-bdbb-bb87d3547647",
+      "metadata": {},
+      "id": "1303cabe-8656-47d4-bf34-62335654820e"
+    },
+    {
+      "platform": "threads",
+      "status": "published",
+      "content": "Politics post 1",
+      "published_at": "2026-09-26T14:24:52.839328+00:00",
+      "story_id": "298f2c32-68c5-4934-9213-c108374e32d9",
+      "metadata": {},
+      "id": "3af3886e-d88d-4a9f-b86c-68cc3485d2f4"
+    },
+    {
+      "platform": "threads",
+      "status": "published",
+      "content": "Politics post 2",
+      "published_at": "2026-09-26T14:24:52.842324+00:00",
+      "story_id": "298f2c32-68c5-4934-9213-c108374e32d9",
+      "metadata": {},
+      "id": "cb3c2a6f-af33-424f-83cf-aae131131387"
+    }
+  ],
+  "news_items": [
+    {
+      "url": "https://example.com/openai-new-model",
+      "canonical_url": "https://example.com/openai-new-model",
+      "title": "OpenAI Releases Next-Generation AI Reasoning Model for Science and Healthcare",
+      "description": "OpenAI announced a new artificial intelligence model.",
+      "source_name": "Tech Crunch",
+      "categories": [
+        "ARTIFICIAL_INTELLIGENCE"
+      ],
+      "id": "ni_16b941a3cf81dbd4d0c228e4",
+      "metadata": {},
+      "discovered_at": "2026-09-28T05:32:51.663549+00:00"
+    }
+  ],
+  "story_sources": [
+    {
+      "story_id": "a13e9c42-b88f-4311-89d4-bc99bdf947f3",
+      "news_item_id": "ni_16b941a3cf81dbd4d0c228e4",
+      "relationship": "reported_by"
+    },
+    {
+      "story_id": "cb12ca43-895b-4066-bccb-cb025d7e7e78",
+      "news_item_id": "ni_16b941a3cf81dbd4d0c228e4",
+      "relationship": "reported_by"
     }
   ]
 }

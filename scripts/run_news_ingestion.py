@@ -1,4 +1,4 @@
-﻿"""Production ingestion orchestrator.
+"""Production ingestion orchestrator.
 
 Writes to:
   sources        -- one row per provider (Tavily, DDGS, Google News, GDELT)
@@ -29,11 +29,21 @@ from scripts._bootstrap import *  # noqa: F401,F403,E402
 from core.tools.database import stories as db  # noqa: E402
 
 
+from schemas.taxonomy import (
+    CATEGORY_DISCOVERY_QUERIES, Category, is_rejected_category,
+    normalize_categories,
+)
+
+# Configured discovery queries per ammendments.md Section 9
 QUERIES = [
-    "breaking news",
-    "world news today",
-    "technology news",
-    "business news",
+    "global politics latest",
+    "markets latest",
+    "technology latest",
+    "artificial intelligence latest",
+    "health latest",
+    "science latest",
+    "climate latest",
+    "world events latest",
 ]
 
 
@@ -43,6 +53,7 @@ PROVIDERS = {
     "google_news": {"source_type": "rss",        "domain": "news.google.com"},
     "gdelt":       {"source_type": "api",        "domain": "gdeltproject.org"},
 }
+
 
 
 def _item_to_dict(item: Any) -> dict[str, Any]:
@@ -226,10 +237,20 @@ def _build_news_item(
     if not url:
         return None
     canonical = (item.get("canonical_url") or url).strip()
+    raw_cats = item.get("categories") or []
+    if isinstance(raw_cats, str):
+        raw_cats = [raw_cats]
+    # Add title/provider hints if category is empty
+    title = (item.get("title") or "").strip()
+    for cat_name in ("politics", "finance", "business", "technology", "ai", "health", "science", "climate"):
+        if cat_name in title.lower():
+            raw_cats.append(cat_name)
+    norm_cats = normalize_categories(raw_cats)
+
     return {
         "url": url,
         "canonical_url": canonical,
-        "title": (item.get("title") or "").strip(),
+        "title": title,
         "description": item.get("description") or "",
         "snippet": item.get("snippet") or "",
         "source_id": source_uuid,
@@ -240,7 +261,7 @@ def _build_news_item(
         "content": item.get("content") or None,
         "language": item.get("language") or "en",
         "country": item.get("country") or None,
-        "categories": item.get("categories") or [],
+        "categories": norm_cats,
         "metadata": {
             "provider": provider,
             "retrieved_at": datetime.now(timezone.utc).isoformat(),
@@ -309,6 +330,14 @@ def _persist_stories(groups: dict[str, list[str]]) -> tuple[int, int, int]:
         title = (rep.get("title") or "").strip() or "(untitled)"
         summary = (rep.get("description") or rep.get("snippet") or "")[:280]
 
+        # Aggregate categories across items in cluster
+        all_cats: list[str] = []
+        for nid in item_ids:
+            ni = db.get_news_item(nid)
+            if ni and ni.get("categories"):
+                all_cats.extend(ni["categories"])
+        norm_cats = normalize_categories(all_cats)
+
         try:
             story_id = db.create_story(
                 title=title,
@@ -316,6 +345,7 @@ def _persist_stories(groups: dict[str, list[str]]) -> tuple[int, int, int]:
                 metadata={
                     "cluster_signature": sig_hash,
                     "item_count": len(item_ids),
+                    "categories": norm_cats,
                     "ingest_run": datetime.now(timezone.utc).isoformat(),
                 },
             )

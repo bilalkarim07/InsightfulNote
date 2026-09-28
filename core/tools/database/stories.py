@@ -787,3 +787,263 @@ def find_recent_stories(limit: int = 20, topic: str | None = None) -> list[dict]
         min_source_count=0,
         limit=limit,
     )
+
+
+# ============================================================
+# Editorial Memory Functions (ammendments.md Sections 15-25)
+# ============================================================
+
+def get_recent_publications(
+    platform: str = S.PLATFORM_THREADS,
+    limit: int = 10,
+    hours: int = 48,
+) -> list[dict[str, Any]]:
+    """Retrieve recent publications from Supabase with story metadata."""
+    client = get_client()
+    cutoff = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
+
+    if not is_production():
+        pubs = client.select(S.PUBLICATIONS, platform=platform)
+        pubs = [p for p in pubs if p.get("status") in (S.PUBLICATION_STATUS_PUBLISHED, "PUBLISHED", "published")]
+        pubs.sort(key=lambda p: p.get("published_at") or "", reverse=True)
+        results = pubs[:limit]
+    else:
+        try:
+            r = (
+                client.table(S.PUBLICATIONS)
+                .select("*")
+                .eq("platform", platform)
+                .in_("status", [S.PUBLICATION_STATUS_PUBLISHED, "PUBLISHED", "published"])
+                .order("published_at", desc=True)
+                .limit(limit)
+                .execute()
+            )
+            results = r.data or []
+        except DatabaseUnavailableError:
+            raise
+        except Exception as exc:
+            raise_unavailable("get_recent_publications", exc)
+            results = []
+
+    # Enrich with story details
+    enriched = []
+    for pub in results:
+        p = dict(pub)
+        # Standardize status to lowercase
+        if p.get("status") == "PUBLISHED":
+            p["status"] = S.PUBLICATION_STATUS_PUBLISHED
+        sid = p.get("story_id")
+        if sid:
+            story = get_story(sid)
+            if story:
+                p["title"] = story.get("title")
+                p["categories"] = story.get("categories") or story.get("metadata", {}).get("categories") or []
+        enriched.append(p)
+    return enriched
+
+
+def get_recent_stories(
+    hours: int = 24,
+    limit: int = 20,
+) -> list[dict[str, Any]]:
+    """Retrieve stories created/updated in the last N hours."""
+    client = get_client()
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
+
+    if not is_production():
+        rows = client.select(S.STORIES)
+    else:
+        try:
+            r = (
+                client.table(S.STORIES)
+                .select("*")
+                .order("last_seen_at", desc=True)
+                .limit(limit * 2)
+                .execute()
+            )
+            rows = r.data or []
+        except DatabaseUnavailableError:
+            raise
+        except Exception as exc:
+            raise_unavailable("get_recent_stories", exc)
+            return []
+
+    out = []
+    for s in rows:
+        ls = s.get("last_seen_at") or s.get("first_seen_at") or ""
+        try:
+            ts = datetime.fromisoformat(str(ls).replace("Z", "+00:00"))
+            if ts.tzinfo is None:
+                ts = ts.replace(tzinfo=timezone.utc)
+            if ts < cutoff:
+                continue
+        except Exception:
+            pass
+        out.append(s)
+        if len(out) >= limit:
+            break
+    return out
+
+
+def get_recent_category_distribution(
+    hours: int = 24,
+) -> dict[str, int]:
+    """Calculate category counts for stories/publications in the last N hours."""
+    pubs = get_recent_publications(limit=30, hours=hours)
+    dist: dict[str, int] = {}
+    for pub in pubs:
+        cats = pub.get("categories") or []
+        if isinstance(cats, str):
+            cats = [cats]
+        for c in cats:
+            c_str = str(c).upper().strip()
+            dist[c_str] = dist.get(c_str, 0) + 1
+    return dist
+
+
+def _compute_text_similarity(text1: str, text2: str) -> float:
+    """Compute word overlap Jaccard similarity between two titles/texts."""
+    if not text1 or not text2:
+        return 0.0
+    words1 = set(w.lower().strip(".,;:!?\"'()[]{}—–-") for w in text1.split() if len(w) > 2)
+    words2 = set(w.lower().strip(".,;:!?\"'()[]{}—–-") for w in text2.split() if len(w) > 2)
+    if not words1 or not words2:
+        return 0.0
+    intersection = words1 & words2
+    union = words1 | words2
+    return len(intersection) / len(union)
+
+
+def find_similar_recent_stories(
+    query_title: str,
+    story_id: Optional[str] = None,
+    hours: int = 48,
+    limit: int = 5,
+) -> list[dict[str, Any]]:
+    """Find recent stories that are similar to the query title to detect repetition/material updates."""
+    recent_pubs = get_recent_publications(limit=30, hours=hours)
+    recent_stories = get_recent_stories(hours=hours, limit=30)
+
+    candidates = []
+    seen_ids = set()
+
+    for p in recent_pubs:
+        sid = p.get("story_id")
+        if sid == story_id or sid in seen_ids:
+            continue
+        seen_ids.add(sid)
+        title = p.get("title") or ""
+        score = _compute_text_similarity(query_title, title)
+        if score >= 0.10:
+            rel = "RELATED"
+            if score > 0.70:
+                rel = "DUPLICATE"
+            elif score >= 0.35:
+                rel = "REPETITIVE"
+            elif score >= 0.20:
+                rel = "MATERIAL_UPDATE"
+            candidates.append({
+                "id": sid,
+                "title": title,
+                "categories": p.get("categories") or [],
+                "relationship": rel,
+                "score": score,
+                "published_at": p.get("published_at"),
+            })
+
+    for s in recent_stories:
+        sid = s.get("id")
+        if sid == story_id or sid in seen_ids:
+            continue
+        seen_ids.add(sid)
+        title = s.get("title") or ""
+        score = _compute_text_similarity(query_title, title)
+        if score >= 0.10:
+            rel = "RELATED"
+            if score > 0.70:
+                rel = "DUPLICATE"
+            elif score >= 0.35:
+                rel = "REPETITIVE"
+            elif score >= 0.20:
+                rel = "MATERIAL_UPDATE"
+            candidates.append({
+                "id": sid,
+                "title": title,
+                "categories": s.get("categories") or s.get("metadata", {}).get("categories") or [],
+                "relationship": rel,
+                "score": score,
+                "published_at": s.get("first_seen_at"),
+            })
+
+    candidates.sort(key=lambda x: x["score"], reverse=True)
+    return candidates[:limit]
+
+
+def build_editorial_memory(
+    story_id: Optional[str] = None,
+    query_title: Optional[str] = None,
+    hours: int = 48,
+) -> dict[str, Any]:
+    """Construct an EditorialMemory dictionary object from database state."""
+    from schemas.editorial_memory import EditorialMemory, RecentPublication, RecentStory, SimilarStory
+
+    pubs_raw = get_recent_publications(limit=10, hours=hours)
+    pubs = [
+        RecentPublication(
+            id=p.get("id", ""),
+            story_id=p.get("story_id", ""),
+            platform=p.get("platform", "threads"),
+            content=p.get("content", ""),
+            published_at=p.get("published_at"),
+            status=p.get("status", "published"),
+            external_post_id=p.get("external_post_id"),
+            title=p.get("title"),
+            categories=p.get("categories") or [],
+        )
+        for p in pubs_raw
+    ]
+
+    stories_raw = get_recent_stories(hours=hours, limit=15)
+    stories = [
+        RecentStory(
+            id=s.get("id", ""),
+            title=s.get("title", ""),
+            summary=s.get("summary"),
+            categories=s.get("categories") or s.get("metadata", {}).get("categories") or [],
+            first_seen_at=s.get("first_seen_at"),
+            status=s.get("status"),
+        )
+        for s in stories_raw
+    ]
+
+    similar = []
+    warnings = []
+    if query_title:
+        sim_raw = find_similar_recent_stories(query_title, story_id=story_id, hours=hours, limit=5)
+        for sr in sim_raw:
+            similar.append(
+                SimilarStory(
+                    id=sr["id"],
+                    title=sr["title"],
+                    categories=sr.get("categories") or [],
+                    relationship=sr["relationship"],
+                    score=sr["score"],
+                    published_at=sr.get("published_at"),
+                )
+            )
+            if sr["relationship"] in ("DUPLICATE", "REPETITIVE"):
+                warnings.append(
+                    f"Warning: Story is highly similar ({sr['relationship']}) to recently published/covered story: {sr['title']}"
+                )
+
+    cat_dist = get_recent_category_distribution(hours=24)
+
+    memory_obj = EditorialMemory(
+        recent_publications=pubs,
+        recent_stories=stories,
+        similar_stories=similar,
+        category_distribution=cat_dist,
+        repetition_warnings=warnings,
+    )
+    return memory_obj.model_dump(mode="json")
+

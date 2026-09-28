@@ -1,4 +1,4 @@
-﻿"""Team state and agent-to-agent messages.
+"""Team state and agent-to-agent messages.
 
 Every node in the graph reads from TeamState and writes back to it.
 Messages are append-only so the full conversation is preserved.
@@ -37,6 +37,9 @@ class TeamState(TypedDict, total=False):
     story_id: str
     topic: str
     seed: dict[str, Any]
+    story_record: Optional[dict[str, Any]]
+    sources: Optional[list[dict[str, Any]]]
+    editorial_memory: Optional[dict[str, Any]]
 
     # Provider / model
     provider: str
@@ -73,28 +76,48 @@ MAX_EDITORIAL_FIXES = 1
 
 
 def new_state(
-    *, run_id: str, provider: str, model_id: str,
+    *,
+    run_id: str,
+    provider: str,
+    model_id: str,
+    story: dict | None = None,
     topic: str | None = None,
+    editorial_memory: dict | None = None,
 ) -> TeamState:
-    if topic:
+    if story:
+        sid = story.get("id") or f"story_{run_id[4:]}"
         seed = {
-            "story_id": f"story_{run_id[4:]}",
+            "story_id": sid,
+            "title": story.get("title", ""),
+            "summary": story.get("summary") or story.get("title", ""),
+            "topic": topic or "news",
+            "categories": story.get("categories") or story.get("metadata", {}).get("categories") or [],
+        }
+    elif topic:
+        sid = f"story_{run_id[4:]}"
+        seed = {
+            "story_id": sid,
             "title": topic,
             "summary": f"Latest developments regarding: {topic}",
             "topic": "news",
         }
     else:
+        sid = f"story_{run_id[4:]}"
         seed = {
-            "story_id": f"story_{run_id[4:]}",
+            "story_id": sid,
             "title": "Company X announces product Y",
             "summary": "Company X today announced product Y, available Q2 2026.",
             "topic": "technology",
         }
+
     return TeamState(
         run_id=run_id,
-        story_id=seed["story_id"],
+        story_id=sid,
         topic=seed["topic"],
         seed=seed,
+        story_record=story,
+        sources=story.get("sources") if story else None,
+        editorial_memory=editorial_memory,
         provider=provider,
         model_id=model_id,
         messages=[],
@@ -116,3 +139,4 @@ def msg(
         from_agent=from_agent, to_agent=to_agent,
         kind=kind, content=content, iteration=iteration,
     ).model_dump(mode="json")
+

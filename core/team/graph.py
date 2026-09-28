@@ -1,4 +1,4 @@
-﻿"""The NewsRoom team graph.
+"""The NewsRoom team graph.
 
 This is not a pipeline. Every node can:
   - produce output
@@ -1077,6 +1077,7 @@ def run_team(
     mode: str = "synthetic",
     topic: str | None = None,
     dry_run: bool = True,
+    editorial_memory: dict | None = None,
 ) -> int:
     from core.team.state import new_state
     run_id = f"run_{__import__('uuid').uuid4().hex[:12]}"
@@ -1095,9 +1096,26 @@ def run_team(
                 print("        sources: " + str(len(_sources)))
             else:
                 print("  [run] WARNING: story not found in DB: " + str(story_id))
+            if not editorial_memory:
+                editorial_memory = _db.build_editorial_memory(story_id=story_id, query_title=topic)
         except Exception as _exc:
             print("  [run] context load failed: " + type(_exc).__name__ + ": " + str(_exc))
-    state = new_state(run_id=run_id, provider=provider, model_id=model_id, topic=topic)
+
+    if not editorial_memory:
+        try:
+            from core.tools.database import stories as _db
+            editorial_memory = _db.build_editorial_memory(story_id=story_id, query_title=topic)
+        except Exception:
+            pass
+
+    state = new_state(
+        run_id=run_id,
+        provider=provider,
+        model_id=model_id,
+        story=production_context["story"] if production_context else None,
+        topic=topic,
+        editorial_memory=editorial_memory,
+    )
     if production_context:
         state["production_context"] = production_context
         state["seed"] = {

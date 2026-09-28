@@ -32,15 +32,33 @@ def _is_live() -> bool:
     return os.environ.get("NEWSROOM_LIVE", "").strip().lower() in ("1", "true", "yes")
 
 
+from schemas.taxonomy import is_rejected_category
+
+
 def select_candidate() -> dict | None:
     """Return the top-ranked unpublished candidate, or None."""
     candidates = db.find_unpublished_candidates(
         max_age_minutes=360,   # stories first seen in the last 6h
         min_source_count=1,    # at least one source (DB already has sources)
-        limit=5,
+        limit=10,
     )
     if not candidates:
         return None
+
+    # Filter out rejected categories (sports, celebrity, etc.)
+    eligible = []
+    for c in candidates:
+        cats = c.get("categories") or c.get("metadata", {}).get("categories") or []
+        if any(is_rejected_category(cat) for cat in cats):
+            continue
+        title = c.get("title", "")
+        if any(is_rejected_category(word) for word in title.split()):
+            continue
+        eligible.append(c)
+
+    if not eligible:
+        return None
+
     # Prefer titles containing breaking/fresh cues when otherwise tied.
     def score(r: dict) -> tuple[int, str]:
         title = (r.get("title") or "").lower()
@@ -49,8 +67,8 @@ def select_candidate() -> dict | None:
             if cue in title:
                 breaking_bonus -= 1
         return (breaking_bonus, r.get("first_seen_at") or "")
-    candidates.sort(key=score)
-    return candidates[0]
+    eligible.sort(key=score)
+    return eligible[0]
 
 
 def main() -> int:
@@ -80,6 +98,9 @@ def main() -> int:
     print(f"    seen_at:  {candidate.get('first_seen_at')}")
     print()
 
+    # Build editorial memory from database
+    memory = db.build_editorial_memory(story_id=story_id, query_title=title)
+
     # Run the team graph in breaking mode. The topic is the real story title.
     rc = run_team(
         provider, model_id,
@@ -87,6 +108,7 @@ def main() -> int:
         mode="breaking",
         topic=title,
         dry_run=not live,
+        editorial_memory=memory,
     )
 
     return rc

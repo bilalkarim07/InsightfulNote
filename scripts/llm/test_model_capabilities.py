@@ -10,6 +10,8 @@ sys.path.insert(0, str(ROOT))
 
 from scripts._bootstrap import *  # noqa: F401,F403,E402
 
+__test__ = False
+
 from core.llm.providers import (  # noqa: E402
     OllamaProvider, GroqProvider, OpenRouterProvider, GeminiProvider, ProviderFactory,
 )

@@ -1,4 +1,4 @@
-﻿"""Publishing contract — final publication record."""
+"""Publishing contract — final publication record."""
 from __future__ import annotations
 
 from typing import Optional
@@ -15,5 +15,6 @@ class PublishResult(BaseContract):
     external_id: Optional[str] = None
     url: Optional[str] = None
     published_at: Optional[str] = None
-    status: str = "PENDING"
+    status: str = "draft"
     error: Optional[str] = None
+

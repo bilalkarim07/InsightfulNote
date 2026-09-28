@@ -2,6 +2,7 @@ langchain
 langgraph
 langchain-tavily
 langchain-core
+langchain-openai
 beautifulsoup4
 lxml
 python-dotenv
