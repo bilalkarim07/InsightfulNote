@@ -29,4 +29,4 @@ from etl.persistence.supabase import get_supabase
 
 client = get_supabase()
 resp = client.table("sources").select("id").limit(1).execute()
-print(f"✓ Supabase connection successful (sources table readable, {len(resp.data)} row(s) sampled).")
+print(f"PASS Supabase connection (sources table readable, {len(resp.data)} row(s) sampled).")

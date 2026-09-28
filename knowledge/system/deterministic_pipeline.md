@@ -1,7 +1,7 @@
 # Deterministic End-to-End Pipeline
 
 0. Bootstrap: validate configuration, source registry, provider registry, DB connectivity, scheduler mode, and dry-run flag.
-1. Discovery: GDELT, Google News RSS, DDGS, validated RSS; produce 25–50 candidates.
+1. External discovery is performed by deterministic ETL sources: GDELT, Google News RSS, DDGS, Tavily, and configured RSS. The 25–50 candidate count is a target funnel, not a hard invariant.
 2. Extraction: fetch permitted content; parse clean metadata/body.
 3. Normalize → Canonicalize → Hash → Deduplicate.
 4. Clustering: group reports into ~10–20 story clusters.
@@ -12,10 +12,14 @@
 9. Editorial: approve claims, framing, tone, and platform requirements.
 10. Writing: draft from approved claims only.
 11. Hook: improve attention without changing factual meaning.
-12. Platform Adaptation: X/LinkedIn/Substack/video transformation.
+12. Platform Adaptation: adapt approved content for Threads (current production platform); other platforms are deferred.
 13. Final QA: schema, evidence, neutrality, uncertainty, duplicate, platform, CTA, and publication checks.
 14. Publishing: publish and persist post IDs/timestamps/status.
-15. Recovery: bounded retries; systemic failures trigger dry-run according to operational policy.
+15. Recovery: unresolved publication outcomes are reserved and reconciled before retry to avoid duplicates. Automated scheduling shutdown after error thresholds is future operational work.
+
+The agent graph's Discovery node interprets and validates a candidate already loaded from Supabase. It does not perform external news discovery.
+
+Each production run selects one verified model for the graph; per-agent capability routing is future work.
 
 State:
 DISCOVERED → EXTRACTED → NORMALIZED → CLUSTERED → RESEARCHED → SHORTLISTED → VERIFIED → EDITED → DRAFTED → QA_PASSED → PUBLISHED

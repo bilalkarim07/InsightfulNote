@@ -53,13 +53,13 @@ def select_candidate() -> dict | None:
 
     Evaluates:
       - freshness (<= 180 mins)
-      - source count / corroboration (_source_count >= 1)
+      - at least two linked source records as a minimum corroboration signal
       - non-duplicate / novelty
       - eligible category taxonomy
     """
     candidates = db.find_unpublished_candidates(
         max_age_minutes=180,   # strict 3-hour freshness window for breaking events
-        min_source_count=1,
+        min_source_count=2,
         limit=15,
     )
     if not candidates:
@@ -99,7 +99,8 @@ def select_candidate() -> dict | None:
     if not eligible:
         return None
 
-    # Rank breaking candidates by multi-factor score: (source_count DESC, freshness_age ASC)
+    # Rank using recorded corroboration and freshness; the word "breaking"
+    # is not treated as evidence of significance or urgency.
     def breaking_rank(c: dict) -> tuple[int, float]:
         source_count = c.get("_source_count", 1)
         if isinstance(source_count, list):
@@ -111,11 +112,21 @@ def select_candidate() -> dict | None:
 
 
 def main() -> int:
+    if any(arg in ("-h", "--help") for arg in sys.argv[1:]):
+        print("Usage: python scripts/agents/run_breaking_news.py")
+        return 0
     provider = os.environ.get("NEWSROOM_PROVIDER", "").strip()
     model_id = os.environ.get("NEWSROOM_MODEL", "").strip()
     if not provider or not model_id:
         provider, model_id = _route_model(AgentTask.RESEARCH)
     live = _is_live()
+    try:
+        if not db.is_production():
+            print("  ERROR: breaking workflow requires the real Supabase backend.")
+            return 2
+    except Exception as exc:
+        print("  ERROR: Supabase is unavailable: " + str(exc))
+        return 2
 
     print("=" * 70)
     print(f"Breaking News Runner — live={live}")

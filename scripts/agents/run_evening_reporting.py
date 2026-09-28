@@ -113,11 +113,21 @@ def select_candidate() -> dict | None:
 
 
 def main() -> int:
+    if any(arg in ("-h", "--help") for arg in sys.argv[1:]):
+        print("Usage: python scripts/agents/run_evening_reporting.py")
+        return 0
     provider = os.environ.get("NEWSROOM_PROVIDER", "").strip()
     model_id = os.environ.get("NEWSROOM_MODEL", "").strip()
     if not provider or not model_id:
         provider, model_id = _route_model(AgentTask.RESEARCH)
     live = _is_live()
+    try:
+        if not db.is_production():
+            print("  ERROR: reporting workflow requires the real Supabase backend.")
+            return 2
+    except Exception as exc:
+        print("  ERROR: Supabase is unavailable: " + str(exc))
+        return 2
 
     print("=" * 70)
     print(f"Evening Reporting Runner — live={live}")

@@ -71,9 +71,13 @@ def _is_supabase() -> bool:
         return False
 
 
-def can_publish() -> tuple[bool, str, dict[str, Any]]:
+def can_publish(
+    publication_type: str = "normal",
+) -> tuple[bool, str, dict[str, Any]]:
     """Return (allowed, reason, state).
 
+    Breaking publications share the daily cap but do not inherit normal
+    reporting-hour or spacing restrictions.
     Supabase path:
       - daily count from publications where status='published' AND published_at >= today
       - last_published_at from publications order by published_at DESC limit 1
@@ -91,18 +95,19 @@ def can_publish() -> tuple[bool, str, dict[str, Any]]:
         "date": _local_date(),
         "max_per_day": max_per_day,
         "source": "local",
+        "publication_type": publication_type,
     }
 
-    # ── Active hours check (applies to both paths) ──
-    hour = _local_now().hour
-    if not (active_start <= hour < active_end):
-        state["published"] = 0
-        state["last_published_at"] = None
-        return (
-            False,
-            f"outside active hours ({active_start}-{active_end}, now {hour})",
-            state,
-        )
+    if publication_type != "breaking":
+        hour = _local_now().hour
+        if not (active_start <= hour < active_end):
+            state["published"] = 0
+            state["last_published_at"] = None
+            return (
+                False,
+                f"outside active hours ({active_start}-{active_end}, now {hour})",
+                state,
+            )
 
     # ── Published-today count + last-published timestamp ──
     published_today = 0
@@ -135,7 +140,7 @@ def can_publish() -> tuple[bool, str, dict[str, Any]]:
         return False, f"daily cap reached ({published_today}/{max_per_day})", state
 
     # ── Spacing ──
-    if last_published:
+    if last_published and publication_type != "breaking":
         try:
             last = datetime.fromisoformat(str(last_published).replace("Z", "+00:00"))
             if last.tzinfo is None:

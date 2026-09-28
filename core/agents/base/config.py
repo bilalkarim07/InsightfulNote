@@ -37,7 +37,7 @@ class AgentConfig(BaseModel):
 DEFAULT_AGENT_CONFIGS: dict[str, AgentConfig] = {
     "discovery": AgentConfig(
         name="discovery",
-        mission="Identify promising stories from the ingested candidate pool.",
+        mission="Interpret and validate a candidate already loaded from the ingested pool.",
         input_schema_name="DiscoveryInput",
         output_schema_name="DiscoveryResult",
         tools=["get_story", "find_recent_stories"],

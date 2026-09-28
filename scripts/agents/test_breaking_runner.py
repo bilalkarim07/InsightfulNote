@@ -15,6 +15,7 @@ from core.tools.database import stories as db  # noqa: E402
 
 
 def main() -> int:
+    require_local_test_backend(db)
     print("=" * 70)
     print("Breaking runner selection test")
     print("=" * 70)

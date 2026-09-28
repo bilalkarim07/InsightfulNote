@@ -3,11 +3,11 @@
 
 ## Purpose
 
-Identify potentially important news events from approved structured sources and create normalized candidate stories for downstream processing.
+The deterministic ETL identifies potentially important news events from approved structured sources and creates normalized candidate stories. The graph's Discovery stage only interprets and validates a candidate already selected from the database.
 
 ## Responsibility
 
-The Discovery Agent is responsible for finding candidate events, not proving that they are true.
+The graph's candidate interpreter is responsible for interpreting a loaded candidate, not searching external news or proving that claims are true.
 
 ## Primary Sources
 

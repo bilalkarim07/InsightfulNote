@@ -16,6 +16,7 @@ from schemas.editorial_memory import EditorialMemory
 
 
 def test_editorial_memory() -> None:
+    require_local_test_backend(db)
     print("=" * 60)
     print("Testing Editorial Memory & Story Repetition Detection")
     print("=" * 60)

@@ -1,0 +1,96 @@
+# InsightfulNote
+
+InsightfulNote is an evidence-led newsroom pipeline that ingests news sources,
+selects story candidates, verifies claims, and can publish approved posts to
+Threads. The current production platform is **Threads**; other platform adapters
+are deferred.
+
+## Architecture
+
+```text
+GDELT / Google News / DDGS / Tavily / configured RSS
+  -> deterministic extraction, normalization, canonicalization, deduplication,
+     clustering, and Supabase persistence
+  -> story selection and editorial memory
+  -> candidate interpretation -> source intelligence -> research
+  -> verification -> editorial -> tone -> writer -> Threads adapter
+  -> deterministic QA -> duplicate and quota guards -> Threads
+  -> Supabase publication record
+```
+
+External news discovery is performed by the deterministic ETL. The graph's
+Discovery stage interprets and validates a candidate already loaded from the
+database; it does not perform GDELT, Google News, DDGS, or Tavily discovery.
+Supabase is the source of truth for ingested stories, source links, editorial
+memory inputs, and publication records. Per-run research, verification, and
+editorial outputs are captured in run snapshots. A production runner fails
+closed if Supabase is not available; local storage is for development only.
+
+Each production run selects one verified LLM model for the newsroom graph.
+Capability-aware per-agent model routing is a future improvement.
+
+## GitHub Actions
+
+- `news-ingestion.yml` runs daily deterministic ingestion.
+- `hourly-breaking-news.yml` evaluates breaking candidates hourly, 24/7.
+- `evening-reporting.yml` runs at 7–11 PM America/New_York.
+
+Breaking posts bypass the normal reporting-hour and spacing checks, but share
+the configured daily maximum and retain evidence, duplicate, and publication
+safety checks. Workflows must remain non-live until live gates and replay
+protection have been verified.
+
+## Local setup
+
+Use Python 3.12 or newer. Install dependencies and create a private `.env`:
+
+```powershell
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+Set only the credentials needed for the services in use. The example file
+contains names and placeholders only; never commit `.env`.
+For a one-off reviewed live post, set `NEWSROOM_REQUIRE_APPROVAL=true` and
+`NEWSROOM_APPROVED_POST_SHA256` to the SHA-256 of the exact inspected post text.
+The live publisher checks this value before reserving or sending the post.
+
+Useful executable checks and tasks:
+
+```powershell
+python scripts/run_news_ingestion.py
+python scripts/test_category_classification.py
+python scripts/test_supabase_pipeline.py
+python scripts/test_editorial_memory.py
+python scripts/test_selection_pipeline.py
+python scripts/test_llm_routing.py
+python scripts/agents/test_agent_contracts.py
+python scripts/agents/test_router.py
+```
+
+The executable checks are scripts; this project does not use pytest or
+unittest as its test framework. Some scripts call real external services or
+modify database state; inspect the script and service configuration before
+running them. Never run synthetic/demo data against the production database.
+
+## Production configuration
+
+See `.env.example` for supported variable names. Production execution requires
+Supabase URL/key, a verified configured LLM, search credentials needed by the
+research path, and a valid `THREADS_ACCESS_TOKEN`. Threads account/application
+settings are also listed there. Set `NEWSROOM_LIVE=true` only for an explicitly
+authorized live run. If credentials or database connectivity are absent, the
+production workflow must stop rather than use local or synthetic data.
+
+## Editorial and publication safeguards
+
+Every factual claim must be evidence-backed; source references and uncertainty
+must be preserved. Allegations and forecasts remain attributed, political
+content is descriptive rather than persuasive, and the Writer may use only
+approved claims. Deterministic QA and duplicate/quota checks run before the
+Threads API call. The publication record is reserved before sending; uncertain
+outcomes block automatic republishing and require reconciliation with the
+Threads account.
+
+Operational automation that disables scheduling after an error threshold and
+opens an incident is **future work**, not an implemented safeguard.

@@ -261,7 +261,7 @@ def _build_news_item(
         "description": item.get("description") or "",
         "snippet": item.get("snippet") or "",
         "source_id": source_uuid,
-        "source_name": item.get("source_name") or provider,
+        "source_name": item.get("source_name") or "",
         "source_domain": item.get("source_domain") or "",
         "author": item.get("author") or None,
         "published_at": item.get("published_at") or None,
@@ -372,11 +372,18 @@ def _persist_stories(groups: dict[str, list[str]]) -> tuple[int, int, int]:
     return stories_created, links_created, clusters_skipped
 
 
-def main() -> None:
+def main() -> int:
     print("=" * 70)
     print("NewsRoom -- Ingestion Orchestrator")
     print("=" * 70)
-    print("  backend: " + db.backend_status())
+    try:
+        if not db.is_production():
+            print("  ERROR: production ingestion requires the real Supabase backend.")
+            return 2
+        print("  backend: " + db.backend_status())
+    except Exception as exc:
+        print("  ERROR: Supabase is unavailable: " + type(exc).__name__ + ": " + str(exc))
+        return 2
     print()
 
     by_provider: dict[str, list[dict[str, Any]]] = {}
@@ -419,7 +426,14 @@ def main() -> None:
     print()
 
     print("  backend: " + db.backend_status())
+    if not all_ids or not groups:
+        print("  ERROR: ingestion produced no persisted source-backed story candidates.")
+        return 1
+    if not any(by_provider.values()):
+        print("  ERROR: every configured external source returned no items.")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

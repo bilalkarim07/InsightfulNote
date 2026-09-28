@@ -11,7 +11,7 @@ on:
         default: false
 
 concurrency:
-  group: newsroom-breaking
+  group: newsroom-production
   cancel-in-progress: false
 
 jobs:
@@ -43,7 +43,9 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
-          NEWSROOM_LIVE: ${{ github.event.inputs.live == 'true' && 'true' || vars.NEWSROOM_LIVE }}
+          NEWSROOM_REQUIRE_APPROVAL: ${{ vars.NEWSROOM_REQUIRE_APPROVAL || 'true' }}
+          NEWSROOM_APPROVED_POST_SHA256: ${{ secrets.NEWSROOM_APPROVED_POST_SHA256 }}
+          NEWSROOM_LIVE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.live == 'true' && 'true' || 'false' }}
           NEWSROOM_MAX_PER_DAY: ${{ vars.NEWSROOM_MAX_PER_DAY || '5' }}
           NEWSROOM_PUBLISH_TIMEZONE: ${{ vars.NEWSROOM_PUBLISH_TIMEZONE || 'America/New_York' }}
           NEWSROOM_PROVIDER: ${{ vars.NEWSROOM_PROVIDER || '' }}

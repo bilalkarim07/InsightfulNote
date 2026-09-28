@@ -21,6 +21,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -127,35 +128,142 @@ def _seed_subject_in_post(seed: dict, post_text: str) -> bool:
 
 def stage_discovery(client, provider, run_id: str, seed: dict) -> DiscoveryResult:
     prompt = (
-        f'Produce a DiscoveryResult with run_id="{run_id}" and one CandidateStory '
-        f'with story_id="{seed["story_id"]}", title="{seed["title"]}", '
-        f'summary="{seed["summary"]}", topic="{seed["topic"]}", '
-        f'is_breaking=true, independent_source_count=2. '
-        f'Return JSON only with this shape: '
-        f'{{"run_id": "{run_id}", "candidates": [{{"story_id": "...", "title": "...", '
-        f'"summary": "...", "topic": "...", "source_ids": [], "is_breaking": true, '
-        f'"is_emerging": false, "independent_source_count": 2, '
-        f'"first_seen_at": null, "discovery_rationale": ""}}], "notes": ""}}'
+        "Interpret the supplied database candidate only; deterministic ETL has "
+        "already performed external discovery. Set breaking only for fresh, "
+        "materially significant events; the literal headline word is not evidence. "
+        "If uncertain, set false. Do not infer source independence. Return JSON "
+        "matching DiscoveryResult.\n"
+        + json.dumps({
+            "run_id": run_id,
+            "candidate": {
+                "story_id": seed["story_id"],
+                "title": seed["title"],
+                "summary": seed["summary"],
+                "topic": seed["topic"],
+                "source_ids": seed.get("source_ids", []),
+                "first_seen_at": seed.get("first_seen_at"),
+            },
+        }, ensure_ascii=False)
     )
     parsed, _ = _structured(client, DiscoveryResult, prompt, provider)
+    if not parsed.candidates:
+        raise ValueError("Candidate interpreter returned no candidate.")
+    candidate = parsed.candidates[0].model_copy(update={
+        "story_id": seed["story_id"],
+        "title": seed["title"],
+        "summary": seed["summary"],
+        "topic": seed["topic"],
+        "source_ids": seed.get("source_ids", []),
+        "first_seen_at": seed.get("first_seen_at"),
+        "independent_source_count": 0,
+    })
+    parsed.candidates = [candidate]
     return parsed
 
 
 def stage_source_intel(client, provider, run_id: str, story_id: str) -> SourceIntelligenceResult:
+    from core.tools.database.stories import get_story, get_story_sources
+
+    story = get_story(story_id)
+    sources = get_story_sources(story_id)
+    inputs = []
+    incomplete_sources = False
+    for item in sources:
+        source = item.get("source") or {}
+        source_id = item.get("source_id") or source.get("id")
+        source_url = item.get("canonical_url") or item.get("url") or ""
+        parsed_url = urlsplit(str(source_url))
+        if source_id and parsed_url.scheme in ("http", "https") and parsed_url.hostname:
+            inputs.append({
+                "source_id": str(source_id),
+                "source_url": str(source_url),
+                "publisher_name": item.get("source_name") or "",
+                "ingestion_source_name": source.get("name") or "",
+                "ingestion_source_type": source.get("source_type") or "",
+                "ingestion_source_domain": source.get("domain") or "",
+                "article_title": item.get("title") or "",
+                "article_summary": item.get("description") or item.get("summary") or "",
+                "source_metadata": source.get("metadata") or {},
+                "documented_authority": (
+                    (source.get("metadata") or {}).get("authority")
+                    or (source.get("metadata") or {}).get("quality")
+                    or (source.get("metadata") or {}).get("authority_level")
+                ),
+            })
+        else:
+            incomplete_sources = True
+    if not story or not inputs or incomplete_sources:
+        raise ValueError("Source intelligence requires a real database story and linked sources.")
     prompt = (
-        f'Produce a SourceIntelligenceResult with run_id="{run_id}", '
-        f'story_id="{story_id}", and one SourceAssessment '
-        f'with story_id="{story_id}", source_id="s1", '
-        f'source_type="PRIMARY", authority="official press release", '
-        f'independence="independent". '
-        f'Return JSON only: '
-        f'{{"run_id": "{run_id}", "story_id": "{story_id}", "assessments": '
-        f'[{{"story_id": "{story_id}", "source_id": "s1", "source_name": "", '
-        f'"source_type": "PRIMARY", "authority": "", "independence": "", '
-        f'"attribution": "", "confidence": null, "conflicts": [], "uncertainty": []}}], '
-        f'"independent_reporting": true, "copying_detected": false, "notes": ""}}'
+        "Assess only the database source records below. Ingestion-source fields "
+        "identify the collection provider, not necessarily the publisher. Copy "
+        "publisher_name exactly when present; otherwise leave source_name empty. "
+        "A publisher name or URL alone does not establish authority or quality; "
+        "leave authority empty unless documented_authority contains evidence. Do not invent source "
+        "type, independence, corroboration, or conflicts. If publisher_name is empty, "
+        "use UNKNOWN source_type and independence. If fewer than two distinct publisher "
+        "names exist, independence must be UNKNOWN and independent_reporting must be null. "
+        "Use false only when evidence establishes that reporting is not independent. "
+        "Copy documented_authority exactly. "
+        "Use UNKNOWN and explicit "
+        "uncertainty when evidence is insufficient. Copy exact source IDs and URLs "
+        "and return one assessment per record.\n"
+        + json.dumps({
+            "run_id": run_id,
+            "story_id": story_id,
+            "story": {
+                "title": story.get("title") or "",
+                "summary": story.get("summary") or "",
+                "metadata": story.get("metadata") or {},
+            },
+            "sources": inputs,
+        }, ensure_ascii=False, default=str)
     )
     parsed, _ = _structured(client, SourceIntelligenceResult, prompt, provider)
+    expected = [(item["source_id"], item["source_url"]) for item in inputs]
+    actual = [(item.source_id, item.source_url) for item in parsed.assessments]
+    expected_names = {
+        (item["source_id"], item["source_url"]): item["publisher_name"]
+        for item in inputs
+    }
+    enough_publishers = len({
+        name.strip().casefold() for name in expected_names.values() if name.strip()
+    }) >= 2
+    if (
+        len(actual) != len(expected)
+        or set(actual) != set(expected)
+        or any(
+            item.source_name != expected_names[(item.source_id, item.source_url)]
+            for item in parsed.assessments
+        )
+        or any(
+            item.authority
+            != str(source["documented_authority"] or "")
+            for source in inputs
+            for item in parsed.assessments
+            if item.source_id == source["source_id"]
+            and item.source_url == source["source_url"]
+        )
+        or any(
+            not source["publisher_name"]
+            and item.source_type.value != "UNKNOWN"
+            for source in inputs
+            for item in parsed.assessments
+            if item.source_id == source["source_id"]
+            and item.source_url == source["source_url"]
+        )
+        or (
+            not enough_publishers
+            and (
+                parsed.independent_reporting
+                or any(item.independence.strip().upper() != "UNKNOWN"
+                       for item in parsed.assessments)
+            )
+        )
+    ):
+        raise ValueError("Source intelligence output does not match database source references.")
+    parsed.run_id = run_id
+    parsed.story_id = story_id
     return parsed
 
 
@@ -418,6 +526,16 @@ def stage_publisher(post: PlatformPost, run_id: str, dry_run: bool = True) -> Pu
 # ── supervisor ──────────────────────────────────────────────
 
 def run_pipeline(provider: str, model_id: str, dry_run: bool = True, topic: str | None = None) -> int:
+    import os
+    if not dry_run or os.environ.get("NEWSROOM_LIVE", "").strip().lower() in ("1", "true", "yes"):
+        print("[BLOCKED] This synthetic demonstration runner cannot be used for live publication.")
+        return 2
+    from core.tools.database import client as database
+    try:
+        require_local_test_backend(database)
+    except SystemExit as exc:
+        print(f"[BLOCKED] {exc}")
+        return 2
     print("=" * 70)
     print(f"Pipeline supervisor - {provider}/{model_id} (dry_run={dry_run})")
     print("=" * 70)
@@ -572,6 +690,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-

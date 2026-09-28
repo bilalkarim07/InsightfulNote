@@ -293,8 +293,10 @@ def get_story_sources(story_id: str) -> list[dict[str, Any]]:
                 r = client.table(S.SOURCES).select("*").eq("id", sid).limit(1).execute()
                 if r.data:
                     enriched["source"] = r.data[0]
-            except Exception:
-                pass
+                else:
+                    enriched["source"] = None
+            except Exception as exc:
+                raise_unavailable("get_story_sources.source_metadata", exc)
         out.append(enriched)
     return out
 
@@ -595,6 +597,39 @@ def save_publication_result(
         raise_unavailable("save_publication_result", exc)
 
 
+def update_publication_result(
+    publication_id: str,
+    payload: dict[str, Any],
+) -> None:
+    """Update a previously reserved publication record."""
+    client = get_client()
+    row = dict(payload)
+    row.pop("id", None)
+    row.pop("run_id", None)
+    row.pop("error", None)
+    row = _sanitize_row(row)
+
+    if not is_production():
+        rows = client.select(S.PUBLICATIONS, id=publication_id)
+        if not rows:
+            raise ValueError(f"Publication record not found: {publication_id}")
+        rows[0].update(row)
+        client._flush()
+        return
+    try:
+        result = (
+            client.table(S.PUBLICATIONS)
+            .update(row)
+            .eq("id", publication_id)
+            .select("id")
+            .execute()
+        )
+        if not result.data:
+            raise RuntimeError("publication update returned no data")
+    except Exception as exc:
+        raise_unavailable("update_publication_result", exc)
+
+
 def find_duplicate_publication(
     story_id: str,
     platform: str = S.PLATFORM_THREADS,
@@ -604,12 +639,16 @@ def find_duplicate_publication(
         S.PUBLICATION_STATUS_PUBLISHED,
         S.PUBLICATION_STATUS_APPROVED,
         S.PUBLICATION_STATUS_PUBLISHING,
+        "PUBLISHED",
+        "APPROVED",
+        "PUBLISHING",
     )
     if not is_production():
-        for r in client.select(S.PUBLICATIONS, story_id=story_id, platform=platform):
-            if r.get("status") in live_statuses:
-                return r
-        return None
+        rows = client.select(S.PUBLICATIONS, story_id=story_id, platform=platform)
+        return next(
+            (r for status in live_statuses for r in rows if r.get("status") == status),
+            None,
+        )
     try:
         r = (
             client.table(S.PUBLICATIONS)
@@ -617,10 +656,14 @@ def find_duplicate_publication(
             .eq("story_id", story_id)
             .eq("platform", platform)
             .in_("status", list(live_statuses))
-            .limit(1)
+            .limit(10)
             .execute()
         )
-        return r.data[0] if r.data else None
+        rows = r.data or []
+        return next(
+            (row for status in live_statuses for row in rows if row.get("status") == status),
+            None,
+        )
     except Exception as exc:
         raise_unavailable("find_duplicate_publication", exc)
 
@@ -1046,4 +1089,3 @@ def build_editorial_memory(
         repetition_warnings=warnings,
     )
     return memory_obj.model_dump(mode="json")
-

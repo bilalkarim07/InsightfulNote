@@ -117,15 +117,10 @@ A story/platform combination should have an idempotency mechanism preventing acc
 
 ### Emergency Safety Rule
 
-If publication errors exceed the configured threshold during a 24-hour cycle:
-
-1. Disable scheduled publication.
-2. Switch the workflow to dry-run mode.
-3. Open a critical issue.
-4. Preserve run logs.
-5. Require investigation before re-enabling publication.
-
-The execution plan specifies 10% publication errors as the initial safeguard threshold; keep this configurable.
+Automatic scheduling shutdown, forced dry-run, and incident creation at a
+24-hour error threshold are future operational automation. They are not
+implemented. Operators must monitor failures and disable live schedules
+manually when publication safety is uncertain.
 
 ---
 

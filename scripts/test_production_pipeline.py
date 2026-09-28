@@ -18,6 +18,7 @@ from scripts.agents.run_breaking_news import main as run_breaking
 
 
 def test_full_production_pipeline() -> None:
+    require_local_test_backend(db)
     print("=" * 70)
     print("Full End-to-End Production Pipeline Test (DRY_RUN)")
     print("=" * 70)

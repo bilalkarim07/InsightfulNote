@@ -19,6 +19,7 @@ from scripts.agents.run_breaking_news import select_candidate as select_breaking
 
 
 def demo_scenarios() -> None:
+    require_local_test_backend(db)
     print("=" * 70)
     print("DEMONSTRATION OF REQUIRED PRODUCTION SCENARIOS (A THROUGH H)")
     print("=" * 70)

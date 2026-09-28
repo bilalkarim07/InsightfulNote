@@ -26,7 +26,12 @@ def _local_store_path() -> Path:
 
 def _is_production_environment() -> bool:
     """True when CI/production credentials are intentionally configured."""
-    return bool(os.environ.get("GITHUB_ACTIONS") or os.environ.get("NEWSROOM_PRODUCTION_MODE"))
+    live = os.environ.get("NEWSROOM_LIVE", "").strip().lower() in ("1", "true", "yes")
+    return bool(
+        os.environ.get("GITHUB_ACTIONS")
+        or os.environ.get("NEWSROOM_PRODUCTION_MODE")
+        or live
+    )
 
 
 class LocalStore:

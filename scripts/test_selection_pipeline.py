@@ -16,6 +16,7 @@ from scripts.agents.run_evening_reporting import select_candidate as select_even
 
 
 def test_selection_pipeline() -> None:
+    require_local_test_backend(db)
     print("=" * 60)
     print("Testing Selection Pipeline & Category Diversity")
     print("=" * 60)

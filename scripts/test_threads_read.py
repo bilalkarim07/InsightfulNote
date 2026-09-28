@@ -70,7 +70,7 @@ def main() -> int:
     section("Test 2 — read own posts")
     try:
         result = api.get_my_posts(limit=1, max_pages=1)
-        data = result.get("data") if isinstance(result, dict) else None
+        data = result.get("items", result.get("data")) if isinstance(result, dict) else None
         count = len(data) if isinstance(data, list) else "?"
         record("get_my_posts", True, f"returned {count} post(s)")
         if isinstance(data, list) and data:
@@ -86,7 +86,7 @@ def main() -> int:
     section("Test 3 — search")
     try:
         result = api.search(query="news", limit=1, max_pages=1)
-        data = result.get("data") if isinstance(result, dict) else None
+        data = result.get("items", result.get("data")) if isinstance(result, dict) else None
         count = len(data) if isinstance(data, list) else "?"
         record("search('news')", True, f"returned {count} result(s)")
     except Exception as exc:

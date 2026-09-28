@@ -15,6 +15,7 @@ from core.tools.database import stories as db
 
 
 def test_supabase_operations() -> None:
+    require_local_test_backend(db)
     print("=" * 60)
     print("Testing Supabase Pipeline & Fail-Closed Behavior")
     print(f"Backend Status: {db.backend_status()}")

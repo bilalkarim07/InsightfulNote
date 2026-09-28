@@ -36,9 +36,12 @@ class TeamState(TypedDict, total=False):
     run_id: str
     story_id: str
     topic: str
+    mode: str
     seed: dict[str, Any]
     story_record: Optional[dict[str, Any]]
     sources: Optional[list[dict[str, Any]]]
+    production_context: Optional[dict[str, Any]]
+    dry_run: bool
     editorial_memory: Optional[dict[str, Any]]
 
     # Provider / model
@@ -62,6 +65,7 @@ class TeamState(TypedDict, total=False):
     iteration: dict[str, int]
     research_questions: list[str]   # questions verification asked research
     editorial_fixes: list[str]      # issues writer flagged to editorial
+    validation_feedback: list[str]
 
     # Outcome
     current_node: str
@@ -82,6 +86,7 @@ def new_state(
     model_id: str,
     story: dict | None = None,
     topic: str | None = None,
+    mode: str = "synthetic",
     editorial_memory: dict | None = None,
 ) -> TeamState:
     if story:
@@ -114,6 +119,7 @@ def new_state(
         run_id=run_id,
         story_id=sid,
         topic=seed["topic"],
+        mode=mode,
         seed=seed,
         story_record=story,
         sources=story.get("sources") if story else None,
@@ -124,6 +130,7 @@ def new_state(
         iteration={},
         research_questions=[],
         editorial_fixes=[],
+        validation_feedback=[],
         current_node="start",
         outcome="RUNNING",
         blockers=[],
@@ -139,4 +146,3 @@ def msg(
         from_agent=from_agent, to_agent=to_agent,
         kind=kind, content=content, iteration=iteration,
     ).model_dump(mode="json")
-

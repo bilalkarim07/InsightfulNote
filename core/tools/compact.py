@@ -12,9 +12,11 @@ No LLM. No drift.
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import re
 from typing import Any
+from urllib.parse import urlsplit
 
 MAX_EVIDENCE_ITEMS = 5
 MAX_DESCRIPTION_CHARS = 300
@@ -28,7 +30,7 @@ def _parse_search_payload(raw: Any) -> dict[str, Any]:
       - a dict (already parsed)
       - a JSON string
       - a Python-dict-literal string (single quotes)
-      - anything else: returns {} with a raw fallback
+      - anything else: returns an empty parse result, which is not treated as evidence
     """
     if isinstance(raw, dict):
         return raw
@@ -49,7 +51,7 @@ def _parse_search_payload(raw: Any) -> dict[str, Any]:
             return parsed
     except (ValueError, SyntaxError):
         pass
-    # Give up — return raw so callers can decide.
+    # Give up — retain raw text for diagnostics, never as evidence.
     return {"_raw": text}
 
 
@@ -85,19 +87,9 @@ def compact_search_results(
     payload = _parse_search_payload(raw)
     items = _extract_items(payload)
 
-    # Fallback: treat raw text as a single evidence item.
+    # Provider error text or snippets without provenance are not evidence.
     if not items:
-        text = payload.get("_raw") or (str(raw) if raw else "")
-        text = _truncate(text, max_description_chars)
-        if not text:
-            return []
-        return [{
-            "evidence_id": "ev_1",
-            "source_id": "s1",
-            "title": "",
-            "url": None,
-            "quote": text,
-        }]
+        return []
 
     seen_urls: set[str] = set()
     out: list[dict[str, Any]] = []
@@ -105,6 +97,9 @@ def compact_search_results(
         if not isinstance(item, dict):
             continue
         url = item.get("canonical_url") or item.get("url") or ""
+        parsed_url = urlsplit(str(url))
+        if parsed_url.scheme not in ("http", "https") or not parsed_url.netloc:
+            continue
         if url and url in seen_urls:
             continue
         if url:
@@ -117,10 +112,10 @@ def compact_search_results(
         if not quote:
             continue
 
-        idx = len(out) + 1
+        identity = hashlib.sha256(str(url).encode("utf-8")).hexdigest()[:20]
         out.append({
-            "evidence_id": f"ev_{idx}",
-            "source_id": f"s{idx}",
+            "evidence_id": f"ev_{identity}",
+            "source_id": f"src_{identity}",
             "title": title,
             "url": url or None,
             "quote": quote,

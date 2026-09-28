@@ -11,6 +11,7 @@ Returned dict keys:
 """
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any
 
 _IMPORT_ERROR = ""
@@ -121,9 +122,66 @@ def publish_threads(text: str, dry_run: bool = True) -> dict[str, Any]:
             pass
 
     ext_id, url = _extract_id_and_url(result)
+    if not ext_id:
+        return {
+            "status": "UNKNOWN",
+            "external_id": None,
+            "url": url,
+            "error": "Threads API returned no publication ID; outcome requires reconciliation.",
+        }
     return {
         "status": "PUBLISHED",
         "external_id": ext_id,
         "url": url,
         "error": None,
     }
+
+
+def reconcile_threads_publication(
+    text: str,
+    *,
+    started_at: str | None,
+) -> dict[str, Any] | None:
+    """Find one exact matching post created after a reserved publication attempt."""
+    if not started_at:
+        raise ValueError("publication reservation has no started_at timestamp")
+    if not _AVAILABLE:
+        raise RuntimeError(f"Threads API unavailable: {_IMPORT_ERROR}")
+
+    try:
+        started = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ValueError("publication reservation has an invalid started_at timestamp") from exc
+    if started.tzinfo is None:
+        started = started.replace(tzinfo=timezone.utc)
+
+    api = build_threads_api()
+    try:
+        response = api.get_my_posts(limit=50, max_pages=3)
+    finally:
+        api.close()
+
+    matches = []
+    for post in response.get("items", []):
+        if post.get("text") != text:
+            continue
+        created_at = post.get("timestamp")
+        if not created_at:
+            continue
+        try:
+            created = datetime.fromisoformat(str(created_at).replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=timezone.utc)
+        if created >= started:
+            external_id, url = _extract_id_and_url(post)
+            if external_id:
+                matches.append({
+                    "external_id": external_id,
+                    "url": url,
+                    "published_at": created.isoformat(),
+                })
+    if len(matches) > 1:
+        raise RuntimeError("multiple matching Threads posts found; manual reconciliation required")
+    return matches[0] if matches else None

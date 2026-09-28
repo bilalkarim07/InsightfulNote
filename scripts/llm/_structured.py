@@ -85,6 +85,8 @@ def _normalize(data: Any, schema: Any = None) -> Any:
     do NOT alias it. This lets us alias `text -> body` globally without
     breaking PlatformPost (which uses `text` as a real field).
     """
+    if isinstance(data, list):
+        return [_normalize(item, schema=schema) for item in data]
     if isinstance(data, dict):
         normalized: dict[str, Any] = {}
         schema_fields = set(schema.model_fields.keys()) if schema is not None else set()
@@ -95,10 +97,11 @@ def _normalize(data: Any, schema: Any = None) -> Any:
                 new_key = _FIELD_ALIASES.get(k, k)
             if new_key in normalized and k != new_key:
                 continue
-            normalized[new_key] = _normalize(v)
+            nested_schema = None
+            if schema is not None and k in schema_fields:
+                nested_schema = _inner_model(schema.model_fields[k].annotation)
+            normalized[new_key] = _normalize(v, schema=nested_schema)
         return normalized
-    if isinstance(data, list):
-        return [_normalize(item) for item in data]
     return data
 
 
@@ -187,8 +190,10 @@ def _try_parse(
 
     try:
         return schema.model_validate(data)
-    except Exception:
-        return None
+    except Exception as exc:
+        raise ValueError(
+            f"{schema.__name__} validation failed: {exc}"
+        ) from exc
 
 
 def invoke_structured(

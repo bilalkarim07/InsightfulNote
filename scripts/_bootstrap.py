@@ -24,3 +24,19 @@ if ENV_FILE.exists():
 else:
     # Fall back to default search (cwd) if .env not at repo root
     load_dotenv(override=False)
+
+
+def require_local_test_backend(database) -> None:
+    """Prevent executable tests with synthetic fixtures from writing to Supabase."""
+    try:
+        if database.is_production():
+            raise SystemExit(
+                "Synthetic test data is prohibited against Supabase; use a local database."
+            )
+    except SystemExit:
+        raise
+    except Exception as exc:
+        raise SystemExit(
+            "Cannot verify a local test backend; refusing to use synthetic data: "
+            f"{type(exc).__name__}: {exc}"
+        ) from exc

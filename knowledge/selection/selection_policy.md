@@ -60,7 +60,7 @@ Selection should:
 
 The execution plan targets a funnel approximately:
 
-`25–50 candidates → 10–20 clusters → 5–10 shortlisted → ~5 verified stories`
+`25–50 candidates → 10–20 clusters → 5–10 shortlisted → ~5 verified stories` is the desired funnel/target, not a guaranteed or enforced count.
 
 These values should remain configurable.
 
