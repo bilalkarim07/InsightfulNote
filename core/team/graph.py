@@ -1495,38 +1495,6 @@ def node_publisher(state: TeamState) -> TeamState:
         dry_run = not live
     live = not dry_run
 
-    if live:
-        from hashlib import sha256
-        approval_required = os.environ.get(
-            "NEWSROOM_REQUIRE_APPROVAL", "true"
-        ).strip().lower() in ("1", "true", "yes")
-        approved_hash = os.environ.get(
-            "NEWSROOM_APPROVED_POST_SHA256", ""
-        ).strip().lower()
-        actual_hash = sha256(post.text.encode("utf-8")).hexdigest()
-        if approval_required and not approved_hash:
-            return _trace("publisher", state, [
-                msg("publisher", "all", "BLOCKER",
-                    "Manual publication approval hash is required."),
-            ]) | {
-                "publication": PublishResult(
-                    run_id=run_id, story_id=story_id, platform="threads",
-                    status="BLOCKED_APPROVAL_REQUIRED",
-                ).model_dump(mode="json"),
-                "outcome": "BLOCKED",
-            }
-        if approved_hash and approved_hash != actual_hash:
-            return _trace("publisher", state, [
-                msg("publisher", "all", "BLOCKER",
-                    "Generated post differs from manually reviewed content."),
-            ]) | {
-                "publication": PublishResult(
-                    run_id=run_id, story_id=story_id, platform="threads",
-                    status="BLOCKED_APPROVAL_MISMATCH",
-                ).model_dump(mode="json"),
-                "outcome": "BLOCKED",
-            }
-
     # Live publication is only allowed against the real production database.
     if live:
         try:

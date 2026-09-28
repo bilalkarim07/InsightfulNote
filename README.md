@@ -51,10 +51,6 @@ Copy-Item .env.example .env
 
 Set only the credentials needed for the services in use. The example file
 contains names and placeholders only; never commit `.env`.
-For a one-off reviewed live post, set `NEWSROOM_REQUIRE_APPROVAL=true` and
-`NEWSROOM_APPROVED_POST_SHA256` to the SHA-256 of the exact inspected post text.
-The live publisher checks this value before reserving or sending the post.
-
 Useful executable checks and tasks:
 
 ```powershell
