@@ -75,7 +75,7 @@ class TeamState(TypedDict, total=False):
 
 
 MAX_RESEARCH_LOOPS = 2
-MAX_WRITER_RETRIES = 2
+MAX_WRITER_RETRIES = 3
 MAX_EDITORIAL_FIXES = 1
 
 

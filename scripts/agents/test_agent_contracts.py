@@ -17,7 +17,9 @@ from schemas.editorial import EditorialDecision  # noqa: E402
 from schemas.tone import ToneDecision, ToneType  # noqa: E402
 from schemas.writing import WriterDraft  # noqa: E402
 from schemas.platform import PlatformPost  # noqa: E402
-from schemas.validation import ValidationResult, ValidationState  # noqa: E402
+from schemas.validation import (  # noqa: E402
+    SentenceClaimMapping, ValidationResult, ValidationState,
+)
 from schemas.publishing import PublishResult  # noqa: E402
 
 
@@ -69,7 +71,10 @@ def main() -> None:
     check("PlatformPost", lambda: roundtrip(PlatformPost(
         run_id=rid, story_id=sid, text="hello")))
     check("ValidationResult", lambda: roundtrip(ValidationResult(
-        run_id=rid, story_id=sid, state=ValidationState.PASS)))
+        run_id=rid, story_id=sid, state=ValidationState.PASS,
+        sentence_claims=[SentenceClaimMapping(
+            sentence="Gold prices fell.", claim_ids=["claim_1"],
+        )])))
     check("PublishResult", lambda: roundtrip(PublishResult(
         run_id=rid, story_id=sid)))
 
