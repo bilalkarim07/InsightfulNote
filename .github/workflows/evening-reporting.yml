@@ -2,8 +2,8 @@ name: Evening Reporting
 
 on:
   schedule:
-    # 19:00, 20:00, 21:00, 22:00, 23:00 US/Eastern (23:00 - 03:00 UTC)
-    - cron: "0 23,0,1,2,3 * * *"
+    - cron: "0 19,20,21,22,23 * * *"
+      timezone: "America/New_York"
   workflow_dispatch:
     inputs:
       live:
@@ -47,6 +47,8 @@ jobs:
           NEWSROOM_LIVE: ${{ github.event.inputs.live == 'true' && 'true' || vars.NEWSROOM_LIVE }}
           NEWSROOM_MAX_PER_DAY: ${{ vars.NEWSROOM_MAX_PER_DAY || '5' }}
           NEWSROOM_PUBLISH_TIMEZONE: ${{ vars.NEWSROOM_PUBLISH_TIMEZONE || 'America/New_York' }}
+          NEWSROOM_PROVIDER: ${{ vars.NEWSROOM_PROVIDER || '' }}
+          NEWSROOM_MODEL: ${{ vars.NEWSROOM_MODEL || '' }}
         run: python scripts/agents/run_evening_reporting.py
 
       - name: Upload run artifacts

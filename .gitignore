@@ -12,6 +12,10 @@ wheels/
 .env.example
 # NewsRoom runtime data
 data/slices/
+data/runs/
+data/local_store.json
+data/quota.json
+data/pipeline_log.jsonl
 data/model_capabilities.json
 
 # Explicitly track the manifest (it IS committed).

@@ -14,6 +14,7 @@ Fail-soft: one source failing does not stop the others.
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 import sys
 import time
@@ -34,17 +35,19 @@ from schemas.taxonomy import (
     normalize_categories,
 )
 
-# Configured discovery queries per ammendments.md Section 9
-QUERIES = [
-    "global politics latest",
-    "markets latest",
-    "technology latest",
-    "artificial intelligence latest",
-    "health latest",
-    "science latest",
-    "climate latest",
-    "world events latest",
-]
+# Single authoritative source for discovery queries. GDELT coverage is explicit
+# and configurable; do not silently slice the taxonomy query set.
+QUERIES: list[str] = []
+for category in (Category.GLOBAL_POLITICS, Category.FINANCE, Category.BUSINESS,
+                Category.TECHNOLOGY, Category.ARTIFICIAL_INTELLIGENCE,
+                Category.HEALTH, Category.SCIENCE, Category.CLIMATE_ENVIRONMENT,
+                Category.WORLD_EVENTS):
+    QUERIES.extend(CATEGORY_DISCOVERY_QUERIES.get(category, []))
+
+# Optional guard for GDELT rate limiting. Default is "all category queries" to
+# preserve the original production model. Override with env var if a stricter cap
+# is needed in CI or a low-capacity environment.
+_GDELT_MAX_QUERY_LIMIT = int(os.environ.get("NEWSROOM_GDELT_MAX_QUERIES", "0"))
 
 
 PROVIDERS = {
@@ -212,8 +215,11 @@ def _gdelt_items() -> list[dict[str, Any]]:
     from sources.gdelt import GDELTClient
     out: list[dict[str, Any]] = []
     client = GDELTClient()
+    queries = QUERIES
+    if _GDELT_MAX_QUERY_LIMIT > 0:
+        queries = queries[:_GDELT_MAX_QUERY_LIMIT]
     try:
-        for idx, q in enumerate(QUERIES[:4]):
+        for idx, q in enumerate(queries):
             if idx > 0:
                 time.sleep(2.0)
             out.extend(_iter_items(client.search(q)))

@@ -863,8 +863,14 @@ def node_publisher(state: TeamState) -> TeamState:
     story_id = state.get("story_id", "")
     run_id = state.get("run_id", "")
 
-    live = os.environ.get("NEWSROOM_LIVE", "").strip().lower() in ("1", "true", "yes")
-    dry_run = not live
+    # Respect dry_run from state (set by the runner) as the primary signal.
+    # Fall back to NEWSROOM_LIVE env if state doesn't contain dry_run.
+    if "dry_run" in state:
+        dry_run = bool(state["dry_run"])
+    else:
+        live = os.environ.get("NEWSROOM_LIVE", "").strip().lower() in ("1", "true", "yes")
+        dry_run = not live
+    live = not dry_run
 
     # ── Duplicate check (fail-closed) ──
     if live and story_id:

@@ -2,7 +2,7 @@ name: Hourly Breaking News
 
 on:
   schedule:
-    - cron: "20 * * * *"   # 20 min past each hour, after ingestion at :05
+    - cron: "20 * * * *"
   workflow_dispatch:
     inputs:
       live:
@@ -46,6 +46,8 @@ jobs:
           NEWSROOM_LIVE: ${{ github.event.inputs.live == 'true' && 'true' || vars.NEWSROOM_LIVE }}
           NEWSROOM_MAX_PER_DAY: ${{ vars.NEWSROOM_MAX_PER_DAY || '5' }}
           NEWSROOM_PUBLISH_TIMEZONE: ${{ vars.NEWSROOM_PUBLISH_TIMEZONE || 'America/New_York' }}
+          NEWSROOM_PROVIDER: ${{ vars.NEWSROOM_PROVIDER || '' }}
+          NEWSROOM_MODEL: ${{ vars.NEWSROOM_MODEL || '' }}
         run: python scripts/agents/run_breaking_news.py
 
       - name: Upload run artifacts

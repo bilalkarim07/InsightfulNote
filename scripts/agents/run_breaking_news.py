@@ -20,8 +20,21 @@ sys.path.insert(0, str(ROOT))
 
 from scripts._bootstrap import *  # noqa: F401,F403,E402
 
+from core.llm.registry import build_default_registry
+from core.llm.persistence import load_capabilities
+from core.llm.routing.router import AgentTask, ModelRouter  # noqa: E402
 from core.team.graph import run_team  # noqa: E402
 from core.tools.database import stories as db  # noqa: E402
+
+
+def _route_model(task: AgentTask) -> tuple[str, str]:
+    registry = build_default_registry()
+    load_capabilities(registry)
+    router = ModelRouter(registry)
+    primary = router.route(task)
+    if primary is None:
+        raise RuntimeError(f"No verified model available for task {task.value!r}")
+    return primary.provider, primary.model_id
 
 
 def _now() -> str:
@@ -98,8 +111,10 @@ def select_candidate() -> dict | None:
 
 
 def main() -> int:
-    provider = os.environ.get("NEWSROOM_PROVIDER", "ollama")
-    model_id = os.environ.get("NEWSROOM_MODEL", "gpt-oss:120b")
+    provider = os.environ.get("NEWSROOM_PROVIDER", "").strip()
+    model_id = os.environ.get("NEWSROOM_MODEL", "").strip()
+    if not provider or not model_id:
+        provider, model_id = _route_model(AgentTask.RESEARCH)
     live = _is_live()
 
     print("=" * 70)

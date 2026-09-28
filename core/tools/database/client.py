@@ -1,4 +1,4 @@
-"""Supabase client singleton with LocalStore fallback."""
+"""Supabase client singleton with fail-closed production semantics."""
 from __future__ import annotations
 import json
 import os
@@ -22,6 +22,11 @@ def _local_store_path() -> Path:
     p = root / "data" / "local_store.json"
     p.parent.mkdir(parents=True, exist_ok=True)
     return p
+
+
+def _is_production_environment() -> bool:
+    """True when CI/production credentials are intentionally configured."""
+    return bool(os.environ.get("GITHUB_ACTIONS") or os.environ.get("NEWSROOM_PRODUCTION_MODE"))
 
 
 class LocalStore:
@@ -99,6 +104,7 @@ def get_client() -> Any:
 
         url = os.environ.get("SUPABASE_URL", "").strip()
         key = _resolve_supabase_key()
+        is_production = _is_production_environment()
 
         if url and key:
             try:
@@ -107,7 +113,16 @@ def get_client() -> Any:
                 _MODE = "supabase"
                 return _CLIENT
             except Exception as exc:
+                if is_production:
+                    raise DatabaseUnavailableError(
+                        "Production/CI Supabase initialization failed; local fallback is disabled."
+                    ) from exc
                 print(f"  [db] supabase init failed: {exc} - using local store")
+
+        if is_production:
+            raise DatabaseUnavailableError(
+                "Production/CI requires SUPABASE_URL and SUPABASE_KEY; no local fallback is allowed."
+            )
 
         _STORE = LocalStore()
         _MODE = "local"
