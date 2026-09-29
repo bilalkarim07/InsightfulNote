@@ -49,15 +49,20 @@ def test_category_classification() -> None:
     assert Category.ARTIFICIAL_INTELLIGENCE.value in normalized
     assert Category.TECHNOLOGY.value in normalized
     assert Category.GLOBAL_POLITICS.value in normalized
-    assert "SPORTS" not in normalized
+    assert Category.SPORTS.value in normalized
     assert "CELEBRITY" not in normalized
 
     # 3. Test rejection of unwanted categories
-    rejected_inputs = ["sports", "sports_news", "celebrity", "gaming", "tv_schedules", "weather", "hollywood"]
+    rejected_inputs = ["sports_news", "celebrity", "gaming", "tv_schedules", "weather", "hollywood"]
     for item in rejected_inputs:
         assert is_rejected_category(item), f"Expected {item} to be flagged as rejected"
         assert normalize_category(item) is None, f"Expected {item} to normalize to None"
         print(f"  [OK] Rejected category correctly blocked: {item!r}")
+
+    valid_sports_input = "sports"
+    assert normalize_category(valid_sports_input) == Category.SPORTS
+    assert not is_rejected_category(valid_sports_input)
+    print(f"  [OK] Valid category kept in scope: {valid_sports_input!r}")
 
     print("\nALL CATEGORY CLASSIFICATION TESTS PASSED!")
 

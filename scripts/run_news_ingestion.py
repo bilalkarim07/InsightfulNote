@@ -38,10 +38,21 @@ from schemas.taxonomy import (
 # Single authoritative source for discovery queries. GDELT coverage is explicit
 # and configurable; do not silently slice the taxonomy query set.
 QUERIES: list[str] = []
-for category in (Category.GLOBAL_POLITICS, Category.FINANCE, Category.BUSINESS,
-                Category.TECHNOLOGY, Category.ARTIFICIAL_INTELLIGENCE,
-                Category.HEALTH, Category.SCIENCE, Category.CLIMATE_ENVIRONMENT,
-                Category.WORLD_EVENTS):
+for category in (
+    Category.GLOBAL_POLITICS,
+    Category.WAR_CONFLICT,
+    Category.ARTIFICIAL_INTELLIGENCE,
+    Category.TECHNOLOGY,
+    Category.SCIENCE,
+    Category.HEALTH,
+    Category.MEDICAL,
+    Category.FINANCE,
+    Category.BUSINESS,
+    Category.INVESTMENTS,
+    Category.CLIMATE_ENVIRONMENT,
+    Category.SPORTS,
+    Category.WORLD_EVENTS,
+):
     QUERIES.extend(CATEGORY_DISCOVERY_QUERIES.get(category, []))
 
 # Optional guard for GDELT rate limiting. Default is "all category queries" to
