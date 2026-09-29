@@ -158,8 +158,12 @@ CATEGORY_DISCOVERY_QUERIES: dict[Category, list[str]] = {
 }
 
 
-def normalize_category(val: str) -> Optional[Category]:
-    """Normalize a raw category string to a controlled taxonomy Category or None if invalid/rejected."""
+def normalize_category(
+    val: str,
+    *,
+    allow_partial: bool = True,
+) -> Optional[Category]:
+    """Normalize a category, optionally skipping fuzzy partial matching."""
     if not val or not isinstance(val, str):
         return None
     cleaned = val.strip().lower().replace("_", " ")
@@ -176,10 +180,10 @@ def normalize_category(val: str) -> Optional[Category]:
     if cleaned in _CATEGORY_MAPPINGS:
         return _CATEGORY_MAPPINGS[cleaned]
 
-    # Partial matching
-    for key, mapped_cat in _CATEGORY_MAPPINGS.items():
-        if key in cleaned or cleaned in key:
-            return mapped_cat
+    if allow_partial:
+        for key, mapped_cat in _CATEGORY_MAPPINGS.items():
+            if key in cleaned or cleaned in key:
+                return mapped_cat
 
     return None
 

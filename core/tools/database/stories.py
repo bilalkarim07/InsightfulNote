@@ -316,8 +316,8 @@ def _story_source_count(client, story_id: str) -> int:
             .execute()
         )
         return len(r.data or [])
-    except Exception:
-        return 0
+    except Exception as exc:
+        raise_unavailable("_story_source_count", exc)
 
 
 def _is_eligible_story(story: dict) -> bool:

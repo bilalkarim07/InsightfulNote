@@ -16,7 +16,10 @@ from sources.threads.exceptions import (  # noqa: E402
     ThreadsAuthenticationError,
     ThreadsPublishingError,
 )
-from scripts.agents.run_evening_reporting import _attempt_candidates  # noqa: E402
+from scripts.agents.run_evening_reporting import (  # noqa: E402
+    _attempt_candidates,
+    select_candidates,
+)
 
 
 def _candidate(index: int) -> dict:
@@ -124,6 +127,43 @@ def _test_candidate_fallback() -> None:
     )
     assert rc == 1 and calls == ["story-1"]
 
+    calls.clear()
+
+    def deferred_quota(*_args, result_out, **kwargs) -> int:
+        del _args
+        calls.append(kwargs["story_id"])
+        result_out["outcome"] = "DEFERRED_QUOTA"
+        return 1
+
+    rc = _attempt_candidates(
+        candidates,
+        "provider",
+        "model",
+        True,
+        max_attempts=5,
+        team_runner=deferred_quota,
+        memory_builder=memory_builder,
+    )
+    assert rc == 0 and calls == ["story-1"]
+
+    calls.clear()
+
+    def actual_exception(*_args, **kwargs) -> int:
+        del _args, kwargs
+        raise RuntimeError("simulated provider failure")
+
+    rc = _attempt_candidates(
+        candidates,
+        "provider",
+        "model",
+        True,
+        max_attempts=5,
+        team_runner=actual_exception,
+        memory_builder=memory_builder,
+    )
+    assert rc == 1
+
+    calls.clear()
     rc = _attempt_candidates(
         [],
         "provider",
@@ -133,7 +173,7 @@ def _test_candidate_fallback() -> None:
         team_runner=system_failure,
         memory_builder=memory_builder,
     )
-    assert rc == 0 and calls == ["story-1"]
+    assert rc == 0 and calls == []
     assert MAX_WRITER_ATTEMPTS == 2
     assert _validation_retry_target(
         {"iteration": {"writer": 1}}, ["empty post text"],
@@ -142,6 +182,109 @@ def _test_candidate_fallback() -> None:
         {"iteration": {"writer": 2}}, ["empty post text"],
     ) is None
     print("  Candidate fallback checks: PASS")
+
+
+def _test_candidate_eligibility() -> None:
+    from schemas.taxonomy import Category
+
+    original_candidates = db.find_reporting_candidates
+    original_distribution = db.get_recent_category_distribution
+    valid_categories = [category.value for category in Category]
+    candidates = [
+        {
+            "id": f"valid-{category}",
+            "title": f"Valid story about {category.lower()}",
+            "categories": [category],
+            "_source_count": 1,
+        }
+        for category in valid_categories
+    ]
+    candidates.extend([
+        {
+            "id": "politics-alias",
+            "title": "Story about politics",
+            "categories": ["politics"],
+            "_source_count": 1,
+        },
+        {
+            "id": "metadata-category",
+            "title": "Story from metadata category",
+            "categories": [],
+            "metadata": {"categories": ["FINANCE"]},
+            "_source_count": 1,
+        },
+        {
+            "id": "no-category",
+            "title": "Story without a category",
+            "categories": [],
+            "_source_count": 1,
+        },
+        {
+            "id": "invalid-category",
+            "title": "Story with art category",
+            "categories": ["ART"],
+            "_source_count": 1,
+        },
+        {
+            "id": "sports",
+            "title": "Sports story",
+            "categories": ["SPORTS"],
+            "_source_count": 1,
+        },
+        {
+            "id": "celebrity",
+            "title": "Celebrity story",
+            "categories": ["CELEBRITY"],
+            "_source_count": 1,
+        },
+        {
+            "id": "entertainment",
+            "title": "Entertainment story",
+            "categories": ["ENTERTAINMENT"],
+            "_source_count": 1,
+        },
+        {
+            "title": "Story missing ID",
+            "categories": ["FINANCE"],
+            "_source_count": 1,
+        },
+        {
+            "id": "no-title",
+            "title": " ",
+            "categories": ["FINANCE"],
+            "_source_count": 1,
+        },
+        {
+            "id": "no-sources",
+            "title": "Story missing sources",
+            "categories": ["FINANCE"],
+            "_source_count": 0,
+        },
+    ])
+
+    try:
+        db.find_reporting_candidates = lambda **_: candidates
+        db.get_recent_category_distribution = lambda **_: {}
+        selected = select_candidates(limit=30)
+    finally:
+        db.find_reporting_candidates = original_candidates
+        db.get_recent_category_distribution = original_distribution
+
+    selected_by_id = {
+        candidate.get("id"): candidate for candidate in selected
+    }
+    assert len(selected) == len(valid_categories) + 2
+    assert selected_by_id["politics-alias"]["categories"] == ["GLOBAL_POLITICS"]
+    assert selected_by_id["metadata-category"]["categories"] == ["FINANCE"]
+    assert all(candidate.get("id") for candidate in selected)
+    assert not any(
+        candidate.get("id") in {
+            "no-category", "invalid-category", "sports", "celebrity",
+            "entertainment", "no-title", "no-sources",
+        }
+        for candidate in selected
+    )
+    print("  Candidate eligibility checks: PASS")
 
 
 def _test_threads_result_classification() -> None:
@@ -204,6 +347,7 @@ def main() -> int:
     print(f"  backend: {db.backend_status()}")
     print()
     _test_candidate_fallback()
+    _test_candidate_eligibility()
     _test_threads_result_classification()
 
     cands = db.find_reporting_candidates(max_age_minutes=1440, limit=10)

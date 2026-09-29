@@ -1457,10 +1457,10 @@ def node_quota_gate(state: TeamState) -> TeamState:
         publication_type = (
             "breaking" if state.get("mode") == "breaking" else "normal"
         )
-        if quota_mod.active_hours_bypass_enabled(publication_type):
+        if quota_mod.manual_test_bypass_enabled(publication_type):
             message += (
-                " (active-hours bypass enabled for manual test run; "
-                "quotas are not evaluated in dry-run)"
+                " (manual test bypass: active hours + spacing; "
+                "daily cap remains enforced in live runs)"
             )
         return _trace("quota_gate", state, [
             msg("quota_gate", "publisher", "HANDOFF", message),
@@ -1552,8 +1552,11 @@ def node_quota_gate(state: TeamState) -> TeamState:
         publication_type=publication_type
     )
     quota_message = "quota ok" if allowed else "deferred: " + reason
-    if quota_state.get("active_hours_bypassed"):
-        quota_message += " (active-hours restriction bypassed for manual test run)"
+    if quota_state.get("manual_test_bypass"):
+        quota_message += (
+            " (manual test bypass: active hours + spacing; "
+            "daily cap remains enforced)"
+        )
     if allowed:
         return _trace("quota_gate", state, [
             msg("quota_gate", "publisher", "HANDOFF", quota_message),
@@ -2122,15 +2125,30 @@ def run_team(
     print(f"\n[outcome] {outcome}")
     if result_out is not None:
         publication = final_state.get("publication") or {}
-        runner_outcome = {
-            "PASS": "DRY_RUN" if publication.get("status") == "SKIPPED_DRY_RUN" else "SYSTEM_ERROR",
-            "ESCALATE": "SYSTEM_ERROR",
-            "BLOCKED": (
-                "RECOVERY_REQUIRED"
-                if str(publication.get("status") or "").endswith("RECOVERY_REQUIRED")
+        if outcome in (
+            "CANDIDATE_REJECTED",
+            "DEFERRED_QUOTA",
+            "PUBLISHED",
+        ):
+            runner_outcome = str(outcome)
+        elif outcome == "PASS":
+            runner_outcome = (
+                "DRY_RUN"
+                if publication.get("status") == "SKIPPED_DRY_RUN"
                 else "SYSTEM_ERROR"
-            ),
-        }.get(str(outcome), str(outcome))
+            )
+        elif outcome == "ESCALATE":
+            runner_outcome = "SYSTEM_ERROR"
+        elif outcome == "BLOCKED":
+            runner_outcome = (
+                "RECOVERY_REQUIRED"
+                if str(publication.get("status") or "").endswith(
+                    "RECOVERY_REQUIRED"
+                )
+                else "SYSTEM_ERROR"
+            )
+        else:
+            runner_outcome = str(outcome)
         result_out.update({
             "outcome": runner_outcome,
             "candidate_rejection_reason": str(
@@ -2158,4 +2176,9 @@ def run_team(
     )
     print(f"\n  snapshot: data/runs/{run_id}.json")
 
-    return 0 if outcome in ("PASS", "PUBLISHED", "DRY_RUN") else 1
+    return 0 if outcome in (
+        "PASS",
+        "PUBLISHED",
+        "DRY_RUN",
+        "DEFERRED_QUOTA",
+    ) else 1

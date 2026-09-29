@@ -3,7 +3,8 @@
 Runs during the 19:00-23:00 local window. Tries a bounded ranked list of
 unpublished candidates (default five, configurable up to ten with
 NEWSROOM_MAX_CANDIDATE_ATTEMPTS). Candidate-quality rejections advance to the
-next candidate; system, quota, and publication-recovery failures stop the run.
+next candidate; quota deferral stops successfully; system and
+publication-recovery failures stop with an error.
 The target is one confirmed post by default and can be configured with
 NEWSROOM_MIN_POSTS_PER_RUN, subject to the candidate and publication quotas.
 """
@@ -74,7 +75,7 @@ def _most_recent_publication_topic() -> str:
         return ""
 
 
-from schemas.taxonomy import is_rejected_category
+from schemas.taxonomy import is_rejected_category, normalize_category
 
 
 def select_candidates(limit: int = 5) -> list[dict]:
@@ -83,15 +84,48 @@ def select_candidates(limit: int = 5) -> list[dict]:
     if not candidates:
         return []
 
-    # Filter out rejected categories
+    # Require a real story, at least one linked source, and controlled categories.
     eligible = []
     for c in candidates:
-        cats = c.get("categories") or c.get("metadata", {}).get("categories") or []
-        if any(is_rejected_category(cat) for cat in cats):
+        story_id = c.get("id") or c.get("story_id")
+        title = c.get("title")
+        metadata = c.get("metadata") or {}
+        if not isinstance(metadata, dict):
+            metadata = {}
+        cats = c.get("categories") or metadata.get("categories") or []
+        if isinstance(cats, str):
+            cats = [cats]
+        if not isinstance(cats, (list, tuple, set)):
+            cats = []
+        normalized_categories = {
+            category.value
+            for raw_category in cats
+            if isinstance(raw_category, str)
+            and (
+                category := normalize_category(
+                    raw_category,
+                    allow_partial=False,
+                )
+            ) is not None
+        }
+        source_count = c.get("_source_count")
+        if type(source_count) is int:
+            has_sources = source_count > 0
+        else:
+            sources = c.get("source_ids") or c.get("sources") or []
+            has_sources = isinstance(sources, (list, tuple, set)) and bool(sources)
+        if (
+            not isinstance(story_id, str)
+            or not story_id.strip()
+            or not isinstance(title, str)
+            or not title.strip()
+            or not normalized_categories
+            or not has_sources
+        ):
             continue
-        title = c.get("title", "")
         if any(is_rejected_category(word) for word in title.split()):
             continue
+        c["categories"] = sorted(normalized_categories)
         eligible.append(c)
 
     if not eligible:
@@ -102,7 +136,7 @@ def select_candidates(limit: int = 5) -> list[dict]:
     if dist:
         # Sort candidates so categories with lower recent count come first (diversity bonus)
         def diversity_score(c: dict) -> tuple[int, int]:
-            cats = c.get("categories") or c.get("metadata", {}).get("categories") or []
+            cats = c.get("categories") or []
             max_count = max([dist.get(str(cat).upper(), 0) for cat in cats], default=0)
             cnt = c.get("_source_count", 0)
             source_cnt = cnt if isinstance(cnt, int) else (len(cnt) if isinstance(cnt, (list, tuple)) else 1)
@@ -185,10 +219,10 @@ def _attempt_candidates(
             memory = build_memory(story_id=story_id, query_title=title)
         except Exception as exc:
             print(
-                "  ERROR: editorial memory/database failure; stopping candidate "
-                f"fallback: {type(exc).__name__}"
+                "  [run] SYSTEM_ERROR: editorial memory/database failure; "
+                f"stopping candidate fallback: {type(exc).__name__}"
             )
-            return 2
+            return 1
 
         result: dict[str, Any] = {}
         try:
@@ -207,7 +241,7 @@ def _attempt_candidates(
                 f"  [run] SYSTEM_ERROR: newsroom execution raised "
                 f"{type(exc).__name__}; stopping fallback."
             )
-            return 2
+            return 1
         outcome = result.get("outcome")
         if outcome == "CANDIDATE_REJECTED":
             reason = result.get("candidate_rejection_reason") or "UNSPECIFIED"
@@ -242,20 +276,20 @@ def _attempt_candidates(
             print("  [run] Automatic retry disabled to prevent duplicate publication.")
             if result.get("publication_error"):
                 print("  [publisher] " + str(result["publication_error"]))
-            return rc if rc else 1
+            return 1
         if outcome == "DEFERRED_QUOTA":
             print("  [quota] DEFERRED_QUOTA; stopping candidate processing.")
             print(
                 f"  Posts published: {successful_posts}/{target_posts}; "
                 f"candidates attempted: {attempted}"
             )
-            return rc if rc else 1
+            return 0
 
         print(
             f"  [run] SYSTEM_ERROR ({outcome or 'UNKNOWN'}); "
             "stopping without trying another candidate."
         )
-        return rc if rc else 1
+        return 1
 
     if successful_posts:
         print("\n  RUN INCOMPLETE: target not reached")
@@ -284,15 +318,15 @@ def main() -> int:
                 + type(exc).__name__
                 + ")."
             )
-            return 2
+            return 1
     live = _is_live()
     try:
         if not db.is_production():
             print("  ERROR: reporting workflow requires the real Supabase backend.")
-            return 2
+            return 1
     except Exception as exc:
         print("  ERROR: Supabase is unavailable: " + str(exc))
-        return 2
+        return 1
 
     try:
         max_attempts = candidate_attempt_limit()
@@ -315,7 +349,7 @@ def main() -> int:
             + type(exc).__name__
             + ")."
         )
-        return 2
+        return 1
     print("=" * 70)
     print("NewsRoom Reporting Run")
     print("=" * 70)

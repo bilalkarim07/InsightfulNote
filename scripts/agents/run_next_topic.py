@@ -59,22 +59,17 @@ def main() -> None:
         print("No pending topics in data/topic_queue.json")
         sys.exit(0)
     print(f"Running team graph on: {topic!r}")
-    rc = run_team(provider, model_id, topic=topic)
+    result: dict[str, str] = {}
+    rc = run_team(provider, model_id, topic=topic, result_out=result)
     # If quota deferred the run, put the topic back at the front of the queue.
-    if rc == 1:  # non-PASS exit; check last snapshot for DEFERRED_QUOTA
+    if result.get("outcome") == "DEFERRED_QUOTA":
         try:
-            import glob, os
-            snaps = sorted(glob.glob(str(ROOT / "data" / "runs" / "*.json")),
-                           key=os.path.getmtime, reverse=True)
-            if snaps:
-                last = json.loads(Path(snaps[0]).read_text(encoding="utf-8"))
-                if last.get("outcome") == "DEFERRED_QUOTA":
-                    data = json.loads(QUEUE.read_text(encoding="utf-8"))
-                    data["pending"].insert(0, topic)
-                    if data["consumed"] and data["consumed"][-1] == topic:
-                        data["consumed"].pop()
-                    QUEUE.write_text(json.dumps(data, indent=2), encoding="utf-8")
-                    print(f"Requeued {topic!r} (quota deferred)")
+            data = json.loads(QUEUE.read_text(encoding="utf-8"))
+            data["pending"].insert(0, topic)
+            if data["consumed"] and data["consumed"][-1] == topic:
+                data["consumed"].pop()
+            QUEUE.write_text(json.dumps(data, indent=2), encoding="utf-8")
+            print(f"Requeued {topic!r} (quota deferred)")
         except Exception as exc:
             print(f"Requeue check failed: {exc}")
     sys.exit(rc)

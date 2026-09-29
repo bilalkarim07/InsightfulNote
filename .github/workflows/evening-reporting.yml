@@ -11,7 +11,7 @@ on:
         type: boolean
         default: false
       bypass_active_hours:
-        description: "Allow manual testing outside normal reporting hours"
+        description: "Bypass reporting hours and spacing for manual tests; daily cap remains enforced"
         type: boolean
         default: false
 

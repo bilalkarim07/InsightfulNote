@@ -4,12 +4,15 @@ Production source of truth: Supabase `publications` table.
 Local dev fallback: `data/quota.json` (only used if backend is LOCAL).
 
 Config (env-overridable):
-  NEWSROOM_MAX_PER_DAY        default 10
-  NEWSROOM_MIN_HOURS_BETWEEN  default 1
+  NEWSROOM_MAX_PER_DAY        maximum confirmed publications per local publishing day
+  NEWSROOM_MIN_HOURS_BETWEEN  minimum spacing between normal scheduled publications
   NEWSROOM_ACTIVE_START       default 8    (local hour)
   NEWSROOM_ACTIVE_END         default 23   (local hour, exclusive)
   NEWSROOM_TZ_OFFSET          default 5    (hours from UTC)
-  NEWSROOM_BYPASS_ACTIVE_HOURS default false (manual reporting tests only)
+  NEWSROOM_BYPASS_ACTIVE_HOURS manual reporting-test bypass for active hours and spacing
+
+The manual bypass never disables the daily publication cap. Breaking
+publications use their own eligibility path and are not affected by it.
 """
 from __future__ import annotations
 
@@ -36,12 +39,17 @@ def _env_bool(name: str, default: bool = False) -> bool:
     return value.strip().lower() in ("1", "true", "yes")
 
 
-def active_hours_bypass_enabled(publication_type: str = "normal") -> bool:
-    """Return whether reporting hours are bypassed for a non-breaking run."""
+def manual_test_bypass_enabled(publication_type: str = "normal") -> bool:
+    """Return whether the manual reporting bypass is active for normal runs."""
     return (
         publication_type != "breaking"
         and _env_bool("NEWSROOM_BYPASS_ACTIVE_HOURS")
     )
+
+
+def active_hours_bypass_enabled(publication_type: str = "normal") -> bool:
+    """Compatibility alias for the manual reporting bypass."""
+    return manual_test_bypass_enabled(publication_type)
 
 
 def _get_publish_timezone() -> timezone | Any:
@@ -114,11 +122,13 @@ def can_publish(
         "publication_type": publication_type,
     }
 
-    bypass_active_hours = active_hours_bypass_enabled(publication_type)
-    if bypass_active_hours:
+    manual_test_bypass = manual_test_bypass_enabled(publication_type)
+    if manual_test_bypass:
         state["active_hours_bypassed"] = True
+        state["spacing_bypassed"] = True
+        state["manual_test_bypass"] = True
 
-    if publication_type != "breaking" and not bypass_active_hours:
+    if publication_type != "breaking" and not manual_test_bypass:
         hour = _local_now().hour
         if not (active_start <= hour < active_end):
             state["published"] = 0
@@ -160,7 +170,11 @@ def can_publish(
         return False, f"daily cap reached ({published_today}/{max_per_day})", state
 
     # ── Spacing ──
-    if last_published and publication_type != "breaking":
+    if (
+        last_published
+        and publication_type != "breaking"
+        and not manual_test_bypass
+    ):
         try:
             last = datetime.fromisoformat(str(last_published).replace("Z", "+00:00"))
             if last.tzinfo is None:

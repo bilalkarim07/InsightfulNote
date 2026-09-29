@@ -33,6 +33,11 @@ def main() -> int:
     original_local_now = quota._local_now
     original_is_supabase = quota._is_supabase
     original_local_store_read = quota._local_store_read
+    original_can_publish = quota.can_publish
+    original_record_deferral = quota.record_deferral
+    from core.tools.database import stories as db
+    original_count_published = db.count_published_today
+    original_last_published = db.last_published_at
 
     try:
         quota._is_supabase = lambda: False
@@ -44,7 +49,7 @@ def main() -> int:
 
         quota._local_now = lambda: datetime(2026, 9, 29, 12, tzinfo=timezone.utc)
         os.environ.pop("NEWSROOM_BYPASS_ACTIVE_HOURS", None)
-        allowed, reason, _ = quota.can_publish()
+        allowed, reason, state = quota.can_publish()
         _assert(allowed, "active-hours reporting is allowed")
 
         quota._local_now = lambda: datetime(2026, 9, 29, 1, tzinfo=timezone.utc)
@@ -57,8 +62,11 @@ def main() -> int:
         os.environ["NEWSROOM_BYPASS_ACTIVE_HOURS"] = "true"
         allowed, reason, state = quota.can_publish()
         _assert(
-            allowed and state.get("active_hours_bypassed") is True,
-            "manual active-hours bypass permits testing and reports telemetry",
+            allowed
+            and state.get("active_hours_bypassed") is True
+            and state.get("spacing_bypassed") is True
+            and state.get("manual_test_bypass") is True,
+            "manual reporting bypass skips active hours and spacing",
         )
         gate_result = node_quota_gate({
             "outcome": "RUNNING",
@@ -67,8 +75,9 @@ def main() -> int:
             "messages": [],
         })
         _assert(
-            "active-hours bypass enabled" in gate_result["messages"][0]["content"],
-            "dry-run quota telemetry reports the manual bypass setting",
+            "manual test bypass: active hours + spacing"
+            in gate_result["messages"][0]["content"],
+            "dry-run telemetry describes the manual bypass",
         )
 
         quota._local_store_read = lambda: {
@@ -79,7 +88,7 @@ def main() -> int:
         allowed, reason, _ = quota.can_publish()
         _assert(
             not allowed and "daily cap reached" in reason,
-            "active-hours bypass does not override the daily cap",
+            "manual bypass does not override the daily cap",
         )
 
         quota._local_store_read = lambda: {
@@ -89,15 +98,62 @@ def main() -> int:
                 datetime.now(timezone.utc) - timedelta(minutes=20)
             ).isoformat(),
         }
-        allowed, reason, _ = quota.can_publish()
+        allowed, reason, state = quota.can_publish()
         _assert(
-            not allowed and "spacing not met" in reason,
-            "active-hours bypass does not override minimum spacing",
+            allowed and state.get("spacing_bypassed") is True,
+            "manual bypass permits a recent publication without spacing failure",
         )
 
+        quota._local_now = lambda: datetime(2026, 9, 29, 12, tzinfo=timezone.utc)
+        os.environ.pop("NEWSROOM_BYPASS_ACTIVE_HOURS", None)
+        allowed, reason, state = quota.can_publish()
+        _assert(
+            not allowed and "spacing not met" in reason,
+            "scheduled reporting still enforces minimum spacing",
+        )
+        quota.can_publish = lambda **_: (
+            False,
+            "spacing not met (37m remaining)",
+            {"source": "supabase"},
+        )
+        quota.record_deferral = lambda: None
+        deferred = node_quota_gate({
+            "outcome": "RUNNING",
+            "dry_run": False,
+            "mode": "reporting",
+            "messages": [],
+        })
+        _assert(
+            deferred.get("outcome") == "DEFERRED_QUOTA",
+            "live quota gate exposes spacing as a safe terminal deferral",
+        )
+        quota.can_publish = original_can_publish
+        quota.record_deferral = original_record_deferral
+
+        quota._is_supabase = lambda: True
+        db.count_published_today = lambda: 1
+        db.last_published_at = lambda: (
+            datetime.now(timezone.utc) - timedelta(minutes=20)
+        ).isoformat()
+        os.environ["NEWSROOM_BYPASS_ACTIVE_HOURS"] = "true"
+        allowed, reason, state = quota.can_publish(publication_type="normal")
+        _assert(
+            allowed and state.get("spacing_bypassed") is True,
+            "manual bypass handles recent Supabase publication without spacing failure",
+        )
+        db.count_published_today = lambda: 5
+        allowed, reason, _ = quota.can_publish(publication_type="normal")
+        _assert(
+            not allowed and "daily cap reached" in reason,
+            "manual Supabase bypass still enforces the daily cap",
+        )
+
+        db.count_published_today = lambda: 1
         allowed, reason, state = quota.can_publish(publication_type="breaking")
         _assert(
-            allowed and "active_hours_bypassed" not in state,
+            allowed
+            and "active_hours_bypassed" not in state
+            and "spacing_bypassed" not in state,
             "breaking-news quota behavior remains independent of the bypass",
         )
 
@@ -107,6 +163,10 @@ def main() -> int:
         quota._local_now = original_local_now
         quota._is_supabase = original_is_supabase
         quota._local_store_read = original_local_store_read
+        quota.can_publish = original_can_publish
+        quota.record_deferral = original_record_deferral
+        db.count_published_today = original_count_published
+        db.last_published_at = original_last_published
         for name, value in original_env.items():
             if value is None:
                 os.environ.pop(name, None)
