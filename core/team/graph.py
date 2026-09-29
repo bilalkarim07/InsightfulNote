@@ -69,13 +69,21 @@ def _model(state: TeamState):
     return get_chat_model(entry, timeout=180)
 
 
-def _structured(client, schema, prompt: str, provider: str, context: dict | None = None):
+def _structured(
+    client,
+    schema,
+    prompt: str,
+    provider: str,
+    context: dict | None = None,
+    payload_normalizer=None,
+):
     supports_schema = provider != "ollama"
     try:
         return invoke_structured(
             client, schema, prompt,
             supports_json_schema=supports_schema,
             context=context,
+            payload_normalizer=payload_normalizer,
         )
     except StructuredOutputError:
         terse = prompt + "\n\nReturn ONLY the JSON object, no prose."
@@ -83,6 +91,7 @@ def _structured(client, schema, prompt: str, provider: str, context: dict | None
             client, schema, terse,
             supports_json_schema=supports_schema,
             context=context,
+            payload_normalizer=payload_normalizer,
         )
 
 
