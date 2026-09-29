@@ -43,7 +43,7 @@ from core.tools.compact import (
 from core.tools.publishing import publish_threads
 from core.observability.runlog import stage
 from core.team.state import (
-    MAX_EDITORIAL_FIXES, MAX_RESEARCH_LOOPS, MAX_WRITER_RETRIES,
+    MAX_EDITORIAL_FIXES, MAX_WRITER_ATTEMPTS,
     TeamState, msg,
 )
 from scripts.llm._structured import invoke_structured, StructuredOutputError
@@ -94,19 +94,6 @@ _CLAIM_STOPWORDS = {
     "and", "or", "but", "is", "are", "was", "were", "be", "been", "being",
     "that", "this", "these", "those", "it", "its",
 }
-
-
-def _ngrams(text: str, n: int = 3) -> set[str]:
-    words = [w.lower().strip(".,;:!?\"'()[]{}—–-") for w in text.split()]
-    words = [w for w in words if w and w not in _STOPWORDS]
-    return {" ".join(words[i:i + n]) for i in range(len(words) - n + 1)}
-
-
-def _verbatim_ok(claim_text: str, quotes: list[str], n: int) -> bool:
-    grams = _ngrams(claim_text, n)
-    if not grams:
-        return False
-    return any(grams & _ngrams(q, n) for q in quotes)
 
 
 def _claim_tokens(text: str) -> set[str]:
@@ -204,6 +191,26 @@ def _trace(node: str, out: TeamState, messages: list[dict]) -> TeamState:
     return merged  # type: ignore[return-value]
 
 
+def _is_terminal(state: TeamState) -> bool:
+    return state.get("outcome") in ("ESCALATE", "CANDIDATE_REJECTED")
+
+
+def _reject_candidate(
+    state: TeamState,
+    node: str,
+    reason_code: str,
+    detail: str,
+) -> TeamState:
+    message = f"{reason_code}: {detail}"
+    return _trace(node, state, [
+        msg(node, "all", "INFO", message),
+    ]) | {
+        "outcome": "CANDIDATE_REJECTED",
+        "candidate_rejection_reason": reason_code,
+        "blockers": (state.get("blockers") or []) + [message],
+    }
+
+
 
 def _now_iso() -> str:
     from datetime import datetime, timezone
@@ -271,8 +278,7 @@ def _safe_node(fn):
 
 
 def node_discovery(state: TeamState) -> TeamState:
-    # Short-circuit: upstream failure → skip this node.
-    if state.get("outcome") == "ESCALATE":
+    if _is_terminal(state):
         return state
     client = _model(state)
     seed = state["seed"]
@@ -315,9 +321,12 @@ def node_discovery(state: TeamState) -> TeamState:
         context={"run_id": run_id, "story_id": story_id},
     )
     if not result.candidates:
-        return _trace("discovery", state, [
-            msg("discovery", "all", "BLOCKER", "Candidate interpreter returned no candidate."),
-        ]) | {"outcome": "ESCALATE", "blockers": ["candidate interpretation returned no candidate"]}
+        return _reject_candidate(
+            state,
+            "discovery",
+            "MALFORMED_CANDIDATE",
+            "candidate interpretation returned no candidate for the database record",
+        )
     candidate = result.candidates[0]
     candidate = candidate.model_copy(update={
         "story_id": story_id,
@@ -336,8 +345,7 @@ def node_discovery(state: TeamState) -> TeamState:
 
 
 def node_source_intel(state: TeamState) -> TeamState:
-    # Short-circuit: upstream failure → skip this node.
-    if state.get("outcome") == "ESCALATE":
+    if _is_terminal(state):
         return state
     run_id, story_id = state["run_id"], state["story_id"]
     source_rows = (
@@ -397,13 +405,12 @@ def node_source_intel(state: TeamState) -> TeamState:
             ),
         })
     if not source_inputs or incomplete_sources:
-        return _trace("source_intel", state, [
-            msg("source_intel", "all", "BLOCKER",
-                "Every linked source must have a real source ID and HTTP(S) URL; cannot assess."),
-        ]) | {
-            "outcome": "ESCALATE",
-            "blockers": ["source intelligence has linked sources with missing or invalid references"],
-        }
+        return _reject_candidate(
+            state,
+            "source_intel",
+            "SOURCE_VALIDATION_FAILED",
+            "linked sources lack valid source IDs or HTTP(S) URLs",
+        )
 
     story = (state.get("production_context") or {}).get("story") or state.get("story_record") or {}
     prompt = (
@@ -518,13 +525,12 @@ def node_source_intel(state: TeamState) -> TeamState:
             )
         )
     ):
-        return _trace("source_intel", state, [
-            msg("source_intel", "all", "BLOCKER",
-                "Source assessment did not preserve the database source references."),
-        ]) | {
-            "outcome": "ESCALATE",
-            "blockers": ["source intelligence output does not exactly match linked source IDs and URLs"],
-        }
+        return _reject_candidate(
+            state,
+            "source_intel",
+            "SOURCE_VALIDATION_FAILED",
+            "source assessment did not preserve the database source references",
+        )
     result.run_id = run_id
     result.story_id = story_id
     result.assessments = [
@@ -538,8 +544,7 @@ def node_source_intel(state: TeamState) -> TeamState:
 
 def node_research(state: TeamState) -> TeamState:
     """Research — deterministic evidence, LLM-only-for-claims."""
-    # Short-circuit: upstream failure → skip this node.
-    if state.get("outcome") == "ESCALATE":
+    if _is_terminal(state):
         return state
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
@@ -554,11 +559,13 @@ def node_research(state: TeamState) -> TeamState:
     queries = [topic] + (questions[:1] if questions else [])
     all_items: list[dict] = []
     stale_items = 0
+    search_errors: list[str] = []
     for q in queries:
         try:
             raw = search_web.invoke({"query": q})
         except Exception as exc:  # noqa: BLE001
             print(f"  [research] search error for {q!r}: {exc}")
+            search_errors.append(f"{type(exc).__name__}: {exc}")
             continue
         items = compact_search_results(raw, max_items=4)
         for item in items:
@@ -595,8 +602,13 @@ def node_research(state: TeamState) -> TeamState:
         )
 
     if not all_items:
+        if search_errors:
+            raise RuntimeError(
+                "Research search failed before any evidence was found: "
+                + "; ".join(search_errors)
+            )
         return _trace("research", state, [
-            msg("research", "all", "BLOCKER",
+            msg("research", "research_gate", "INFO",
                 f"No usable evidence for topic {topic!r}.", iteration=it),
         ]) | {
             "research": ResearchResult(
@@ -655,11 +667,11 @@ system already has the evidence and will attach it for you.
 CRITICAL RULES:
 - Output claims and notes ONLY. NO evidence array.
 - Use field name "text" (NOT "claim").
-- Each claim's text MUST share at least THREE consecutive content words with
-  its evidence quote. If not, do not include the claim.
 - Use field name "evidence_ids" (NOT "sources").
 - Each claim MUST cite at least one evidence_id from this exact list: {allowed_ids}
-- Text in the claim must be directly supported by the evidence block above.
+- Claims must accurately summarize what the cited evidence establishes. Do not
+ add facts, causes, motivations, numbers, dates, or certainty not in evidence.
+- Preserve attribution, uncertainty, opinion, allegation, and forecast status.
 - If the evidence is not about {topic!r}, return claims=[] and explain in notes.
 - Keep it under 3 claims total.
 
@@ -682,25 +694,8 @@ Return JSON only, no prose, no markdown fences.
         c.evidence_ids = good_ids
         valid_claims.append(c)
 
-    # ── Step 5: assemble the final ResearchResult ──
-    # Filter out claims that fail the verbatim-overlap check BEFORE
-    # assembly. Partial claims shouldn't block a valid story.
-    kept_claims = []
-    dropped_claims = []
-    for c in valid_claims:
-        quotes_for_c = [
-            e.quote for e in evidence_objects
-            if e.evidence_id in c.evidence_ids
-        ]
-        n_gram = 2 if c.is_forecast else 3
-        if quotes_for_c and _verbatim_ok(c.text, quotes_for_c, n_gram):
-            kept_claims.append(c)
-        else:
-            dropped_claims.append(c.claim_id)
-    if dropped_claims:
-        print("  [research] dropped claims without verbatim support: "
-              + str(dropped_claims))
-    valid_claims = kept_claims
+    # ── Step 5: assemble claims with known evidence references. ──
+    # Semantic support is assessed by verification against the cited evidence.
     result = ResearchResult(
         run_id=run_id,
         story_id=story_id,
@@ -723,47 +718,49 @@ Return JSON only, no prose, no markdown fences.
 
 
 def node_research_gate(state: TeamState) -> TeamState:
-    """Deterministic. Blocks if research produced no claims or verbatim fails."""
-    # Short-circuit: upstream failure → skip this node.
-    if state.get("outcome") == "ESCALATE":
+    """Require evidence-backed claims; verification judges semantic support."""
+    if _is_terminal(state):
         return state
     research = ResearchResult.model_validate(state["research"])
-    evidence_by_id = {e.evidence_id: e.quote for e in research.evidence}
+    evidence_by_id = {e.evidence_id: e for e in research.evidence}
     gate_errors: list[str] = []
     for c in research.claims:
-        quotes = [evidence_by_id[eid] for eid in c.evidence_ids if eid in evidence_by_id]
-        if not quotes:
+        cited_evidence = [
+            evidence_by_id[eid]
+            for eid in c.evidence_ids
+            if eid in evidence_by_id
+        ]
+        if not c.text.strip() or not cited_evidence:
             gate_errors.append(f"claim {c.claim_id} cites no known evidence")
             continue
-        n = 2 if c.is_forecast else 3
-        if not _verbatim_ok(c.text, quotes, n):
-            gate_errors.append(f"claim {c.claim_id}: no verbatim support")
+        if any(
+            not (item.url or "").startswith(("https://", "http://"))
+            for item in cited_evidence
+        ):
+            gate_errors.append(f"claim {c.claim_id} cites evidence without a valid URL")
 
     if not research.claims:
-        return _trace("research_gate", state, [
-            msg("research_gate", "all", "BLOCKER", "Research produced no claims."),
-        ]) | {
-            "outcome": "INSUFFICIENT_EVIDENCE",
-            "blockers": gate_errors + ["no claims produced"],
-        }
+        return _reject_candidate(
+            state,
+            "research_gate",
+            "INSUFFICIENT_EVIDENCE",
+            "research produced no evidence-backed claims",
+        )
 
     if gate_errors:
-        return _trace("research_gate", state, [
-            msg("research_gate", "all", "BLOCKER", "; ".join(gate_errors)),
-        ]) | {
-            "outcome": "INSUFFICIENT_EVIDENCE",
-            "blockers": gate_errors,
-        }
+        return _reject_candidate(
+            state, "research_gate", "INSUFFICIENT_EVIDENCE", "; ".join(gate_errors),
+        )
 
     return _trace("research_gate", state, [
-        msg("research_gate", "verification", "HANDOFF", "All claims have verbatim support."),
+        msg("research_gate", "verification", "HANDOFF",
+            "All claims have evidence references and valid source URLs."),
     ])
 
 
 def node_verification(state: TeamState) -> TeamState:
     """Verification - judges claims against the evidence they cite."""
-    # Short-circuit: upstream failure → skip this node.
-    if state.get("outcome") == "ESCALATE":
+    if _is_terminal(state):
         return state
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
@@ -826,27 +823,33 @@ def node_verification(state: TeamState) -> TeamState:
                         VerificationStatus.CONTRADICTED,
                         VerificationStatus.UNCERTAIN)
     ]
-    supported_count = len(result.verifications) - len(unsupported)
+    supported_ids = {
+        v.claim_id for v in result.verifications
+        if v.status in (
+            VerificationStatus.SUPPORTED,
+            VerificationStatus.SUPPORTED_AS_ATTRIBUTED,
+        )
+    }
+    supported_count = len(supported_ids)
 
     messages = [
         msg("verification", "editorial", "HANDOFF",
             str(supported_count) + " supported, " + str(len(unsupported)) + " unsupported."),
     ]
-    out = {"verification": result.model_dump(mode="json")}
-    if unsupported:
-        out["research_questions"] = [
-            "Additional evidence for claim " + cid for cid in unsupported
-        ]
-        messages.append(msg(
-            "verification", "research", "REQUEST",
-            "Need more evidence for: " + str(unsupported),
-        ))
+    out = {"verification": result.model_dump(mode="json"), "research_questions": []}
+    if not supported_ids:
+        return _trace("verification", state, messages) | out | {
+            "outcome": "CANDIDATE_REJECTED",
+            "candidate_rejection_reason": "VERIFICATION_FAILED",
+            "blockers": (state.get("blockers") or [])
+            + ["verification found no publishable supported claims"],
+        }
     return _trace("verification", state, messages) | out
 
 
 def node_editorial(state: TeamState) -> TeamState:
     """Editorial — decides what the story is actually about."""
-    if state.get("outcome") == "ESCALATE":
+    if _is_terminal(state):
         return state
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
@@ -859,6 +862,13 @@ def node_editorial(state: TeamState) -> TeamState:
                         VerificationStatus.SUPPORTED_AS_ATTRIBUTED)
     ]
     allowed_claims = [c for c in research.claims if c.claim_id in allowed]
+    if not allowed_claims:
+        return _reject_candidate(
+            state,
+            "editorial",
+            "NO_EDITORIAL_PATH",
+            "no verified claims remain for an evidence-based post",
+        )
     claims_block = chr(10).join(
         "  [" + c.claim_id + "] " + c.text
         + (" (FORECAST - attribution: " + c.attribution + ")" if c.is_forecast else "")
@@ -892,7 +902,17 @@ def node_editorial(state: TeamState) -> TeamState:
         context={"run_id": run_id, "story_id": story_id},
     )
     print("  [editorial] central_event=" + repr(result.central_event[:80]))
+    result.allowed_claim_ids = [
+        claim_id for claim_id in result.allowed_claim_ids if claim_id in allowed
+    ]
     print("  [editorial] allowed=" + str(result.allowed_claim_ids))
+    if not result.allowed_claim_ids:
+        return _reject_candidate(
+            state,
+            "editorial",
+            "NO_EDITORIAL_PATH",
+            "editorial approved no verified claims",
+        )
 
     # Deterministic: central_event must be non-empty.
     if not result.central_event or not result.central_event.strip():
@@ -910,7 +930,7 @@ def node_editorial(state: TeamState) -> TeamState:
 
 def node_tone(state: TeamState) -> TeamState:
     """Tone — chooses presentation tone based on subject sensitivity."""
-    if state.get("outcome") == "ESCALATE":
+    if _is_terminal(state):
         return state
     client = _model(state)
     run_id, story_id = state["run_id"], state["story_id"]
@@ -960,7 +980,7 @@ def node_tone(state: TeamState) -> TeamState:
 
 def node_writer(state: TeamState) -> TeamState:
     """Writer — writes using ONLY approved claims, in the chosen tone."""
-    if state.get("outcome") == "ESCALATE":
+    if _is_terminal(state):
         return state
 
     import os
@@ -976,16 +996,12 @@ def node_writer(state: TeamState) -> TeamState:
 
     approved = [c for c in research.claims if c.claim_id in editorial.allowed_claim_ids]
     if not approved:
-        return _trace("writer", state, [
-            msg("writer", "editorial", "BLOCKER",
-                "No approved claims — need more verified evidence."),
-        ]) | {
-            "draft": WriterDraft(
-                run_id=run_id, story_id=story_id,
-                headline="", body="", claim_ids=[], tone=tone_decision.tone,
-            ).model_dump(mode="json"),
-            "editorial_fixes": ["no approved claims"],
-        }
+        return _reject_candidate(
+            state,
+            "writer",
+            "WRITER_FAILED",
+            "no editorial-approved verified claims are available",
+        )
 
     approved_block = chr(10).join(
         "- " + c.claim_id + ": " + c.text
@@ -1076,6 +1092,13 @@ def node_writer(state: TeamState) -> TeamState:
             print("  [writer] WARNING: no body and no headline produced")
 
     print("  [writer] " + str(len(result.body)) + " chars, " + str(len(result.claim_ids)) + " claims, headline=" + (result.headline[:40] if result.headline else "<empty>"))
+    if not (result.body or "").strip():
+        return _reject_candidate(
+            state,
+            "writer",
+            "WRITER_FAILED",
+            "writer could not produce a post grounded in approved claims",
+        )
 
     return _trace("writer", state, [
         msg("writer", "platform_adapter", "HANDOFF",
@@ -1086,7 +1109,7 @@ def node_writer(state: TeamState) -> TeamState:
 def node_platform_adapter(state: TeamState) -> TeamState:
     """Platform Adapter - produces a 2-3 line Threads post."""
 
-    if state.get("outcome") == "ESCALATE":
+    if _is_terminal(state):
         return state
     import os
     run_id, story_id = state["run_id"], state["story_id"]
@@ -1182,9 +1205,30 @@ def node_platform_adapter(state: TeamState) -> TeamState:
     ]) | {"post": result.model_dump(mode="json")}
 
 
+def _validation_retry_target(
+    state: TeamState, errors: list[str],
+) -> Literal["writer", "editorial"] | None:
+    writer_attempts = (state.get("iteration") or {}).get("writer", 0)
+    editorial_fixes = (state.get("iteration") or {}).get("editorial_fix", 0)
+    needs_editorial = any("unapproved" in error for error in errors)
+    needs_writer = any(
+        marker in error
+        for error in errors
+        for marker in (
+            "attribution", "seed subject", "empty post", "not grounded",
+            "repetitive", "without claim-bearing content",
+        )
+    )
+    if needs_editorial and editorial_fixes < MAX_EDITORIAL_FIXES:
+        return "editorial"
+    if needs_writer and writer_attempts < MAX_WRITER_ATTEMPTS:
+        return "writer"
+    return None
+
+
 def node_validation(state: TeamState) -> TeamState:
     """Deterministic. Can route back to writer or editorial, or forward to publisher."""
-    if state.get("outcome") == "ESCALATE":
+    if _is_terminal(state):
         return state
     post = PlatformPost.model_validate(state["post"])
     draft = WriterDraft.model_validate(state["draft"])
@@ -1361,15 +1405,30 @@ def node_validation(state: TeamState) -> TeamState:
     messages = [msg("validation", "publisher" if not errors else "writer",
                     "HANDOFF" if not errors else "FEEDBACK",
                     "OK" if not errors else "; ".join(errors))]
-    return _trace("validation", state, messages) | {
+    result = _trace("validation", state, messages) | {
         "validation": state_out.model_dump(mode="json"),
         "validation_feedback": errors,
     }
+    retry_target = _validation_retry_target(state, errors) if errors else None
+    result = result | {"validation_retry_target": retry_target or ""}
+    if errors:
+        if retry_target is None:
+            message = "candidate failed deterministic QA after the available retry"
+            result = result | {
+                "outcome": "CANDIDATE_REJECTED",
+                "candidate_rejection_reason": "QA_FAILED",
+                "blockers": (state.get("blockers") or []) + [message],
+            }
+        elif retry_target == "editorial":
+            iteration = dict(state.get("iteration") or {})
+            iteration["editorial_fix"] = iteration.get("editorial_fix", 0) + 1
+            result = result | {"iteration": iteration}
+    return result
 
 
 def node_quota_gate(state: TeamState) -> TeamState:
     """Apply the shared daily cap with mode-specific publication windows."""
-    if state.get("outcome") == "ESCALATE":
+    if _is_terminal(state):
         return state
     from core.team import quota as quota_mod
 
@@ -1521,7 +1580,7 @@ def node_publisher(state: TeamState) -> TeamState:
                     run_id=run_id, story_id=story_id, platform="threads",
                     status="BLOCKED_DATABASE_UNAVAILABLE", error=str(exc),
                 ).model_dump(mode="json"),
-                "outcome": "BLOCKED",
+                "outcome": "SYSTEM_ERROR",
             }
 
     # ── Duplicate check (fail-closed) ──
@@ -1558,10 +1617,20 @@ def node_publisher(state: TeamState) -> TeamState:
                             return _trace("publisher", state, [
                                 msg("publisher", "all", "DONE",
                                     "Recovered previously published Threads post; did not republish."),
-                            ]) | {"publication": pub.model_dump(mode="json"), "outcome": "PASS"}
+                            ]) | {
+                                "publication": pub.model_dump(mode="json"),
+                                "outcome": "PUBLISHED",
+                            }
                     except Exception as exc:
-                        print("  [publisher] publication reconciliation failed: " + type(exc).__name__)
-                        recovery_error = str(exc)
+                        print(
+                            "  [publisher] publication reconciliation failed: "
+                            + type(exc).__name__
+                        )
+                        recovery_error = (
+                            "Publication reconciliation failed ("
+                            + type(exc).__name__
+                            + "); manual recovery required."
+                        )
                     else:
                         recovery_error = "No unique matching Threads post found; refusing to republish."
                     pub = PublishResult(
@@ -1571,7 +1640,10 @@ def node_publisher(state: TeamState) -> TeamState:
                     return _trace("publisher", state, [
                         msg("publisher", "all", "BLOCKER",
                             "Prior publication is unresolved; automatic republish blocked."),
-                    ]) | {"publication": pub.model_dump(mode="json"), "outcome": "BLOCKED"}
+                    ]) | {
+                        "publication": pub.model_dump(mode="json"),
+                        "outcome": "RECOVERY_REQUIRED",
+                    }
                 pub = PublishResult(
                     run_id=run_id, story_id=story_id,
                     platform="threads", status="DUPLICATE_SKIPPED", url=None,
@@ -1581,7 +1653,8 @@ def node_publisher(state: TeamState) -> TeamState:
                         "Duplicate publication — skipping."),
                 ]) | {
                     "publication": pub.model_dump(mode="json"),
-                    "outcome": "PASS",
+                    "candidate_rejection_reason": "DUPLICATE_STORY",
+                    "outcome": "CANDIDATE_REJECTED",
                 }
         except Exception as exc:
             print("  [publisher] duplicate check failed: " + type(exc).__name__)
@@ -1596,7 +1669,7 @@ def node_publisher(state: TeamState) -> TeamState:
                     "duplicate check unavailable — BLOCKED"),
             ]) | {
                 "publication": pub.model_dump(mode="json"),
-                "outcome": "BLOCKED",
+                "outcome": "SYSTEM_ERROR",
             }
 
     reservation_id = None
@@ -1630,7 +1703,7 @@ def node_publisher(state: TeamState) -> TeamState:
                     run_id=run_id, story_id=story_id, platform="threads",
                     status="BLOCKED_PERSISTENCE_UNAVAILABLE", error=str(exc),
                 ).model_dump(mode="json"),
-                "outcome": "BLOCKED",
+                "outcome": "SYSTEM_ERROR",
             }
 
     # ── Publish ──
@@ -1640,6 +1713,14 @@ def node_publisher(state: TeamState) -> TeamState:
     external_id = result.get("external_id")
     url = result.get("url")
     error = result.get("error")
+    diagnostic = result.get("diagnostic") or {}
+    print(
+        "  [publisher] Threads result: status=" + str(status)
+        + ", external_id_present=" + str(bool(external_id))
+        + ", diagnostic=" + json.dumps(diagnostic, sort_keys=True)
+    )
+    if error:
+        print("  [publisher] Threads error: " + str(error))
     published_at = _now_iso() if status == "PUBLISHED" and external_id else None
     if status == "PUBLISHED" and not external_id:
         status = "PUBLISHING"
@@ -1661,7 +1742,7 @@ def node_publisher(state: TeamState) -> TeamState:
             payload = {
                 "platform": "threads",
                 "status": (
-                    "publishing" if live and status != "PUBLISHED" else status.lower()
+                    "publishing" if live and status == "UNKNOWN" else status.lower()
                 ),
                 "content": post.text,
                 "external_post_id": external_id,
@@ -1670,7 +1751,7 @@ def node_publisher(state: TeamState) -> TeamState:
                     **reservation_metadata,
                     "run_id": run_id,
                     "error": error,
-                    "recovery_state": "required" if live and status != "PUBLISHED" else None,
+                    "recovery_state": "required" if live and status == "UNKNOWN" else None,
                 },
             }
             if reservation_id:
@@ -1682,19 +1763,30 @@ def node_publisher(state: TeamState) -> TeamState:
         except Exception as exc:
             print("  [publisher] persist failed: " + type(exc).__name__ + ": " + str(exc))
             if live:
-                pub.status = (
-                    "PERSISTENCE_RECOVERY_REQUIRED"
-                    if status == "PUBLISHED" else "RECOVERY_REQUIRED"
-                )
-                pub.error = (
-                    "Threads publication outcome and Supabase finalization require "
-                    "reconciliation; automatic retry is blocked."
-                )
+                if status in ("PUBLISHED", "UNKNOWN"):
+                    pub.status = (
+                        "PERSISTENCE_RECOVERY_REQUIRED"
+                        if status == "PUBLISHED" else "RECOVERY_REQUIRED"
+                    )
+                    pub.error = (
+                        "Threads publication outcome and Supabase finalization require "
+                        "reconciliation; automatic retry is blocked."
+                    )
+                else:
+                    pub.status = "FAILED"
+                    pub.error = (
+                        "Supabase could not finalize the known failed Threads request; "
+                        "system recovery is required."
+                    )
                 return _trace("publisher", state, [
                     msg("publisher", "all", "BLOCKER", pub.error),
                 ]) | {
                     "publication": pub.model_dump(mode="json"),
-                    "outcome": "BLOCKED",
+                    "outcome": (
+                        "RECOVERY_REQUIRED"
+                        if status in ("PUBLISHED", "UNKNOWN")
+                        else "SYSTEM_ERROR"
+                    ),
                 }
 
     # ── Update local quota (no-op in production) ──
@@ -1706,19 +1798,36 @@ def node_publisher(state: TeamState) -> TeamState:
             pass
 
     if live and status != "PUBLISHED":
-        pub.status = "RECOVERY_REQUIRED"
-        pub.error = error or "Threads publication outcome is uncertain; recovery required."
+        if status == "UNKNOWN":
+            pub.status = "RECOVERY_REQUIRED"
+            pub.error = error or "Threads publication outcome is uncertain; recovery required."
+            outcome = "RECOVERY_REQUIRED"
+        else:
+            pub.status = "FAILED"
+            pub.error = error or "Threads publication failed; no confirmed post was returned."
+            outcome = "SYSTEM_ERROR"
         return _trace("publisher", state, [
             msg("publisher", "all", "BLOCKER",
-                "Threads outcome unresolved; reservation retained to prevent duplicate retry."),
-        ]) | {"publication": pub.model_dump(mode="json"), "outcome": "BLOCKED"}
+                (
+                    "Threads outcome unresolved; reservation retained to prevent duplicate retry."
+                    if outcome == "RECOVERY_REQUIRED"
+                    else "Threads request failed; stopping the run without another candidate."
+                )),
+        ]) | {
+            "publication": pub.model_dump(mode="json"),
+            "outcome": outcome,
+        }
 
     return _trace("publisher", state, [
         msg("publisher", "all", "DONE",
             "Publication: " + status + " (live=" + str(live) + ")"),
     ]) | {
         "publication": pub.model_dump(mode="json"),
-        "outcome": "PASS" if status in ("PUBLISHED", "SKIPPED_DRY_RUN") else "BLOCKED",
+        "outcome": (
+            "PUBLISHED" if status == "PUBLISHED"
+            else "DRY_RUN" if status == "SKIPPED_DRY_RUN"
+            else "SYSTEM_ERROR"
+        ),
     }
 
 
@@ -1734,26 +1843,29 @@ def node_escalate(state: TeamState) -> TeamState:
 def route_after_research_gate(state: TeamState) -> Literal["verification", "escalate", "__end__"]:
     if state.get("outcome") == "ESCALATE":
         return "escalate"
-    if state.get("outcome") == "INSUFFICIENT_EVIDENCE":
+    if state.get("outcome") == "CANDIDATE_REJECTED":
         return "__end__"
     return "verification"
 
 
-def route_after_verification(state: TeamState) -> Literal["editorial_and_tone", "research", "escalate"]:
-    """If verification flagged unsupported claims, loop back to research (bounded)."""
-    it = (state.get("iteration") or {}).get("research", 0)
-    if state.get("research_questions") and it < MAX_RESEARCH_LOOPS:
-        return "research"
-    if state.get("research_questions"):
-        # loop limit reached — escalate instead of looping forever
+def route_after_verification(
+    state: TeamState,
+) -> Literal["editorial_and_tone", "escalate", "__end__"]:
+    if state.get("outcome") == "ESCALATE":
         return "escalate"
+    if state.get("outcome") == "CANDIDATE_REJECTED":
+        return "__end__"
     return "editorial_and_tone"
 
 
-def route_after_validation(state: TeamState) -> Literal["publisher", "writer", "editorial", "escalate"]:
+def route_after_validation(
+    state: TeamState,
+) -> Literal["publisher", "writer", "editorial", "escalate", "__end__"]:
     # Short-circuit: any upstream node crashed → escalate, never crash here.
     if state.get("outcome") == "ESCALATE":
         return "escalate"
+    if state.get("outcome") == "CANDIDATE_REJECTED":
+        return "__end__"
     validation = state.get("validation")
     if not validation:
         # A node failed before validation ran. Escalate cleanly.
@@ -1761,23 +1873,12 @@ def route_after_validation(state: TeamState) -> Literal["publisher", "writer", "
     if validation["state"] == "PASS":
         return "publisher"
 
-    writer_retries = (state.get("iteration") or {}).get("writer", 0)
-    editorial_fixes = (state.get("iteration") or {}).get("editorial_fix", 0)
-
-    errors = validation.get("errors") or []
-    needs_editorial = any("unapproved" in e for e in errors)
-    needs_writer = any(
-        "attribution" in e or "seed subject" in e or "empty post" in e
-        or "not grounded" in e or "repetitive" in e
-        or "without claim-bearing content" in e
-        for e in errors
-    )
-
-    if needs_editorial and editorial_fixes < MAX_EDITORIAL_FIXES:
+    target = state.get("validation_retry_target")
+    if target == "editorial":
         return "editorial"
-    if needs_writer and writer_retries < MAX_WRITER_RETRIES:
+    if target == "writer":
         return "writer"
-    return "escalate"
+    return "__end__"
 
 
 # ── graph construction ───────────────────────────────────────────
@@ -1816,8 +1917,8 @@ def build_graph() -> StateGraph:
 
     g.add_conditional_edges("verification", route_after_verification, {
         "editorial_and_tone": "editorial",  # editorial and tone both fan out from here
-        "research": "research",
         "escalate": "escalate",
+        "__end__": END,
     })
 
     # Fan-out from editorial → tone runs in parallel.
@@ -1833,6 +1934,7 @@ def build_graph() -> StateGraph:
         "writer": "writer",
         "editorial": "editorial",
         "escalate": "escalate",
+        "__end__": END,
     })
 
     g.add_edge("quota_gate", "publisher")
@@ -1855,6 +1957,7 @@ def run_team(
     topic: str | None = None,
     dry_run: bool = True,
     editorial_memory: dict | None = None,
+    result_out: dict[str, str] | None = None,
 ) -> int:
     import sys
     for stream in (sys.stdout, sys.stderr):
@@ -1863,6 +1966,11 @@ def run_team(
 
     from core.team.state import new_state
     run_id = f"run_{__import__('uuid').uuid4().hex[:12]}"
+    if result_out is not None:
+        result_out.update({
+            "outcome": "SYSTEM_ERROR",
+            "candidate_rejection_reason": "",
+        })
     live_enabled = __import__("os").environ.get(
         "NEWSROOM_LIVE", ""
     ).strip().lower() in ("1", "true", "yes")
@@ -1910,17 +2018,30 @@ def run_team(
         try:
             from core.tools.database import stories as _db
             _story = _db.get_story(story_id)
-            if _story:
-                _sources = _db.get_story_sources(story_id)
-                if not _sources:
-                    raise RuntimeError("story has no linked database source records")
-                production_context = {"story": _story, "sources": _sources}
-                topic = _story.get("title", topic) or topic
-                print("  [run] loaded real story: " + str(story_id))
-                print("        title: " + str(topic)[:80])
-                print("        sources: " + str(len(_sources)))
-            else:
-                raise RuntimeError("story not found in Supabase: " + str(story_id))
+            if not _story:
+                reason = "production candidate no longer exists in Supabase"
+                print("  [run] candidate rejected: " + reason)
+                if result_out is not None:
+                    result_out.update({
+                        "outcome": "CANDIDATE_REJECTED",
+                        "candidate_rejection_reason": "STORY_NOT_FOUND",
+                    })
+                return 1
+            _sources = _db.get_story_sources(story_id)
+            if not _sources:
+                reason = "production candidate has no linked database source records"
+                print("  [run] candidate rejected: " + reason)
+                if result_out is not None:
+                    result_out.update({
+                        "outcome": "CANDIDATE_REJECTED",
+                        "candidate_rejection_reason": "NO_LINKED_SOURCES",
+                    })
+                return 1
+            production_context = {"story": _story, "sources": _sources}
+            topic = _story.get("title", topic) or topic
+            print("  [run] loaded real story: " + str(story_id))
+            print("        title: " + str(topic)[:80])
+            print("        sources: " + str(len(_sources)))
             if not editorial_memory:
                 editorial_memory = _db.build_editorial_memory(story_id=story_id, query_title=topic)
         except Exception as _exc:
@@ -1979,6 +2100,26 @@ def run_team(
     # Print the outcome.
     outcome = final_state.get("outcome", "UNKNOWN")
     print(f"\n[outcome] {outcome}")
+    if result_out is not None:
+        publication = final_state.get("publication") or {}
+        runner_outcome = {
+            "PASS": "DRY_RUN" if publication.get("status") == "SKIPPED_DRY_RUN" else "SYSTEM_ERROR",
+            "ESCALATE": "SYSTEM_ERROR",
+            "BLOCKED": (
+                "RECOVERY_REQUIRED"
+                if str(publication.get("status") or "").endswith("RECOVERY_REQUIRED")
+                else "SYSTEM_ERROR"
+            ),
+        }.get(str(outcome), str(outcome))
+        result_out.update({
+            "outcome": runner_outcome,
+            "candidate_rejection_reason": str(
+                final_state.get("candidate_rejection_reason") or ""
+            ),
+            "publication_status": str(publication.get("status") or ""),
+            "external_post_id": str(publication.get("external_id") or ""),
+            "publication_error": str(publication.get("error") or ""),
+        })
     if final_state.get("blockers"):
         print(f"[blockers] {final_state['blockers']}")
 
@@ -1997,4 +2138,4 @@ def run_team(
     )
     print(f"\n  snapshot: data/runs/{run_id}.json")
 
-    return 0 if outcome == "PASS" else 1
+    return 0 if outcome in ("PASS", "PUBLISHED", "DRY_RUN") else 1

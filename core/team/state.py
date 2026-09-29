@@ -58,6 +58,7 @@ class TeamState(TypedDict, total=False):
     draft: Optional[dict[str, Any]]
     post: Optional[dict[str, Any]]
     validation: Optional[dict[str, Any]]
+    validation_retry_target: str
     publication: Optional[dict[str, Any]]
 
     # Collaboration
@@ -69,13 +70,13 @@ class TeamState(TypedDict, total=False):
 
     # Outcome
     current_node: str
-    outcome: str        # RUNNING | PASS | BLOCK | ESCALATE | INSUFFICIENT_EVIDENCE
+    outcome: str        # RUNNING | PASS | CANDIDATE_REJECTED | ESCALATE | ...
+    candidate_rejection_reason: str
     blockers: list[str]
     errors: list[str]
 
 
-MAX_RESEARCH_LOOPS = 2
-MAX_WRITER_RETRIES = 3
+MAX_WRITER_ATTEMPTS = 2
 MAX_EDITORIAL_FIXES = 1
 
 

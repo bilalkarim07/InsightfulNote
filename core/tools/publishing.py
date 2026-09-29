@@ -67,6 +67,35 @@ def _extract_id_and_url(result: Any) -> tuple[str | None, str | None]:
     )
 
 
+def _error_details(exc: Exception) -> tuple[str, dict[str, Any]]:
+    """Return useful API diagnostics without logging response bodies or tokens."""
+    details: dict[str, Any] = {"error_type": type(exc).__name__}
+    cause = exc.__cause__
+    if cause is not None:
+        details["cause_type"] = type(cause).__name__
+    for prefix, source in (("", exc), ("cause_", cause)):
+        if source is None:
+            continue
+        for attribute in (
+            "status_code", "error_code", "error_subcode", "error_type", "fbtrace_id",
+        ):
+            value = getattr(source, attribute, None)
+            if value is not None:
+                details[prefix + attribute] = value
+    fields = [
+        f"{key}={details[key]}"
+        for key in (
+            "status_code", "error_code", "error_subcode", "fbtrace_id",
+            "cause_type", "cause_status_code", "cause_error_code",
+        )
+        if key in details
+    ]
+    summary = type(exc).__name__
+    if fields:
+        summary += " (" + ", ".join(fields) + ")"
+    return summary, details
+
+
 def publish_threads(text: str, dry_run: bool = True) -> dict[str, Any]:
     """Publish or simulate publishing to Threads.
 
@@ -99,21 +128,41 @@ def publish_threads(text: str, dry_run: bool = True) -> dict[str, Any]:
     try:
         api = build_threads_api()
     except Exception as exc:  # noqa: BLE001
+        error, details = _error_details(exc)
         return {
             "status": "FAILED",
             "external_id": None,
             "url": None,
-            "error": f"build_threads_api: {type(exc).__name__}: {exc}",
+            "error": f"build_threads_api: {error}",
+            "diagnostic": details,
         }
 
     try:
         result = api.create_post(text=text)
     except Exception as exc:  # noqa: BLE001
+        from sources.threads.exceptions import ThreadsPublishingError
+
+        error, details = _error_details(exc)
+        uncertain = isinstance(exc, ThreadsPublishingError)
+        cause_status = details.get("cause_status_code")
+        if (
+            uncertain
+            and isinstance(cause_status, int)
+            and 400 <= cause_status < 500
+            and cause_status not in (408, 425)
+        ):
+            uncertain = False
         return {
-            "status": "FAILED",
+            "status": "UNKNOWN" if uncertain else "FAILED",
             "external_id": None,
             "url": None,
-            "error": f"create_post: {type(exc).__name__}: {exc}",
+            "error": (
+                "Threads publish request may have succeeded; reconciliation required: "
+                + error
+                if uncertain
+                else f"create_post: {error}"
+            ),
+            "diagnostic": details,
         }
     finally:
         try:
@@ -123,17 +172,28 @@ def publish_threads(text: str, dry_run: bool = True) -> dict[str, Any]:
 
     ext_id, url = _extract_id_and_url(result)
     if not ext_id:
+        response_shape = {
+            "response_type": type(result).__name__,
+            "response_keys": sorted(str(key) for key in result)[:30]
+            if isinstance(result, dict) else [],
+        }
         return {
             "status": "UNKNOWN",
             "external_id": None,
             "url": url,
             "error": "Threads API returned no publication ID; outcome requires reconciliation.",
+            "diagnostic": response_shape,
         }
     return {
         "status": "PUBLISHED",
         "external_id": ext_id,
         "url": url,
         "error": None,
+        "diagnostic": {
+            "response_type": type(result).__name__,
+            "response_keys": sorted(str(key) for key in result)[:30]
+            if isinstance(result, dict) else [],
+        },
     }
 
 

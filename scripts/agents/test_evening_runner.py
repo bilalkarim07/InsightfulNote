@@ -9,6 +9,192 @@ sys.path.insert(0, str(ROOT))
 from scripts._bootstrap import *  # noqa: F401,F403,E402
 
 from core.tools.database import stories as db  # noqa: E402
+from core.team.graph import _validation_retry_target  # noqa: E402
+from core.team.state import MAX_WRITER_ATTEMPTS  # noqa: E402
+from core.tools import publishing as threads_publishing  # noqa: E402
+from sources.threads.exceptions import (  # noqa: E402
+    ThreadsAuthenticationError,
+    ThreadsPublishingError,
+)
+from scripts.agents.run_evening_reporting import _attempt_candidates  # noqa: E402
+
+
+def _candidate(index: int) -> dict:
+    return {
+        "id": f"story-{index}",
+        "title": f"Candidate {index}",
+        "source_ids": [f"source-{index}"],
+    }
+
+
+def _test_candidate_fallback() -> None:
+    def memory_builder(**_) -> dict:
+        return {}
+
+    candidates = [_candidate(index) for index in range(1, 4)]
+
+    calls: list[str] = []
+
+    def reject_then_pass(*_args, result_out, **kwargs) -> int:
+        del _args
+        calls.append(kwargs["story_id"])
+        if len(calls) == 1:
+            result_out.update({
+                "outcome": "CANDIDATE_REJECTED",
+                "candidate_rejection_reason": "INSUFFICIENT_EVIDENCE",
+            })
+            return 1
+        result_out.update({
+            "outcome": "PUBLISHED",
+            "external_post_id": "confirmed-post-id",
+        })
+        return 0
+
+    rc = _attempt_candidates(
+        candidates,
+        "provider",
+        "model",
+        False,
+        max_attempts=5,
+        team_runner=reject_then_pass,
+        memory_builder=memory_builder,
+    )
+    assert rc == 0 and calls == ["story-1", "story-2"]
+
+    calls.clear()
+
+    def always_reject(*_args, result_out, **kwargs) -> int:
+        del _args
+        calls.append(kwargs["story_id"])
+        result_out.update({
+            "outcome": "CANDIDATE_REJECTED",
+            "candidate_rejection_reason": "QA_FAILED",
+        })
+        return 1
+
+    rc = _attempt_candidates(
+        candidates,
+        "provider",
+        "model",
+        False,
+        max_attempts=2,
+        team_runner=always_reject,
+        memory_builder=memory_builder,
+    )
+    assert rc == 0 and calls == ["story-1", "story-2"]
+
+    calls.clear()
+
+    def system_failure(*_args, result_out, **kwargs) -> int:
+        del _args
+        calls.append(kwargs["story_id"])
+        result_out["outcome"] = "ESCALATE"
+        return 1
+
+    rc = _attempt_candidates(
+        candidates,
+        "provider",
+        "model",
+        False,
+        max_attempts=5,
+        team_runner=system_failure,
+        memory_builder=memory_builder,
+    )
+    assert rc == 1 and calls == ["story-1"]
+
+    calls.clear()
+
+    def uncertain_publication(*_args, result_out, **kwargs) -> int:
+        del _args
+        calls.append(kwargs["story_id"])
+        result_out.update({
+            "outcome": "RECOVERY_REQUIRED",
+            "publication_error": "Threads response did not contain an ID",
+        })
+        return 1
+
+    rc = _attempt_candidates(
+        candidates,
+        "provider",
+        "model",
+        True,
+        max_attempts=5,
+        team_runner=uncertain_publication,
+        memory_builder=memory_builder,
+    )
+    assert rc == 1 and calls == ["story-1"]
+
+    rc = _attempt_candidates(
+        [],
+        "provider",
+        "model",
+        False,
+        max_attempts=5,
+        team_runner=system_failure,
+        memory_builder=memory_builder,
+    )
+    assert rc == 0 and calls == ["story-1"]
+    assert MAX_WRITER_ATTEMPTS == 2
+    assert _validation_retry_target(
+        {"iteration": {"writer": 1}}, ["empty post text"],
+    ) == "writer"
+    assert _validation_retry_target(
+        {"iteration": {"writer": 2}}, ["empty post text"],
+    ) is None
+    print("  Candidate fallback checks: PASS")
+
+
+def _test_threads_result_classification() -> None:
+    original_available = threads_publishing._AVAILABLE
+    original_factory = threads_publishing.build_threads_api
+
+    class FakeAPI:
+        def __init__(self, result: dict | Exception) -> None:
+            self.result = result
+
+        def create_post(self, *, text: str) -> dict:
+            del text
+            if isinstance(self.result, Exception):
+                raise self.result
+            return self.result
+
+        def close(self) -> None:
+            return None
+
+    try:
+        threads_publishing._AVAILABLE = True
+        threads_publishing.build_threads_api = lambda: FakeAPI({"id": "post-1"})
+        published = threads_publishing.publish_threads("safe test text", dry_run=False)
+        assert published["status"] == "PUBLISHED"
+        assert published["external_id"] == "post-1"
+
+        threads_publishing.build_threads_api = lambda: FakeAPI(
+            {"status": "ok", "message": "created"}
+        )
+        unknown = threads_publishing.publish_threads("safe test text", dry_run=False)
+        assert unknown["status"] == "UNKNOWN"
+        assert unknown["diagnostic"]["response_keys"] == ["message", "status"]
+
+        threads_publishing.build_threads_api = lambda: FakeAPI(
+            ThreadsPublishingError("non-secret simulated publish failure")
+        )
+        uncertain = threads_publishing.publish_threads("safe test text", dry_run=False)
+        assert uncertain["status"] == "UNKNOWN"
+        assert "reconciliation required" in uncertain["error"]
+
+        auth_failure = ThreadsPublishingError("non-secret simulated publish failure")
+        auth_failure.__cause__ = ThreadsAuthenticationError(
+            "non-secret authentication failure",
+            status_code=401,
+        )
+        threads_publishing.build_threads_api = lambda: FakeAPI(auth_failure)
+        rejected = threads_publishing.publish_threads("safe test text", dry_run=False)
+        assert rejected["status"] == "FAILED"
+        assert rejected["diagnostic"]["cause_status_code"] == 401
+    finally:
+        threads_publishing._AVAILABLE = original_available
+        threads_publishing.build_threads_api = original_factory
+    print("  Threads result classification checks: PASS")
 
 
 def main() -> int:
@@ -17,6 +203,8 @@ def main() -> int:
     print("=" * 70)
     print(f"  backend: {db.backend_status()}")
     print()
+    _test_candidate_fallback()
+    _test_threads_result_classification()
 
     cands = db.find_reporting_candidates(max_age_minutes=1440, limit=10)
     print(f"  candidates in last 24h: {len(cands)}")
