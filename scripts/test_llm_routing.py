@@ -26,11 +26,22 @@ def test_llm_routing_and_contracts() -> None:
 
     # 1. Registry & Router check
     registry = build_default_registry()
-    load_capabilities(registry)
+    loaded = load_capabilities(registry)
+    assert loaded >= 6, f"expected at least 6 manifest models, loaded {loaded}"
 
     print(f"[OK] Model registry loaded ({len(registry.all())} model configurations available).")
 
     router = ModelRouter(registry)
+    research_models = {
+        f"{entry.provider}/{entry.model_id}"
+        for entry in router.eligible_models(
+            router.get_task_requirements(AgentTask.RESEARCH)
+        )
+    }
+    assert "ollama/gpt-oss:120b" in research_models
+    assert "groq/openai/gpt-oss-120b" in research_models
+    print("[OK] Verified research routes include Ollama 120B and Groq 120B.")
+
     selected_entry = router.route(AgentTask.EDITORIAL)
     fallback_entries = router.fallback_chain(AgentTask.EDITORIAL)
 

@@ -9,6 +9,7 @@ so that a fresh runner can route to verified models without re-benchmarking.
 """
 from __future__ import annotations
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -77,6 +78,7 @@ def load_capabilities(registry: ModelRegistry) -> int:
     if count > 0:
         return count
     # Fall back to committed manifest (GitHub Actions path).
+    manifest_error: str | None = None
     if MANIFEST_FILE.exists():
         try:
             raw = json.loads(MANIFEST_FILE.read_text(encoding="utf-8"))
@@ -90,8 +92,24 @@ def load_capabilities(registry: ModelRegistry) -> int:
                     entry.capabilities = cap
                     registry.capabilities.register(cap)
                     count += 1
-        except Exception:
-            pass
+        except Exception as exc:
+            manifest_error = f"{type(exc).__name__}: {exc}"
+    elif os.environ.get("GITHUB_ACTIONS", "").strip().lower() == "true":
+        manifest_error = "file does not exist"
+
+    if (
+        count == 0
+        and os.environ.get("GITHUB_ACTIONS", "").strip().lower() == "true"
+    ):
+        detail = (
+            f"manifest is unavailable ({manifest_error})"
+            if manifest_error
+            else "manifest contains no capabilities matching the registered models"
+        )
+        raise RuntimeError(
+            "No verified model capabilities were loaded in GitHub Actions: "
+            f"committed capability manifest {MANIFEST_FILE} {detail}."
+        )
     return count
 
 
