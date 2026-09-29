@@ -18,7 +18,11 @@ from langgraph.graph import END, StateGraph
 
 from schemas.common import new_run_id  # not used here, for callers
 from schemas.discovery import DiscoveryResult
-from schemas.source_intelligence import SourceIntelligenceResult, SourceType
+from schemas.source_intelligence import (
+    SourceIntelligenceResult,
+    SourceType,
+    normalize_source_intelligence_payload,
+)
 from schemas.research import ResearchResult, Evidence, Claim
 from schemas.research_claims import ResearchClaims
 from schemas.selection import SelectionDecision
@@ -422,7 +426,9 @@ def node_source_intel(state: TeamState) -> TeamState:
         "not UNKNOWN; otherwise use UNKNOWN unless the source records establish a "
         "classification. A URL or publisher name alone does not establish "
         "authority or quality; leave authority empty unless documented_authority "
-        "contains evidence, and copy that value exactly. If publisher_name is empty, "
+        "contains evidence, and copy that value exactly. authority must always be "
+        "a string, never null. Do not wrap source URLs in Markdown; copy all source "
+        "identifiers and URLs unchanged from the supplied records. If publisher_name is empty, "
         "keep independence=UNKNOWN unless multiple actual publishers are documented. "
         "If fewer than two distinct "
         "publisher names are present, independence must be UNKNOWN for every assessment. "
@@ -456,7 +462,12 @@ def node_source_intel(state: TeamState) -> TeamState:
     client = _model(state)
     result, _ = _structured(
         client, SourceIntelligenceResult, prompt, state["provider"],
-        context={"run_id": run_id, "story_id": story_id},
+        context={
+            "run_id": run_id,
+            "story_id": story_id,
+            "source_inputs": source_inputs,
+        },
+        payload_normalizer=normalize_source_intelligence_payload,
     )
     expected = [(row["source_id"], row["source_url"]) for row in source_inputs]
     returned = {

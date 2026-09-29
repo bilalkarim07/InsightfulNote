@@ -16,7 +16,7 @@ Handles:
 from __future__ import annotations
 
 import json
-from typing import Any, Type, Union, get_args, get_origin
+from typing import Any, Callable, Type, Union, get_args, get_origin
 
 from pydantic import BaseModel
 
@@ -149,6 +149,9 @@ def _try_parse(
     schema: Type[BaseModel],
     raw: Any,
     context: dict | None = None,
+    payload_normalizer: (
+        Callable[[dict[str, Any], dict | None], dict[str, Any]] | None
+    ) = None,
 ) -> BaseModel | None:
     """Parse an LLM response into the schema."""
     text = _raw_content(raw)
@@ -189,6 +192,8 @@ def _try_parse(
                     data[key] = context[key]
 
     try:
+        if payload_normalizer is not None:
+            data = payload_normalizer(data, context)
         return schema.model_validate(data)
     except Exception as exc:
         raise ValueError(
@@ -204,6 +209,9 @@ def invoke_structured(
     supports_json_schema: bool = True,
     preferred_method: str | None = None,
     context: dict | None = None,
+    payload_normalizer: (
+        Callable[[dict[str, Any], dict | None], dict[str, Any]] | None
+    ) = None,
 ) -> tuple[BaseModel, str]:
     """Return (parsed_model, method_used)."""
     errors: dict[str, str] = {}
@@ -236,9 +244,25 @@ def invoke_structured(
             raw_previews[method] = _raw_preview(raw)
 
             if parsed is not None and isinstance(parsed, schema):
+                if payload_normalizer is not None:
+                    try:
+                        normalized = payload_normalizer(
+                            parsed.model_dump(mode="python"), context,
+                        )
+                        parsed = schema.model_validate(normalized)
+                    except Exception as exc:
+                        errors[method] = (
+                            f"{type(exc).__name__}: {str(exc)[:200]}"
+                        )
+                        continue
                 return parsed, method
 
-            recovered = _try_parse(schema, raw, context=context)
+            recovered = _try_parse(
+                schema,
+                raw,
+                context=context,
+                payload_normalizer=payload_normalizer,
+            )
             if recovered is not None:
                 return recovered, f"{method}+recovered"
 
