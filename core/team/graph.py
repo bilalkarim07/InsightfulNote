@@ -1371,14 +1371,21 @@ def node_quota_gate(state: TeamState) -> TeamState:
     """Apply the shared daily cap with mode-specific publication windows."""
     if state.get("outcome") == "ESCALATE":
         return state
-    if state.get("dry_run"):
-        return _trace("quota_gate", state, [
-            msg(
-                "quota_gate", "publisher", "HANDOFF",
-                "dry-run: publication quota is not consumed or enforced",
-            ),
-        ])
     from core.team import quota as quota_mod
+
+    if state.get("dry_run"):
+        message = "dry-run: publication quota is not consumed or enforced"
+        publication_type = (
+            "breaking" if state.get("mode") == "breaking" else "normal"
+        )
+        if quota_mod.active_hours_bypass_enabled(publication_type):
+            message += (
+                " (active-hours bypass enabled for manual test run; "
+                "quotas are not evaluated in dry-run)"
+            )
+        return _trace("quota_gate", state, [
+            msg("quota_gate", "publisher", "HANDOFF", message),
+        ])
 
     publication_type = "breaking" if state.get("mode") == "breaking" else "normal"
     if publication_type == "breaking":
@@ -1462,16 +1469,21 @@ def node_quota_gate(state: TeamState) -> TeamState:
                 "blockers": (state.get("blockers") or []) + [reason],
             }
 
-    allowed, reason, _state = quota_mod.can_publish(publication_type=publication_type)
+    allowed, reason, quota_state = quota_mod.can_publish(
+        publication_type=publication_type
+    )
+    quota_message = "quota ok" if allowed else "deferred: " + reason
+    if quota_state.get("active_hours_bypassed"):
+        quota_message += " (active-hours restriction bypassed for manual test run)"
     if allowed:
         return _trace("quota_gate", state, [
-            msg("quota_gate", "publisher", "HANDOFF", "quota ok"),
+            msg("quota_gate", "publisher", "HANDOFF", quota_message),
         ])
 
     # Not allowed — record deferral and return early.
     quota_mod.record_deferral()
     return _trace("quota_gate", state, [
-        msg("quota_gate", "all", "INFO", "deferred: " + reason),
+        msg("quota_gate", "all", "INFO", quota_message),
     ]) | {
         "outcome": "DEFERRED_QUOTA",
         "blockers": (state.get("blockers") or []) + ["quota: " + reason],

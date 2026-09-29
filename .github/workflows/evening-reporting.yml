@@ -10,6 +10,10 @@ on:
         description: "Set to true to publish for real"
         type: boolean
         default: false
+      bypass_active_hours:
+        description: "Allow manual testing outside normal reporting hours"
+        type: boolean
+        default: false
 
 concurrency:
   group: newsroom-production
@@ -45,6 +49,7 @@ jobs:
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
           NEWSROOM_LIVE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.live == 'true' && 'true' || 'false' }}
+          NEWSROOM_BYPASS_ACTIVE_HOURS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.bypass_active_hours == 'true' && 'true' || 'false' }}
           NEWSROOM_MAX_PER_DAY: ${{ vars.NEWSROOM_MAX_PER_DAY || '5' }}
           NEWSROOM_PUBLISH_TIMEZONE: ${{ vars.NEWSROOM_PUBLISH_TIMEZONE || 'America/New_York' }}
           NEWSROOM_PROVIDER: ${{ vars.NEWSROOM_PROVIDER || '' }}

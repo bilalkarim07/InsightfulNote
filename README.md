@@ -35,6 +35,12 @@ Capability-aware per-agent model routing is a future improvement.
 - `hourly-breaking-news.yml` evaluates breaking candidates hourly, 24/7.
 - `evening-reporting.yml` runs at 7–11 PM America/New_York.
 
+Scheduled evening runs remain within that reporting window. A manual
+Evening Reporting dispatch can enable `bypass_active_hours` to test outside
+the normal quota hours. This only bypasses the clock check; the daily quota,
+spacing, QA, duplicate protection, and publication safeguards still apply.
+Keep `NEWSROOM_BYPASS_ACTIVE_HOURS=false` except for controlled manual tests.
+
 Breaking posts bypass the normal reporting-hour and spacing checks, but share
 the configured daily maximum and retain evidence, duplicate, and publication
 safety checks. Workflows must remain non-live until live gates and replay

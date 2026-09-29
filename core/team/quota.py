@@ -9,6 +9,7 @@ Config (env-overridable):
   NEWSROOM_ACTIVE_START       default 8    (local hour)
   NEWSROOM_ACTIVE_END         default 23   (local hour, exclusive)
   NEWSROOM_TZ_OFFSET          default 5    (hours from UTC)
+  NEWSROOM_BYPASS_ACTIVE_HOURS default false (manual reporting tests only)
 """
 from __future__ import annotations
 
@@ -26,6 +27,21 @@ def _env_int(name: str, default: int) -> int:
         return int(os.environ.get(name, str(default)))
     except (ValueError, TypeError):
         return default
+
+
+def _env_bool(name: str, default: bool = False) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in ("1", "true", "yes")
+
+
+def active_hours_bypass_enabled(publication_type: str = "normal") -> bool:
+    """Return whether reporting hours are bypassed for a non-breaking run."""
+    return (
+        publication_type != "breaking"
+        and _env_bool("NEWSROOM_BYPASS_ACTIVE_HOURS")
+    )
 
 
 def _get_publish_timezone() -> timezone | Any:
@@ -98,7 +114,11 @@ def can_publish(
         "publication_type": publication_type,
     }
 
-    if publication_type != "breaking":
+    bypass_active_hours = active_hours_bypass_enabled(publication_type)
+    if bypass_active_hours:
+        state["active_hours_bypassed"] = True
+
+    if publication_type != "breaking" and not bypass_active_hours:
         hour = _local_now().hour
         if not (active_start <= hour < active_end):
             state["published"] = 0
