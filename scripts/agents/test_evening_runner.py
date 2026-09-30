@@ -1,5 +1,7 @@
 """Test evening reporting selection (deterministic)."""
 from __future__ import annotations
+from contextlib import redirect_stdout
+from io import StringIO
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -314,6 +316,30 @@ def _test_candidate_eligibility() -> None:
     print("  Candidate eligibility checks: PASS")
 
 
+def _test_candidate_source_count_display() -> None:
+    output = StringIO()
+
+    def reject_candidate(*_args, result_out, **_kwargs) -> int:
+        result_out.update(
+            outcome="CANDIDATE_REJECTED",
+            candidate_rejection_reason="TEST",
+        )
+        return 1
+
+    with redirect_stdout(output):
+        _attempt_candidates(
+            [{"id": "story-with-source", "title": "Candidate", "_source_count": 1}],
+            provider="test",
+            model_id="test-model",
+            live=False,
+            max_attempts=1,
+            team_runner=reject_candidate,
+            memory_builder=lambda **_: {},
+        )
+    assert "Sources: 1 linked" in output.getvalue()
+    print("  Candidate source-count display: PASS")
+
+
 def _test_reporting_candidate_order() -> None:
     now = datetime.now(timezone.utc)
     candidates = [
@@ -425,6 +451,7 @@ def main() -> int:
     print()
     _test_candidate_fallback()
     _test_candidate_eligibility()
+    _test_candidate_source_count_display()
     _test_reporting_candidate_order()
     _test_editorial_memory_context()
     _test_threads_result_classification()

@@ -265,10 +265,13 @@ def _attempt_candidates(
 
         attempted += 1
         sources = candidate.get("source_ids") or []
+        source_count = candidate.get("_source_count")
+        if not isinstance(source_count, int):
+            source_count = len(sources)
         print(f"\n[candidate {index}/{min(len(candidates), max_attempts)}]")
         print(f"  Title: {title[:100]}")
         print(f"  Story ID: {story_id}")
-        print(f"  Sources: {sources}")
+        print(f"  Sources: {source_count} linked")
 
         try:
             memory = build_memory(story_id=story_id, query_title=title)
