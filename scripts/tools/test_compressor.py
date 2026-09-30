@@ -53,6 +53,18 @@ def main() -> None:
     if no_ellipsis != "The policy was approved.":
         print(f"[FAIL] short post retained an ellipsis or bad ending: {no_ellipsis!r}")
         failures += 1
+    oversized_post = compress_to_limit(
+        "Unauthorized access exposed sensitive personnel data, according to a "
+        "defense official, while officials continue investigating the incident.",
+        limit=70,
+    )
+    if (
+        len(oversized_post) > 70
+        or not oversized_post.endswith((".", "!", "?"))
+        or oversized_post.endswith(("…", "..."))
+    ):
+        print(f"[FAIL] oversized post is not a complete natural ending: {oversized_post!r}")
+        failures += 1
     if failures:
         sys.exit(1)
     print("\nALL COMPRESSOR TESTS PASS")

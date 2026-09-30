@@ -7,6 +7,7 @@ This is not a pipeline. Every node can:
   - decide the run is done
 """
 from __future__ import annotations
+import logging
 import re
 
 import json
@@ -56,6 +57,8 @@ ProviderFactory.register(OllamaProvider(cloud=True))
 ProviderFactory.register(GroqProvider())
 ProviderFactory.register(OpenRouterProvider())
 ProviderFactory.register(GeminiProvider())
+
+_LOGGER = logging.getLogger(__name__)
 
 
 # ── helpers ─────────────────────────────────────────────────────
@@ -887,6 +890,116 @@ def _editorial_memory_context(editorial_memory: dict | None) -> str:
     return chr(10).join(memory_lines) or "(no similar recent stories)"
 
 
+def _select_strongest_verified_claim(
+    research: ResearchResult,
+    verification: VerificationResult,
+    source_intel: dict[str, Any] | None,
+) -> tuple[Claim, VerificationStatus] | None:
+    """Choose an evidence-backed, non-speculative claim deterministically."""
+    verifications = {
+        item.claim_id: item
+        for item in verification.verifications
+        if item.status in (
+            VerificationStatus.SUPPORTED,
+            VerificationStatus.SUPPORTED_AS_ATTRIBUTED,
+        )
+    }
+    evidence_by_id = {
+        item.evidence_id: item
+        for item in research.evidence
+        if item.url
+        and urlsplit(item.url).scheme in ("http", "https")
+        and urlsplit(item.url).hostname
+        and not _is_placeholder_source_url(item.url)
+    }
+    source_ranks = {
+        "PRIMARY": 4,
+        "OFFICIAL": 4,
+        "SECONDARY": 3,
+        "AGGREGATOR": 1,
+        "UNKNOWN": 0,
+        "OPINION": -1,
+    }
+    assessments = (source_intel or {}).get("assessments", [])
+    if not isinstance(assessments, list):
+        assessments = []
+    assessment_ranks = {
+        str(item.get("source_id") or ""): source_ranks.get(
+            str(item.get("source_type") or "UNKNOWN").upper(), 0,
+        )
+        for item in assessments
+        if isinstance(item, dict)
+    }
+
+    ranked: list[tuple[tuple[int, int, int, int, int], str, Claim, VerificationStatus]] = []
+    for claim in research.claims:
+        item = verifications.get(claim.claim_id)
+        if (
+            item is None
+            or claim.is_forecast
+            or claim.is_allegation
+            or claim.is_opinion
+        ):
+            continue
+        claim_evidence_ids = set(claim.evidence_ids)
+        verification_evidence_ids = set(item.evidence_ids)
+        referenced_evidence_ids = (
+            claim_evidence_ids & verification_evidence_ids
+            if verification_evidence_ids
+            else claim_evidence_ids
+        )
+        evidence = [
+            evidence_by_id[evidence_id]
+            for evidence_id in dict.fromkeys(item.evidence_ids or claim.evidence_ids)
+            if evidence_id in referenced_evidence_ids
+            and evidence_id in evidence_by_id
+        ]
+        if not evidence:
+            continue
+
+        source_ids = {entry.source_id for entry in evidence}
+        source_quality = max(
+            (assessment_ranks.get(source_id, 0) for source_id in source_ids),
+            default=0,
+        )
+        verified_status_rank = int(item.status == VerificationStatus.SUPPORTED)
+        specificity = min(
+            len(re.findall(r"\b[\w'-]+\b", claim.text)),
+            100,
+        )
+        certainty = int(not bool(claim.uncertainty.strip()))
+        score = (
+            source_quality,
+            len(source_ids),
+            certainty,
+            specificity,
+            verified_status_rank,
+        )
+        ranked.append((score, claim.claim_id, claim, item.status))
+
+    if not ranked:
+        return None
+    _, _, claim, status = min(ranked, key=lambda entry: (
+        tuple(-value for value in entry[0]),
+        entry[1],
+    ))
+    return claim, status
+
+
+def _has_unresolved_duplicate(editorial_memory: dict[str, Any] | None) -> bool:
+    if not isinstance(editorial_memory, dict):
+        return False
+    similar_stories = editorial_memory.get("similar_stories")
+    if not isinstance(similar_stories, list):
+        return False
+    return any(
+        isinstance(item, dict)
+        and str(item.get("relationship") or "").upper()
+        in {"DUPLICATE", "REPETITIVE"}
+        for item in similar_stories
+    )
+
+
 def node_editorial(state: TeamState) -> TeamState:
     """Editorial — decides what the story is actually about."""
     if _is_terminal(state):
@@ -948,17 +1061,86 @@ def node_editorial(state: TeamState) -> TeamState:
         context={"run_id": run_id, "story_id": story_id},
     )
     print("  [editorial] central_event=" + repr(result.central_event[:80]))
+    model_selected_claims = list(result.allowed_claim_ids)
     result.allowed_claim_ids = [
         claim_id for claim_id in result.allowed_claim_ids if claim_id in allowed
     ]
     print("  [editorial] allowed=" + str(result.allowed_claim_ids))
     if not result.allowed_claim_ids:
-        return _reject_candidate(
-            state,
-            "editorial",
-            "NO_EDITORIAL_PATH",
-            "editorial approved no verified claims",
+        if model_selected_claims:
+            return _reject_candidate(
+                state,
+                "editorial",
+                "NO_EDITORIAL_PATH",
+                "editorial selected no verified claim IDs",
+            )
+
+        story_metadata = (
+            (state.get("production_context") or {}).get("story")
+            or state.get("story_record")
+            or {}
+        ).get("metadata") or {}
+        if not isinstance(story_metadata, dict):
+            story_metadata = {}
+        if (
+            story_metadata.get("topic_fit") is False
+            or story_metadata.get("newsworthiness") is False
+        ):
+            return _reject_candidate(
+                state,
+                "editorial",
+                "EDITORIAL_QUALITY_GATE_FAILED",
+                "story failed the existing topic-fit or newsworthiness gate",
+            )
+        if _has_unresolved_duplicate(state.get("editorial_memory")):
+            return _reject_candidate(
+                state,
+                "editorial",
+                "DUPLICATE_NO_MATERIAL_UPDATE",
+                "editorial memory identifies duplicate or repetitive coverage and no update was approved",
+            )
+
+        fallback = _select_strongest_verified_claim(
+            research,
+            verification,
+            state.get("source_intel"),
         )
+        if fallback is None:
+            return _reject_candidate(
+                state,
+                "editorial",
+                "NO_EDITORIAL_PATH",
+                "no safe, URL-backed verified claim is available for deterministic fallback",
+            )
+        fallback_claim, fallback_status = fallback
+        result.allowed_claim_ids = [fallback_claim.claim_id]
+        result.central_event = fallback_claim.text
+        fallback_reason = "EDITORIAL_EMPTY_SELECTION_FALLBACK"
+        _LOGGER.warning(
+            "Editorial LLM returned no allowed claims; using deterministic verified-claim fallback",
+            extra={
+                "story_id": story_id,
+                "selected_claim_id": fallback_claim.claim_id,
+                "verification_status": fallback_status.value,
+                "fallback_reason": fallback_reason,
+            },
+        )
+        print(
+            "  [editorial] deterministic fallback selected "
+            + fallback_claim.claim_id
+            + " ("
+            + fallback_status.value
+            + ")"
+        )
+        fallback_message = msg(
+            "editorial",
+            "tone",
+            "INFO",
+            fallback_reason + ": selected " + fallback_claim.claim_id
+            + " (" + fallback_status.value + ")",
+        )
+    else:
+        fallback_message = None
 
     # Deterministic: central_event must be non-empty.
     if not result.central_event or not result.central_event.strip():
@@ -968,7 +1150,7 @@ def node_editorial(state: TeamState) -> TeamState:
     return _trace("editorial", state, [
         msg("editorial", "tone", "HANDOFF",
             "Central event: " + result.central_event[:120]),
-    ]) | {
+    ] + ([fallback_message] if fallback_message else [])) | {
         "editorial": result.model_dump(mode="json"),
         "editorial_fixes": [],
     }
@@ -1038,9 +1220,22 @@ def node_writer(state: TeamState) -> TeamState:
     run_id, story_id = state["run_id"], state["story_id"]
     research = ResearchResult.model_validate(state["research"])
     editorial = EditorialDecision.model_validate(state["editorial"])
+    verification = VerificationResult.model_validate(state["verification"])
     tone_decision = ToneDecision.model_validate(state["tone"])
 
-    approved = [c for c in research.claims if c.claim_id in editorial.allowed_claim_ids]
+    verification_statuses = {
+        item.claim_id: item.status
+        for item in verification.verifications
+        if item.status in (
+            VerificationStatus.SUPPORTED,
+            VerificationStatus.SUPPORTED_AS_ATTRIBUTED,
+        )
+    }
+    approved = [
+        claim for claim in research.claims
+        if claim.claim_id in editorial.allowed_claim_ids
+        and claim.claim_id in verification_statuses
+    ]
     if not approved:
         return _reject_candidate(
             state,
@@ -1048,9 +1243,18 @@ def node_writer(state: TeamState) -> TeamState:
             "WRITER_FAILED",
             "no editorial-approved verified claims are available",
         )
+    if set(editorial.allowed_claim_ids) - set(verification_statuses):
+        return _reject_candidate(
+            state,
+            "writer",
+            "WRITER_FAILED",
+            "editorial selection contains claims not supported by verification",
+        )
 
     approved_block = chr(10).join(
-        "- " + c.claim_id + ": " + c.text
+        "- " + c.claim_id + " ["
+        + verification_statuses[c.claim_id].value
+        + "]: " + c.text
         + (" [attribution: " + c.attribution + "]" if c.attribution else "")
         + (" [uncertainty: " + c.uncertainty + "]" if c.uncertainty else "")
         + (" [forecast]" if c.is_forecast else "")
@@ -1106,6 +1310,7 @@ def node_writer(state: TeamState) -> TeamState:
         + "- Every factual sentence must be directly grounded in one or more approved claims." + chr(10)
         + "- Do not add context, causal links, motivation, comparisons, names, dates, numbers, quotes, URLs, or conclusions not stated in those claims." + chr(10)
         + "- Preserve attribution, allegation status, forecast status, and uncertainty." + chr(10)
+        + "- For SUPPORTED_AS_ATTRIBUTED claims, keep the claim's attribution in the post; never state the attributed fact as independently confirmed." + chr(10)
         + "- claim_ids must list only approved claim IDs directly used in the post." + chr(10)
         + "- If a supported post cannot be written, return an empty body; do not improvise." + chr(10)
         + "- Do NOT use the field name 'text'. Use 'body'." + chr(10) + chr(10)
@@ -1135,7 +1340,8 @@ def node_writer(state: TeamState) -> TeamState:
         if body:
             first = re.split(r"(?<=[.!?])\s+", body, maxsplit=1)[0].strip()
             if len(first) > 120:
-                first = first[:117].rsplit(" ", 1)[0] + "..."
+                from core.tools.compress import compress_to_limit
+                first = compress_to_limit(first, limit=120)
             result.headline = first
             print(f"  [writer] headline derived from body: {first[:80]!r}")
         else:

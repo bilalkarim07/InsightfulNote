@@ -43,6 +43,8 @@ The Writer receives:
 - Source-link requirements.
 
 The Writer must treat the approved claim set as the factual boundary of the story.
+Claims marked `SUPPORTED_AS_ATTRIBUTED` must retain their attribution and must
+not be rewritten as independently confirmed facts.
 
 ---
 

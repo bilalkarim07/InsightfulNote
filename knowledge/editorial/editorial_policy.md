@@ -106,3 +106,17 @@ Produce an editorial brief for the Writer Agent.
 ## 11. Quality Gate
 
 The brief must contain only verified information and clearly define tone, context, attribution, and boundaries.
+
+## 12. Empty Claim Selection
+
+Only `SUPPORTED` and `SUPPORTED_AS_ATTRIBUTED` claims may be considered for an
+editorial brief. If the Editorial Agent returns no selected claim IDs, the
+pipeline may select one deterministically from the verified, URL-backed claims
+when no explicit quality-gate failure or unresolved duplicate/repetitive story
+is present. This fallback must not select forecasts, allegations, or opinions,
+must preserve the original claim text, and must record the selected claim and
+verification status.
+
+`SUPPORTED_AS_ATTRIBUTED` claims remain usable only with their attribution
+preserved. Claims marked unsupported, contradicted, uncertain, or partially
+supported remain unavailable to the writer.
