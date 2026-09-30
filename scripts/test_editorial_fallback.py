@@ -382,12 +382,21 @@ def _test_writer_preserves_attribution_status() -> None:
     graph._structured = structured
     try:
         graph.node_writer(state)
+        retry_state = dict(state)
+        retry_state.update({
+            "iteration": {"writer": 1},
+            "validation": {"failed_sentences": ["A paraphrased unsupported sentence."]},
+            "validation_feedback": ["post contains a sentence not grounded in an approved claim"],
+        })
+        graph.node_writer(retry_state)
     finally:
         graph._model = original_model
         graph._structured = original_structured
     assert "[SUPPORTED_AS_ATTRIBUTED]" in captured["prompt"]
     assert "never state the attributed fact as independently confirmed" in captured["prompt"]
     assert claim.text in captured["prompt"]
+    assert "copy the text of one approved claim" in captured["prompt"]
+    assert "list only that claim ID" in captured["prompt"]
     print("[PASS] writer receives explicit attribution preservation instructions")
 
 

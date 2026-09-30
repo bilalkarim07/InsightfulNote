@@ -1298,7 +1298,10 @@ def node_writer(state: TeamState) -> TeamState:
             + chr(10).join(repr(sentence) for sentence in failed_sentences)
             + chr(10) + "Remove each sentence and its unsupported idea entirely. "
             "Do not paraphrase it, replace it, or add a new factual sentence. "
-            "Rewrite only from the approved claims below."
+            "For the replacement body, copy the text of one approved claim "
+            "below verbatim as one complete sentence, and list only that "
+            "claim ID. Do not add a headline or any other factual wording to "
+            "the body. If no approved claim fits, return an empty body."
         )
     elif state.get("validation_feedback"):
         retry_instructions = (
@@ -1333,6 +1336,7 @@ def node_writer(state: TeamState) -> TeamState:
         "a sentence incomplete." + chr(10)
         + "Rules:" + chr(10)
         + "- Every factual sentence must be directly grounded in one or more approved claims." + chr(10)
+        + "- Prefer exact approved-claim wording; do not substitute near-synonyms or add descriptive wording." + chr(10)
         + "- Do not add context, causal links, motivation, comparisons, names, dates, numbers, quotes, URLs, or conclusions not stated in those claims." + chr(10)
         + "- Preserve attribution, allegation status, forecast status, and uncertainty." + chr(10)
         + "- For SUPPORTED_AS_ATTRIBUTED claims, keep the claim's attribution in the post; never state the attributed fact as independently confirmed." + chr(10)
