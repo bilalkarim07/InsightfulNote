@@ -704,6 +704,31 @@ Return JSON only, no prose, no markdown fences.
     claims_result, method = _structured(
         client, ResearchClaims, prompt, state["provider"],
     )
+    if not claims_result.claims:
+        print(
+            "[research] model returned no claims; retrying once against the "
+            "same evidence"
+        )
+        recovery_prompt = (
+            prompt
+            + "\n\nRecovery attempt: Recheck only the evidence supplied above. "
+            "If it supports any factual statement about the topic, return "
+            "1-3 concise claims citing the exact available evidence_ids. "
+            "Do not infer or add facts. Return claims=[] only if the evidence "
+            "does not support a relevant factual statement."
+        )
+        try:
+            retried_claims, retry_method = _structured(
+                client, ResearchClaims, recovery_prompt, state["provider"],
+            )
+        except StructuredOutputError as exc:
+            print(
+                "[research] recovery attempt failed; retaining empty result "
+                f"({type(exc).__name__})"
+            )
+        else:
+            claims_result = retried_claims
+            method = f"{method}+empty-retry:{retry_method}"
     print(f"  [research] structured output via {method}: "
           f"{len(claims_result.claims)} claim(s)")
 
