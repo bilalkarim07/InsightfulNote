@@ -31,12 +31,16 @@ def demo_scenarios() -> None:
     sid_a = db.create_story(
         title="Federal Reserve Keeps Benchmark Interest Rate Unchanged at 5.25%",
         summary="The Federal Reserve announced its policy decision today.",
-        metadata={"categories": [Category.FINANCE.value]},
+        metadata={
+            "categories": [Category.FINANCE.value],
+            "published_at": db._now(),
+        },
     )
     ni_a = db.upsert_news_item({
         "url": "https://example.com/fed-decision-today",
         "title": "Federal Reserve Keeps Benchmark Interest Rate Unchanged at 5.25%",
         "categories": [Category.FINANCE.value],
+        "published_at": db._now(),
     })
     db.link_story_source(sid_a, ni_a)
     sel_a = select_evening()
@@ -81,17 +85,22 @@ def demo_scenarios() -> None:
     sid_e = db.create_story(
         title="Breaking: International Court Issues Binding Climate Ruling on Emissions",
         summary="A major international judicial ruling was issued 15 minutes ago.",
-        metadata={"categories": [Category.CLIMATE_ENVIRONMENT.value, Category.WORLD_EVENTS.value]},
+        metadata={
+            "categories": [Category.CLIMATE_ENVIRONMENT.value, Category.WORLD_EVENTS.value],
+            "published_at": db._now(),
+        },
     )
     ni_e1 = db.upsert_news_item({
         "url": "https://example.com/breaking-court-ruling-1",
         "title": "Breaking: International Court Issues Binding Climate Ruling on Emissions",
         "categories": [Category.CLIMATE_ENVIRONMENT.value],
+        "published_at": db._now(),
     })
     ni_e2 = db.upsert_news_item({
         "url": "https://example.com/breaking-court-ruling-2",
         "title": "International Court Rulings Announced on Global Carbon Emissions",
         "categories": [Category.CLIMATE_ENVIRONMENT.value],
+        "published_at": db._now(),
     })
     db.link_story_source(sid_e, ni_e1)
     db.link_story_source(sid_e, ni_e2)

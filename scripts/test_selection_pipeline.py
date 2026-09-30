@@ -25,17 +25,20 @@ def test_selection_pipeline() -> None:
     story_pol = db.create_story(
         title="Unanimous Vote Passed in Senate Policy Session",
         summary="Senate passed new legislation today.",
-        metadata={"categories": ["GLOBAL_POLITICS"]},
+        metadata={
+            "categories": ["GLOBAL_POLITICS"],
+            "published_at": db._now(),
+        },
     )
     story_health = db.create_story(
         title="WHO Releases Global Health Guidelines for Vaccine Safety",
         summary="New global health standards published today.",
-        metadata={"categories": ["HEALTH"]},
+        metadata={"categories": ["HEALTH"], "published_at": db._now()},
     )
     story_tech = db.create_story(
         title="Breakthrough Quantum Processor Demonstrated by Researchers",
         summary="A new quantum chip achieves record coherence times.",
-        metadata={"categories": ["TECHNOLOGY"]},
+        metadata={"categories": ["TECHNOLOGY"], "published_at": db._now()},
     )
 
     print(f"[OK] Created candidate stories in DB:")

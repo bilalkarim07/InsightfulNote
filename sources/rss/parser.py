@@ -2,6 +2,7 @@
 
 from datetime import datetime, timezone
 from typing import List
+from urllib.parse import urlparse
 
 import feedparser
 
@@ -50,6 +51,18 @@ def parse_feed(content: bytes, source_name: str = "rss") -> List[NewsItem]:
 
             author = entry.get("author")
             guid = entry.get("id") or entry.get("guid")
+            publisher = entry.get("source") or {}
+            publisher_name = (
+                publisher.get("title")
+                if isinstance(publisher, dict)
+                else getattr(publisher, "title", None)
+            )
+            publisher_url = (
+                publisher.get("href")
+                if isinstance(publisher, dict)
+                else getattr(publisher, "href", None)
+            )
+            publisher_domain = urlparse(publisher_url or "").hostname
             categories = [
                 tag.get("term")
                 for tag in entry.get("tags", [])
@@ -63,11 +76,15 @@ def parse_feed(content: bytes, source_name: str = "rss") -> List[NewsItem]:
                 canonical_url=canonicalize_url(link),
                 description=description,
                 snippet=description,
-                source_name=source_name,
+                source_name=publisher_name or source_name,
                 author=author,
                 published_at=published_at,
                 categories=categories,
-                metadata={"feed_entry": dict(entry)},
+                metadata={
+                    "feed_entry": dict(entry),
+                    "publisher_name": publisher_name,
+                    "publisher_domain": publisher_domain,
+                },
             )
             items.append(item)
         except Exception:

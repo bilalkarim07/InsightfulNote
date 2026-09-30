@@ -30,6 +30,10 @@ _PRONOUNS = {
 }
 _NUMBER_RE = re.compile(r"\b\d[\d,.]*\b|\bpercent\b|\b%\b|\b20\d{2}\b")
 _CLAIM_TOKEN_RE = re.compile(r"\bclaim_\d+\b")
+_DANGLING_ENDINGS = {
+    "a", "an", "and", "as", "at", "by", "for", "from", "in", "into",
+    "of", "on", "or", "that", "the", "to", "with",
+}
 
 
 def _split_sentences(text: str) -> list[str]:
@@ -67,15 +71,61 @@ def _score_sentence(s: str, first: bool = False) -> int:
     return score
 
 
-def compress_to_limit(text: str, limit: int = 500, ellipsis: str = "…") -> str:
-    """Return text <= limit, preserving the lede and highest-value sentences."""
+def _finish_sentence(text: str, limit: int) -> str:
+    """Shorten one oversized sentence without leaving a partial final word."""
+    if limit <= 0:
+        return ""
+    text = text.strip().rstrip(" \t\r\n,;:-…")
+    if not text:
+        return "."
+
+    # Prefer the latest sentence-safe boundary already inside the character
+    # budget, but do not keep punctuation that belongs to an incomplete clause.
+    fragment = text[:limit].rstrip()
+    punctuation = max(fragment.rfind("."), fragment.rfind("!"), fragment.rfind("?"))
+    if punctuation >= 0:
+        complete = fragment[:punctuation + 1].rstrip()
+        if complete:
+            return complete
+
+    if len(text) > len(fragment) and fragment and not text[len(fragment)].isspace():
+        fragment = fragment[:fragment.rfind(" ")].rstrip() if " " in fragment else ""
+    shortened = fragment.rstrip(" \t\r\n,;:-…")
+    if shortened:
+        words = shortened.split()
+        while words and words[-1].lower().strip("\"'()[]{}") in _DANGLING_ENDINGS:
+            words.pop()
+        shortened = " ".join(words)
+        if not shortened.endswith((".", "!", "?")):
+            shortened += "."
+        if len(shortened) <= limit:
+            return shortened
+    return "." if limit >= 1 else ""
+
+
+def _ensure_sentence_ending(text: str) -> str:
+    text = text.strip().rstrip(" \t\r\n,;:-…")
+    if not text:
+        return ""
+    if text.endswith(("...", "…")):
+        text = text.rstrip(".…").rstrip()
+    if not text.endswith((".", "!", "?")):
+        text += "."
+    return text
+
+
+def compress_to_limit(text: str, limit: int = 500) -> str:
+    """Return text <= limit using complete sentences and no trailing ellipsis."""
+    if limit <= 0:
+        return ""
     text = text.strip()
     if len(text) <= limit:
-        return text
+        ended = _ensure_sentence_ending(text)
+        return ended if len(ended) <= limit else _finish_sentence(text, limit)
 
     sentences = _split_sentences(text)
     if not sentences:
-        return text[: limit - 1] + ellipsis
+        return _finish_sentence(text, limit)
 
     # Score every sentence. First sentence always wins.
     scored = [(i, _score_sentence(s, first=(i == 0)), s)
@@ -83,24 +133,24 @@ def compress_to_limit(text: str, limit: int = 500, ellipsis: str = "…") -> str
     scored.sort(key=lambda t: (-t[1], t[0]))
 
     chosen: list[tuple[int, str]] = []
-    budget = limit - len(ellipsis)
     for idx, _score, s in scored:
+        if idx == 0 and len(s) > limit:
+            return _finish_sentence(s, limit)
         candidate_len = len(s) + (1 if chosen else 0)  # space separator
-        if sum(len(c[1]) for c in chosen) + candidate_len + len(ellipsis) > limit:
+        if sum(len(c[1]) for c in chosen) + candidate_len > limit:
             continue
         chosen.append((idx, s))
-        if sum(len(c[1]) for c in chosen) + len(ellipsis) >= limit:
+        if sum(len(c[1]) for c in chosen) + len(chosen) - 1 >= limit:
             break
 
     # Re-order by original position so the output reads naturally.
     chosen.sort(key=lambda t: t[0])
     rebuilt = " ".join(c[1] for c in chosen)
 
-    # If even the first sentence alone exceeds the limit, hard-truncate it.
-    if len(rebuilt) > limit:
-        rebuilt = rebuilt[: limit - 1].rsplit(" ", 1)[0]
-
-    return rebuilt + ellipsis
+    if not rebuilt:
+        return _finish_sentence(sentences[0], limit)
+    rebuilt = _ensure_sentence_ending(rebuilt)
+    return rebuilt if len(rebuilt) <= limit else _finish_sentence(rebuilt, limit)
 
 
 def compress_iter(text: str, limit: int = 500) -> Iterable[str]:

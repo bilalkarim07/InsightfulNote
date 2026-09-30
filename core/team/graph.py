@@ -867,6 +867,26 @@ def node_verification(state: TeamState) -> TeamState:
     return _trace("verification", state, messages) | out
 
 
+def _editorial_memory_context(editorial_memory: dict | None) -> str:
+    if not isinstance(editorial_memory, dict):
+        return "(no similar recent stories)"
+    similar_stories = editorial_memory.get("similar_stories", [])
+    memory_lines = []
+    if isinstance(similar_stories, list):
+        for similar in similar_stories[:5]:
+            if not isinstance(similar, dict):
+                continue
+            title = str(similar.get("title") or "").strip()
+            if not title:
+                continue
+            relationship = str(similar.get("relationship") or "RELATED").upper()
+            published_at = str(similar.get("published_at") or "unknown")
+            memory_lines.append(
+                f"- {relationship}: {title} (published/seen: {published_at})"
+            )
+    return chr(10).join(memory_lines) or "(no similar recent stories)"
+
+
 def node_editorial(state: TeamState) -> TeamState:
     """Editorial — decides what the story is actually about."""
     if _is_terminal(state):
@@ -894,6 +914,7 @@ def node_editorial(state: TeamState) -> TeamState:
         + (" (FORECAST - attribution: " + c.attribution + ")" if c.is_forecast else "")
         for c in allowed_claims
     )
+    memory_block = _editorial_memory_context(state.get("editorial_memory"))
     fixes = state.get("editorial_fixes") or []
     fixes_block = chr(10).join("- " + f for f in fixes) if fixes else "(none)"
 
@@ -903,6 +924,8 @@ def node_editorial(state: TeamState) -> TeamState:
         + "story_id = " + repr(story_id) + chr(10) + chr(10)
         + "Verified claims you may use:" + chr(10)
         + claims_block + chr(10) + chr(10)
+        + "Recent similar published or candidate stories:" + chr(10)
+        + memory_block + chr(10) + chr(10)
         + "Writer feedback to address (if any): " + fixes_block + chr(10) + chr(10)
         + "Your job:" + chr(10)
         + "1. Write central_event as ONE sentence stating the central fact." + chr(10)
@@ -913,6 +936,9 @@ def node_editorial(state: TeamState) -> TeamState:
         + "Rules:" + chr(10)
         + "- central_event MUST be non-empty and specific." + chr(10)
         + "- Forecasts stay forecasts. Never mark a forecast as a fact." + chr(10)
+        + "- Treat DUPLICATE or REPETITIVE coverage as ineligible unless these verified claims establish a material new development." + chr(10)
+        + "- If there is no material update to a DUPLICATE or REPETITIVE story, approve no claims." + chr(10)
+        + "- RELATED coverage alone does not make this story ineligible." + chr(10)
         + "- Use only claim_ids from the list above." + chr(10) + chr(10)
         + "Return JSON matching EditorialDecision exactly."
     )
@@ -1070,8 +1096,12 @@ def node_writer(state: TeamState) -> TeamState:
         + "QA retry instructions:" + chr(10) + retry_instructions + chr(10) + chr(10)
         + "Tone: " + tone_decision.tone.value + chr(10)
         + "Target platform: Threads; keep one concise post within "
-        + str(os.environ.get("THREADS_MAX_CHARS", "500"))
+        + str(os.environ.get("THREADS_MAX_CHARS", "280"))
         + " characters." + chr(10)
+        + "Write the complete post within the character limit. Do not rely on "
+        "downstream truncation. Prefer 2-4 concise complete sentences. End "
+        "naturally with '.', '!' or '?'. Never end with an ellipsis or leave "
+        "a sentence incomplete." + chr(10)
         + "Rules:" + chr(10)
         + "- Every factual sentence must be directly grounded in one or more approved claims." + chr(10)
         + "- Do not add context, causal links, motivation, comparisons, names, dates, numbers, quotes, URLs, or conclusions not stated in those claims." + chr(10)
@@ -1166,6 +1196,8 @@ def node_platform_adapter(state: TeamState) -> TeamState:
         + "Draft body: " + repr(body) + chr(10) + chr(10)
         + "Rules:" + chr(10)
         + "- Target 200-280 characters TOTAL. Hard max: " + str(max_chars) + "." + chr(10)
+        + "- Return only complete sentences and end naturally with '.', '!' or '?'." + chr(10)
+        + "- Never end with an ellipsis or leave a sentence incomplete." + chr(10)
         + "- Shorten only. Do not add, repeat, or strengthen claims from the draft." + chr(10)
         + "- 2-3 short sentences. No headline line. No bullet lists." + chr(10)
         + "- Lead with the most newsworthy fact." + chr(10)
@@ -1203,9 +1235,9 @@ def node_platform_adapter(state: TeamState) -> TeamState:
                   + " -> " + str(len(compressed)) + " chars")
             text = compressed
         except Exception as exc:
-            # Fallback: truncate on word boundary.
             print("  [platform_adapter] compressor failed: " + type(exc).__name__)
-            text = text[:max_chars - 1].rsplit(" ", 1)[0] + chr(8230)
+            from core.tools.compress import _finish_sentence
+            text = _finish_sentence(text, max_chars)
 
     result.text = text
     research = ResearchResult.model_validate(state["research"])

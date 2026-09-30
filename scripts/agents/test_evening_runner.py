@@ -1,6 +1,7 @@
 """Test evening reporting selection (deterministic)."""
 from __future__ import annotations
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -9,6 +10,7 @@ sys.path.insert(0, str(ROOT))
 from scripts._bootstrap import *  # noqa: F401,F403,E402
 
 from core.tools.database import stories as db  # noqa: E402
+from core.tools.database.stories import _reporting_candidate_sort_key  # noqa: E402
 from core.team.graph import _validation_retry_target  # noqa: E402
 from core.team.state import MAX_WRITER_ATTEMPTS  # noqa: E402
 from core.tools import publishing as threads_publishing  # noqa: E402
@@ -190,11 +192,18 @@ def _test_candidate_eligibility() -> None:
     original_candidates = db.find_reporting_candidates
     original_distribution = db.get_recent_category_distribution
     valid_categories = [category.value for category in Category]
+    published_at = datetime.now(timezone.utc).isoformat()
     candidates = [
         {
             "id": f"valid-{category}",
             "title": f"Valid story about {category.lower()}",
             "categories": [category],
+            "metadata": {
+                "primary_category": category,
+                "topic_fit": True,
+                "newsworthiness": True,
+                "published_at": published_at,
+            },
             "_source_count": 1,
         }
         for category in valid_categories
@@ -202,15 +211,33 @@ def _test_candidate_eligibility() -> None:
     candidates.extend([
         {
             "id": "politics-alias",
-            "title": "Story about politics",
+            "title": "Government announces a new policy",
+            "summary": "Officials announced a new government policy decision.",
             "categories": ["politics"],
+            "metadata": {"published_at": published_at},
             "_source_count": 1,
         },
         {
             "id": "metadata-category",
             "title": "Story from metadata category",
             "categories": [],
-            "metadata": {"categories": ["FINANCE"]},
+            "metadata": {
+                "categories": ["FINANCE"],
+                "primary_category": "FINANCE",
+                "topic_fit": True,
+                "newsworthiness": True,
+                "published_at": published_at,
+            },
+            "_source_count": 1,
+        },
+        {
+            "id": "undated",
+            "title": "OpenAI announces a new AI model",
+            "categories": ["ARTIFICIAL_INTELLIGENCE"],
+            "metadata": {
+                "topic_fit": True,
+                "newsworthiness": True,
+            },
             "_source_count": 1,
         },
         {
@@ -279,12 +306,62 @@ def _test_candidate_eligibility() -> None:
     assert all(candidate.get("id") for candidate in selected)
     assert not any(
         candidate.get("id") in {
-            "no-category", "invalid-category", "sports", "celebrity",
+            "undated", "no-category", "invalid-category", "sports", "celebrity",
             "entertainment", "no-title", "no-sources",
         }
         for candidate in selected
     )
     print("  Candidate eligibility checks: PASS")
+
+
+def _test_reporting_candidate_order() -> None:
+    now = datetime.now(timezone.utc)
+    candidates = [
+        {
+            "id": "older-multi-source",
+            "first_seen_at": (now - timedelta(hours=12)).isoformat(),
+            "_source_count": 8,
+        },
+        {
+            "id": "newer-single-source",
+            "first_seen_at": (now - timedelta(minutes=1)).isoformat(),
+            "_source_count": 1,
+        },
+        {
+            "id": "newer-multi-source",
+            "first_seen_at": (now - timedelta(minutes=1)).isoformat(),
+            "_source_count": 2,
+        },
+    ]
+    ordered = sorted(candidates, key=_reporting_candidate_sort_key, reverse=True)
+    assert [candidate["id"] for candidate in ordered] == [
+        "newer-multi-source",
+        "newer-single-source",
+        "older-multi-source",
+    ]
+    print("  Reporting candidate freshness ordering: PASS")
+
+
+def _test_editorial_memory_context() -> None:
+    from core.team.graph import _editorial_memory_context
+
+    context = _editorial_memory_context({
+        "similar_stories": [
+            {
+                "relationship": "REPETITIVE",
+                "title": "OpenAI scraps another model release",
+                "published_at": "2026-09-29T12:00:00+00:00",
+            },
+            {
+                "relationship": "RELATED",
+                "title": "AI safety report published",
+            },
+        ],
+    })
+    assert "REPETITIVE: OpenAI scraps another model release" in context
+    assert "RELATED: AI safety report published" in context
+    assert _editorial_memory_context({}) == "(no similar recent stories)"
+    print("  Editorial memory context checks: PASS")
 
 
 def _test_threads_result_classification() -> None:
@@ -348,6 +425,8 @@ def main() -> int:
     print()
     _test_candidate_fallback()
     _test_candidate_eligibility()
+    _test_reporting_candidate_order()
+    _test_editorial_memory_context()
     _test_threads_result_classification()
 
     cands = db.find_reporting_candidates(max_age_minutes=1440, limit=10)

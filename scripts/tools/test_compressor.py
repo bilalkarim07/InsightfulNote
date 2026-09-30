@@ -20,6 +20,14 @@ CASES = [
         "Additional details will be shared at the next earnings call. "
         "Separately, the company confirmed that existing orders will be honored.",
     ),
+    (
+        "oversized first sentence",
+        "The policy was approved by the White House Office of Science and Technology Policy after months of review.",
+    ),
+    (
+        "multiple complete sentences",
+        "A ceasefire agreement was announced after negotiations. Officials said it takes effect tonight. Analysts expect further talks.",
+    ),
 ]
 
 
@@ -27,11 +35,24 @@ def main() -> None:
     failures = 0
     for name, text in CASES:
         out = compress_to_limit(text, limit=200)
-        ok = len(out) <= 200
+        ok = len(out) <= 200 and not out.endswith(("…", "..."))
+        if len(text) > 200:
+            ok = ok and out.endswith((".", "!", "?"))
         print(f"[{'PASS' if ok else 'FAIL'}] {name}: {len(text)} -> {len(out)} chars")
         print(f"    {out}")
         if not ok:
             failures += 1
+    oversized = compress_to_limit(
+        "The policy was approved by the White House Office of Science and Technology Policy.",
+        limit=28,
+    )
+    if oversized != "The policy was approved.":
+        print(f"[FAIL] small limit produced an incomplete ending: {oversized!r}")
+        failures += 1
+    no_ellipsis = compress_to_limit("The policy was approved…", limit=50)
+    if no_ellipsis != "The policy was approved.":
+        print(f"[FAIL] short post retained an ellipsis or bad ending: {no_ellipsis!r}")
+        failures += 1
     if failures:
         sys.exit(1)
     print("\nALL COMPRESSOR TESTS PASS")

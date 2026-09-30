@@ -18,9 +18,11 @@ import os
 import re
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any, Callable
+from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -31,8 +33,9 @@ from core.tools.database import stories as db  # noqa: E402
 
 
 from schemas.taxonomy import (
-    CATEGORY_DISCOVERY_QUERIES, Category, is_rejected_category,
-    normalize_categories,
+    CATEGORY_DISCOVERY_QUERIES, Category, classify_article,
+    infer_categories_from_text, is_newsworthy_text, normalize_category,
+    is_publication_current, primary_category_for_text,
 )
 
 # Single authoritative source for discovery queries. GDELT coverage is explicit
@@ -68,6 +71,40 @@ PROVIDERS = {
     "gdelt":       {"source_type": "api",        "domain": "gdeltproject.org"},
 }
 
+
+def _tag_discovery(items: list[dict[str, Any]], query: str) -> list[dict[str, Any]]:
+    """Attach discovery provenance; it is never used as article evidence."""
+    for item in items:
+        item["discovery_query"] = query
+    return items
+
+
+def _strict_normalize_categories(values: list[Any]) -> list[str]:
+    normalized = {
+        category.value
+        for value in values
+        if (category := normalize_category(str(value), allow_partial=False)) is not None
+    }
+    return sorted(normalized)
+
+
+def _parse_publication_datetime(value: Any) -> datetime | None:
+    if isinstance(value, datetime):
+        parsed = value
+    elif isinstance(value, str) and value.strip():
+        raw = value.strip()
+        try:
+            parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        except ValueError:
+            try:
+                parsed = parsedate_to_datetime(raw)
+            except (TypeError, ValueError, OverflowError):
+                return None
+    else:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
 
 
 def _item_to_dict(item: Any) -> dict[str, Any]:
@@ -189,7 +226,7 @@ def _tavily_items() -> list[dict[str, Any]]:
     client = TavilyClient()
     try:
         for q in QUERIES:
-            out.extend(_iter_items(client.search(q)))
+            out.extend(_tag_discovery(_iter_items(client.search(q)), q))
     finally:
         try: client.close()
         except Exception: pass
@@ -202,7 +239,7 @@ def _ddgs_items() -> list[dict[str, Any]]:
     client = DDGSClient()
     try:
         for q in QUERIES:
-            out.extend(_iter_items(client.news_search(q)))
+            out.extend(_tag_discovery(_iter_items(client.news_search(q)), q))
     finally:
         try: client.close()
         except Exception: pass
@@ -215,7 +252,7 @@ def _google_news_items() -> list[dict[str, Any]]:
     client = GoogleNewsClient()
     try:
         for q in QUERIES:
-            out.extend(_iter_items(client.search(q)))
+            out.extend(_tag_discovery(_iter_items(client.search(q)), q))
     finally:
         try: client.close()
         except Exception: pass
@@ -233,7 +270,7 @@ def _gdelt_items() -> list[dict[str, Any]]:
         for idx, q in enumerate(queries):
             if idx > 0:
                 time.sleep(2.0)
-            out.extend(_iter_items(client.search(q)))
+            out.extend(_tag_discovery(_iter_items(client.search(q)), q))
     finally:
         try: client.close()
         except Exception: pass
@@ -251,47 +288,221 @@ SOURCES: list[tuple[str, Callable[[], list[dict[str, Any]]]]] = [
 def _build_news_item(
     item: dict[str, Any], provider: str, source_uuid: str,
 ) -> dict[str, Any] | None:
-    url = (item.get("url") or item.get("canonical_url") or "").strip()
+    url = (item.get("article_url") or item.get("url") or item.get("canonical_url") or "").strip()
     if not url:
         return None
     canonical = (item.get("canonical_url") or url).strip()
-    raw_cats = item.get("categories") or []
-    if isinstance(raw_cats, str):
-        raw_cats = [raw_cats]
-    # Add title/provider hints if category is empty
+    canonical_host = (urlparse(canonical).hostname or "").lower()
+    if not canonical_host or canonical_host == "news.google.com" or canonical_host.endswith(".google.com"):
+        canonical = url
     title = (item.get("title") or "").strip()
-    for cat_name in ("politics", "finance", "business", "technology", "ai", "health", "science", "climate"):
-        if cat_name in title.lower():
-            raw_cats.append(cat_name)
-    norm_cats = normalize_categories(raw_cats)
+    description = str(item.get("description") or "")
+    snippet = str(item.get("snippet") or "")
+    content = str(item.get("content") or "")
+    raw_metadata = item.get("metadata")
+    item_metadata = raw_metadata if isinstance(raw_metadata, dict) else {}
+    quality = classify_article(
+        title=title,
+        description=description,
+        snippet=snippet,
+        content=content,
+        source_name=str(item.get("source_name") or ""),
+    )
+    norm_cats = quality["categories"]
+    primary = quality["primary_category"]
+
+    hostname = (urlparse(url).hostname or "").lower().removeprefix("www.")
+    publisher_name = (
+        item.get("publisher_name")
+        or item_metadata.get("publisher_name")
+        or item.get("source_name")
+        or hostname
+    )
+    publisher_name = str(publisher_name).strip()
+    name_url = publisher_name if "://" in publisher_name else "//" + publisher_name
+    candidate_host = (urlparse(name_url).hostname or "").lower()
+    if candidate_host.endswith("google.com") or (
+        provider == "google_news" and publisher_name.lower() in ("google news", "google news rss")
+    ):
+        publisher_name = hostname
+    publisher_domain = str(
+        item.get("publisher_domain")
+        or item_metadata.get("publisher_domain")
+        or item.get("source_domain")
+        or hostname
+    ).lower().removeprefix("www.")
+    if publisher_domain.endswith("google.com"):
+        publisher_domain = hostname
+    topic_fit = bool(quality["topic_fit"])
+    newsworthy = bool(quality["newsworthiness"])
+    if not topic_fit or not newsworthy:
+        return None
 
     return {
         "url": url,
         "canonical_url": canonical,
         "title": title,
-        "description": item.get("description") or "",
-        "snippet": item.get("snippet") or "",
+        "description": description,
+        "snippet": snippet,
         "source_id": source_uuid,
-        "source_name": item.get("source_name") or "",
-        "source_domain": item.get("source_domain") or "",
+        "source_name": publisher_name,
+        "source_domain": publisher_domain,
         "author": item.get("author") or None,
         "published_at": item.get("published_at") or None,
-        "content": item.get("content") or None,
+        "content": content or None,
         "language": item.get("language") or "en",
         "country": item.get("country") or None,
         "categories": norm_cats,
         "metadata": {
             "provider": provider,
+            "discovery_provider": provider,
+            "article_url": url,
+            "publisher_name": publisher_name,
+            "publisher_domain": publisher_domain,
+            "discovery_query": item.get("discovery_query") or "",
+            "primary_category": primary,
+            "topic_fit": topic_fit,
+            "newsworthiness": newsworthy,
+            "article_quality": quality["article_quality"],
+            "rejection_reason": None,
             "retrieved_at": datetime.now(timezone.utc).isoformat(),
         },
     }
+
+
+def _reject_reason(item: dict[str, Any], provider: str) -> str | None:
+    url = (item.get("article_url") or item.get("url") or item.get("canonical_url") or "").strip()
+    title = (item.get("title") or "").strip()
+    if not url or not title:
+        return "INSUFFICIENT_METADATA"
+    parsed_url = urlparse(url)
+    if parsed_url.scheme not in ("http", "https") or not parsed_url.hostname:
+        return "INSUFFICIENT_METADATA"
+    if _SKIP_URL_RE.search(url) or _is_portal_url(url) or _PORTAL_TITLE_BLOCKLIST.match(title):
+        return "PORTAL_PAGE"
+    if len(title) < 15:
+        return "INSUFFICIENT_METADATA"
+    title_lower = title.lower()
+    if re.search(r"\b(opinion|editorial|op-ed|interview|explainer|what to know|guide)\b", title_lower):
+        return "OPINION_CONTENT"
+    if re.search(r"\b(sponsored|promotional|promo code|buy now|shopping deals)\b", title_lower):
+        return "PROMOTIONAL_CONTENT"
+    host = (parsed_url.hostname or "").lower()
+    if provider == "google_news" and (
+        host == "news.google.com" or host.endswith(".google.com")
+    ):
+        return "UNRESOLVED_PUBLISHER"
+    if not any(str(item.get(field) or "").strip() for field in ("description", "snippet", "content")):
+        return "INSUFFICIENT_METADATA"
+    article_text = " ".join(str(item.get(field) or "") for field in ("title", "description", "snippet", "content"))
+    if not infer_categories_from_text(article_text):
+        return "OUT_OF_SCOPE"
+    if not is_newsworthy_text(
+        title,
+        " ".join(str(item.get(field) or "") for field in ("description", "snippet")),
+    ):
+        return "NOT_NEWSWORTHY"
+    item_metadata = item.get("metadata")
+    if not isinstance(item_metadata, dict):
+        item_metadata = {}
+    published = _parse_publication_datetime(
+        item.get("published_at")
+        or item_metadata.get("published_date")
+        or item_metadata.get("tavily_published_date")
+    )
+    if published is None:
+        return "INSUFFICIENT_METADATA"
+    if published > datetime.now(timezone.utc) + timedelta(days=1):
+        return "INSUFFICIENT_METADATA"
+    max_age_days = int(os.environ.get("NEWSROOM_MAX_ARTICLE_AGE_DAYS", "30"))
+    if not is_publication_current(published, max_age_days=max_age_days):
+        return "STALE_ARTICLE"
+    return None
+
+
+def _enrich_article(
+    item: dict[str, Any], provider: str, *, extract_content: bool = True,
+) -> dict[str, Any]:
+    """Resolve discovery wrappers and opportunistically extract the publisher article."""
+    enriched = dict(item)
+    item_metadata = enriched.get("metadata")
+    if not isinstance(item_metadata, dict):
+        item_metadata = {}
+    published_at = _parse_publication_datetime(
+        enriched.get("published_at")
+        or item_metadata.get("published_date")
+        or item_metadata.get("tavily_published_date")
+    )
+    if published_at is not None:
+        enriched["published_at"] = published_at.isoformat()
+    url = (enriched.get("url") or enriched.get("canonical_url") or "").strip()
+    if not url:
+        return enriched
+
+    from extraction.fetchers.resolvers import is_google_news_redirect, resolve_google_news_url
+
+    try:
+        article_url = resolve_google_news_url(url) if is_google_news_redirect(url) else url
+    except Exception as exc:
+        print(f"  [ingest] publisher resolution failed: {type(exc).__name__}: {exc}")
+        article_url = url
+    enriched["article_url"] = article_url
+    canonical_url = (enriched.get("canonical_url") or "").strip()
+    canonical_host = (urlparse(canonical_url).hostname or "").lower()
+    if (
+        not canonical_host
+        or canonical_host == "news.google.com"
+        or canonical_host.endswith(".google.com")
+    ):
+        enriched["canonical_url"] = article_url
+        enriched["url"] = article_url
+    if is_google_news_redirect(article_url):
+        return enriched
+
+    article_text = " ".join(str(enriched.get(field) or "") for field in ("description", "snippet", "content"))
+    should_extract = extract_content and (
+        provider == "google_news"
+        or len(str(enriched.get("content") or "")) < 500
+        or len(article_text.strip()) < 500
+    )
+    if should_extract:
+        try:
+            from extraction.normalizers.article import extract_article
+            extracted = extract_article(article_url)
+            extracted_data = extracted.model_dump(mode="json")
+            for key in ("title", "canonical_url", "content", "author", "published_at", "language"):
+                if extracted_data.get(key):
+                    if key == "canonical_url" or not enriched.get(key):
+                        enriched[key] = extracted_data[key]
+            final_url = extracted_data.get("url") or article_url
+            enriched["article_url"] = final_url
+            enriched["url"] = final_url
+            enriched["canonical_url"] = extracted_data.get("canonical_url") or final_url
+            parsed = urlparse(final_url)
+            enriched["publisher_domain"] = (parsed.hostname or "").lower().removeprefix("www.")
+            metadata = enriched.get("metadata")
+            if not isinstance(metadata, dict):
+                metadata = {}
+            metadata["article_extraction"] = extracted_data.get("metadata", {})
+            enriched["metadata"] = metadata
+        except Exception as exc:
+            print(f"  [ingest] article extraction failed for {article_url}: {type(exc).__name__}: {exc}")
+    return enriched
 
 
 def _save_news_items(
     items_by_provider: dict[str, list[dict[str, Any]]],
 ) -> dict[str, list[str]]:
     result: dict[str, list[str]] = {}
-    for provider, items in items_by_provider.items():
+    rejection_counts: dict[str, int] = {}
+    max_extracts = max(0, int(os.environ.get("NEWSROOM_MAX_ARTICLE_EXTRACTIONS", "50")))
+    extracts = 0
+    provider_order = sorted(
+        items_by_provider,
+        key=lambda provider: (provider != "google_news", provider),
+    )
+    for provider in provider_order:
+        items = items_by_provider[provider]
         meta = PROVIDERS[provider]
         try:
             source_uuid = db.get_or_create_source(
@@ -307,9 +518,44 @@ def _save_news_items(
         ids: list[str] = []
         for raw in items:
             if not _is_valid_article(raw):
+                reason = _reject_reason(raw, provider) or "INSUFFICIENT_METADATA"
+                rejection_counts[reason] = rejection_counts.get(reason, 0) + 1
+                print(
+                    "  [ingest] rejected candidate: "
+                    + reason
+                    + " | "
+                    + str(raw.get("title") or "")[:120]
+                )
                 continue
-            payload = _build_news_item(raw, provider, source_uuid)
+            extract_content = extracts < max_extracts
+            if extract_content:
+                extracts += 1
+            enriched = _enrich_article(
+                raw,
+                provider,
+                extract_content=extract_content,
+            )
+            reason = _reject_reason(enriched, provider)
+            if reason or not _is_valid_article(enriched):
+                reason = reason or "INSUFFICIENT_METADATA"
+                rejection_counts[reason] = rejection_counts.get(reason, 0) + 1
+                print(
+                    "  [ingest] rejected candidate: "
+                    + reason
+                    + " | "
+                    + str(enriched.get("title") or "")[:120]
+                )
+                continue
+            payload = _build_news_item(enriched, provider, source_uuid)
             if payload is None:
+                reason = _reject_reason(enriched, provider) or "NO_VALID_CATEGORY"
+                rejection_counts[reason] = rejection_counts.get(reason, 0) + 1
+                print(
+                    "  [ingest] rejected candidate: "
+                    + reason
+                    + " | "
+                    + str(enriched.get("title") or "")[:120]
+                )
                 continue
             try:
                 nid = db.upsert_news_item(payload)
@@ -317,6 +563,8 @@ def _save_news_items(
             except Exception as exc:
                 print(f"  [ingest] upsert_news_item failed: {exc}")
         result[provider] = ids
+    if rejection_counts:
+        print("  [ingest] rejection totals: " + str(rejection_counts))
     return result
 
 
@@ -354,7 +602,27 @@ def _persist_stories(groups: dict[str, list[str]]) -> tuple[int, int, int]:
             ni = db.get_news_item(nid)
             if ni and ni.get("categories"):
                 all_cats.extend(ni["categories"])
-        norm_cats = normalize_categories(all_cats)
+        norm_cats = _strict_normalize_categories(all_cats)
+        representative_metadata = rep.get("metadata") or {}
+        primary_category = (
+            representative_metadata.get("primary_category")
+            or primary_category_for_text(title, summary)
+        )
+        if primary_category not in norm_cats:
+            primary_category = norm_cats[0] if norm_cats else None
+        linked_items = [db.get_news_item(nid) for nid in item_ids]
+        linked_metadata = [
+            ni.get("metadata") or {} for ni in linked_items if ni
+        ]
+        publication_dates = [
+            parsed
+            for item in linked_items
+            if item
+            if (parsed := _parse_publication_datetime(item.get("published_at"))) is not None
+        ]
+        story_published_at = (
+            max(publication_dates).isoformat() if publication_dates else None
+        )
 
         try:
             story_id = db.create_story(
@@ -364,6 +632,36 @@ def _persist_stories(groups: dict[str, list[str]]) -> tuple[int, int, int]:
                     "cluster_signature": sig_hash,
                     "item_count": len(item_ids),
                     "categories": norm_cats,
+                    "primary_category": primary_category,
+                    "topic_fit": bool(norm_cats),
+                    "newsworthiness": bool(representative_metadata.get("newsworthiness")),
+                    "published_at": story_published_at,
+                    "publisher_name": representative_metadata.get("publisher_name") or "",
+                    "publisher_domain": representative_metadata.get("publisher_domain") or "",
+                    "discovery_provider": (
+                        representative_metadata.get("discovery_provider")
+                        or representative_metadata.get("provider")
+                        or ""
+                    ),
+                    "discovery_query": representative_metadata.get("discovery_query") or "",
+                    "article_quality": (
+                        "article"
+                        if any(meta.get("article_quality") == "article" for meta in linked_metadata)
+                        else "snippet"
+                    ),
+                    "publishers": sorted({
+                        str(meta.get("publisher_domain") or "")
+                        for meta in linked_metadata if meta.get("publisher_domain")
+                    }),
+                    "discovery_providers": sorted({
+                        str(meta.get("discovery_provider") or meta.get("provider") or "")
+                        for meta in linked_metadata
+                        if meta.get("discovery_provider") or meta.get("provider")
+                    }),
+                    "discovery_queries": list(dict.fromkeys(
+                        str(meta.get("discovery_query") or "")
+                        for meta in linked_metadata if meta.get("discovery_query")
+                    )),
                     "ingest_run": datetime.now(timezone.utc).isoformat(),
                 },
             )

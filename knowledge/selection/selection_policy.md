@@ -9,6 +9,10 @@ Selection is a prioritization process.
 
 It must not be used to determine whether a claim is true.
 
+Topic fit and newsworthiness are hard eligibility gates, not ranking bonuses.
+Topic diversity is only a preference among candidates that pass those gates;
+never publish or advance a weak story to satisfy a category quota.
+
 ---
 
 ## 2. Responsibility
@@ -57,6 +61,9 @@ Selection should:
 8. Consider public significance.
 9. Consider editorial value.
 10. Produce the publication shortlist.
+11. Compare candidates with recent published and candidate stories; avoid
+    repeating the same event, company announcement, or angle unless there is a
+    material update.
 
 The execution plan targets a funnel approximately:
 
@@ -199,3 +206,8 @@ Selection criteria are applied consistently.
 Political content is handled neutrally.
 The shortlist fits publication capacity.
 Selection does not override verification requirements.
+Candidates with explicit failed topic-fit or newsworthiness metadata are
+rejected before selection. Among eligible candidates, use recent coverage
+distribution as a configurable diversity signal alongside freshness, source
+quality/diversity, evidence availability, significance, novelty, and
+publication suitability.

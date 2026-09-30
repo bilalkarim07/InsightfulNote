@@ -325,6 +325,22 @@ def _is_eligible_story(story: dict) -> bool:
     return status in (S.STORY_STATUS_CANDIDATE, S.STORY_STATUS_RESEARCHING)
 
 
+def _reporting_candidate_sort_key(story: dict) -> tuple[datetime, int]:
+    first_seen = story.get("first_seen_at")
+    try:
+        timestamp = datetime.fromisoformat(str(first_seen).replace("Z", "+00:00"))
+        if timestamp.tzinfo is None:
+            timestamp = timestamp.replace(tzinfo=timezone.utc)
+        timestamp = timestamp.astimezone(timezone.utc)
+    except (TypeError, ValueError):
+        timestamp = datetime.min.replace(tzinfo=timezone.utc)
+
+    source_count = story.get("_source_count")
+    if type(source_count) is not int:
+        source_count = 0
+    return timestamp, source_count
+
+
 def find_unpublished_candidates(
     *,
     max_age_minutes: int = 360,
@@ -430,7 +446,7 @@ def find_reporting_candidates(
         s["_source_count"] = n
         out.append(s)
 
-    out.sort(key=lambda s: (-s.get("_source_count", 0), s.get("first_seen_at") or ""))
+    out.sort(key=_reporting_candidate_sort_key, reverse=True)
     return out[:limit]
 
 

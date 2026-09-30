@@ -45,7 +45,10 @@ def _is_live() -> bool:
     return os.environ.get("NEWSROOM_LIVE", "").strip().lower() in ("1", "true", "yes")
 
 
-from schemas.taxonomy import is_rejected_category
+from schemas.taxonomy import (
+    classify_article, is_rejected_category, normalize_category,
+    is_publication_current, primary_category_for_text,
+)
 
 
 def select_candidate() -> dict | None:
@@ -70,12 +73,61 @@ def select_candidate() -> dict | None:
     now_utc = datetime.now(timezone.utc)
 
     for c in candidates:
-        cats = c.get("categories") or c.get("metadata", {}).get("categories") or []
+        metadata = c.get("metadata") or {}
+        if not isinstance(metadata, dict):
+            metadata = {}
+        max_age_days = int(os.environ.get("NEWSROOM_MAX_ARTICLE_AGE_DAYS", "30"))
+        if not is_publication_current(
+            metadata.get("published_at"),
+            max_age_days=max_age_days,
+        ):
+            continue
+        title = str(c.get("title") or "")
+        if not title.strip():
+            continue
+        if metadata.get("topic_fit") is False or metadata.get("newsworthiness") is False:
+            continue
+        if metadata.get("topic_fit") is not True or metadata.get("newsworthiness") is not True:
+            assessed = classify_article(
+                title=str(title),
+                description=str(c.get("summary") or ""),
+            )
+            if not assessed["topic_fit"] or not assessed["newsworthiness"]:
+                continue
+            metadata = {
+                **metadata,
+                "categories": metadata.get("categories") or assessed["categories"],
+                "primary_category": metadata.get("primary_category") or assessed["primary_category"],
+                "topic_fit": assessed["topic_fit"],
+                "newsworthiness": assessed["newsworthiness"],
+            }
+        cats = c.get("categories") or metadata.get("categories") or []
+        if isinstance(cats, str):
+            cats = [cats]
+        categories = {
+            category.value
+            for raw in cats
+            if isinstance(raw, str)
+            and (category := normalize_category(raw, allow_partial=False)) is not None
+        }
+        if not categories:
+            continue
         if any(is_rejected_category(cat) for cat in cats):
             continue
-        title = c.get("title", "")
         if any(is_rejected_category(word) for word in title.split()):
             continue
+        c["categories"] = sorted(categories)
+        primary = normalize_category(
+            str(metadata.get("primary_category") or c.get("primary_category") or ""),
+            allow_partial=False,
+        )
+        c["primary_category"] = (
+            primary.value
+            if primary and primary.value in categories
+            else primary_category_for_text(title, str(c.get("summary") or ""))
+            or sorted(categories)[0]
+        )
+        c["metadata"] = metadata
 
         sid = c.get("id", "")
         if sid and db.find_duplicate_publication(sid):
@@ -101,11 +153,14 @@ def select_candidate() -> dict | None:
 
     # Rank using recorded corroboration and freshness; the word "breaking"
     # is not treated as evidence of significance or urgency.
-    def breaking_rank(c: dict) -> tuple[int, float]:
+    def breaking_rank(c: dict) -> tuple[int, int, float]:
         source_count = c.get("_source_count", 1)
         if isinstance(source_count, list):
             source_count = len(source_count)
-        return (-int(source_count), c.get("_age_mins", 999.0))
+        metadata = c.get("metadata") or {}
+        publishers = metadata.get("publishers") or []
+        publisher_count = len(set(map(str, publishers)))
+        return (-publisher_count, -int(source_count), c.get("_age_mins", 999.0))
 
     eligible.sort(key=breaking_rank)
     return eligible[0]

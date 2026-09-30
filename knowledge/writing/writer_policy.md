@@ -20,6 +20,7 @@ The Writer is responsible for:
 - Maintaining appropriate uncertainty and attribution.
 - Following the assigned style and tone.
 - Producing concise platform-ready content when requested.
+- Writing complete Threads posts within the configured character limit.
 - Avoiding unsupported claims or invented context.
 
 The Writer must not independently decide whether information is true.
@@ -115,6 +116,13 @@ Quotes must originate from verified source material.
 ### Rule 7 — No Engagement-Driven Distortion
 
 The Writer must never exaggerate facts to make the story more clickable.
+
+### Rule 8 — Complete Threads Posts
+
+For Threads, write the complete post within `THREADS_MAX_CHARS`; do not rely on
+the platform adapter to truncate it. Prefer 2–4 concise, complete sentences.
+End naturally with `.`, `!`, or `?`. Never end with an ellipsis or leave a
+sentence incomplete.
 
 ---
 
@@ -215,5 +223,6 @@ Writer output passes only when:
 - No fabricated quotes exist.
 - Tone matches the editorial classification.
 - Platform requirements are satisfied.
+- Threads posts fit the configured limit and end as complete sentences.
 - The content does not contain prohibited political persuasion.
 - The content is ready for Fact-check review.

@@ -42,6 +42,17 @@ Multiple articles describing the same event should become one candidate cluster 
 
 A search result is a lead, not automatically verified news.
 
+Discovery queries are instructions for finding leads, not evidence about an
+article. Category assignment must be based on the article's title,
+description, snippet, and available article content. Never assign a category
+because it appears in the query or because a provider returned the result for
+that query. Resolve aggregator wrappers and record the actual publisher before
+source intelligence or research.
+
+Candidates must match a controlled editorial category and describe a concrete,
+newsworthy development. Reject out-of-scope, evergreen, opinion, promotional,
+portal, stale, and insufficiently documented items before clustering.
+
 ## Prohibited Actions
 
 The Discovery Agent must not:
@@ -68,6 +79,10 @@ Each candidate should contain:
 - source type
 - extraction requirement
 - initial confidence
+- primary category and controlled category list
+- topic-fit and newsworthiness gate outcomes
+- discovery provider and discovery query as provenance only
+- actual publisher name/domain and resolved article/canonical URLs
 
 ## Quality Gate
 
