@@ -37,14 +37,14 @@ Capability-aware per-agent model routing is a future improvement.
 
 - `news-ingestion.yml` runs daily deterministic ingestion.
 - `hourly-breaking-news.yml` evaluates breaking candidates every 30 minutes.
-- `evening-reporting.yml` runs at 7–11 PM America/New_York.
+- `evening-reporting.yml` runs hourly from 8–11 PM America/New_York.
 
 Scheduled and manually dispatched breaking and evening runs use the same
 production behavior: qualified, validated posts are sent to Threads, subject
 to the daily quota, spacing, duplicate protection, and publication safeguards.
-Evening dispatch follows the same active-hour and spacing restrictions as
-scheduled runs. Shared local/development runs may still use `dry_run=True`;
-the two production runners always publish.
+Evening dispatch follows the same 8 PM–midnight active-hour window and spacing
+restrictions as scheduled runs. Shared local/development runs may still use
+`dry_run=True`; the two production runners always publish.
 
 Breaking posts bypass the normal reporting-hour and spacing checks, but share
 the configured daily maximum and retain evidence, duplicate, and publication

@@ -400,6 +400,74 @@ def _test_writer_preserves_attribution_status() -> None:
     print("[PASS] writer receives explicit attribution preservation instructions")
 
 
+def _test_writer_uses_exact_claim_after_grounding_failure() -> None:
+    claim = Claim(
+        claim_id="claim_climate",
+        text="The IPCC says attribution science helps assess climate change impacts.",
+        evidence_ids=["evidence-climate"],
+    )
+    state = _story_state(
+        [claim],
+        {"claim_climate": VerificationStatus.SUPPORTED},
+    )
+    state.update({
+        "editorial": EditorialDecision(
+            run_id=state["run_id"],
+            story_id=state["story_id"],
+            central_event=claim.text,
+            allowed_claim_ids=[claim.claim_id],
+        ).model_dump(mode="json"),
+        "tone": ToneDecision(
+            run_id=state["run_id"],
+            story_id=state["story_id"],
+            tone=ToneType.ANALYTICAL,
+        ).model_dump(mode="json"),
+    })
+    calls = 0
+    original_model = graph._model
+    original_structured = graph._structured
+    graph._model = lambda _state: object()
+
+    def structured(_client, _schema, *_args, **_kwargs):
+        nonlocal calls
+        calls += 1
+        return (
+            WriterDraft(
+                run_id=state["run_id"],
+                story_id=state["story_id"],
+                body="It helps understand and assess climate change impacts.",
+                claim_ids=[claim.claim_id],
+            ),
+            {},
+        )
+
+    graph._structured = structured
+    try:
+        first = graph.node_writer(state)
+        retry_state = dict(state)
+        retry_state.update({
+            "iteration": {"writer": 1},
+            "validation": {
+                "failed_sentences": [
+                    "It helps understand and assess climate change impacts."
+                ],
+            },
+            "validation_feedback": [
+                "post contains a sentence not grounded in an approved claim"
+            ],
+        })
+        retried = graph.node_writer(retry_state)
+    finally:
+        graph._model = original_model
+        graph._structured = original_structured
+
+    assert first["draft"]["body"] == "It helps understand and assess climate change impacts."
+    assert retried["draft"]["body"] == claim.text
+    assert retried["draft"]["claim_ids"] == [claim.claim_id]
+    assert calls == 1
+    print("[PASS] grounding retry uses exact verified claim without another LLM rewrite")
+
+
 def _test_verified_source_link() -> None:
     claim = Claim(
         claim_id="claim_link",
@@ -605,6 +673,7 @@ def main() -> None:
     _test_unsupported_claims_are_excluded()
     _test_duplicate_and_quality_gates()
     _test_writer_preserves_attribution_status()
+    _test_writer_uses_exact_claim_after_grounding_failure()
     _test_verified_source_link()
     _test_length_validation_remains_strict()
     print("\nALL EDITORIAL FALLBACK CHECKS PASSED")

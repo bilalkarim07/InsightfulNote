@@ -26,8 +26,11 @@ def _check_workflow_configuration() -> None:
     workflow_dir = ROOT / ".github" / "workflows"
     evening = (workflow_dir / "evening-reporting.yml").read_text(encoding="utf-8")
     breaking = (workflow_dir / "hourly-breaking-news.yml").read_text(encoding="utf-8")
-    assert 'cron: "0 19,20,21,22,23 * * *"' in evening
+    assert 'cron: "0 20,21,22,23 * * *"' in evening
     assert 'timezone: "America/New_York"' in evening
+    assert "NEWSROOM_PUBLISH_TIMEZONE: America/New_York" in evening
+    assert 'NEWSROOM_ACTIVE_START: "20"' in evening
+    assert 'NEWSROOM_ACTIVE_END: "24"' in evening
     assert 'cron: "*/30 * * * *"' in breaking
     assert "live:" not in evening + breaking
     assert "NEWSROOM_LIVE" not in evening + breaking

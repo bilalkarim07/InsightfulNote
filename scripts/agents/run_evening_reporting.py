@@ -1,6 +1,6 @@
 """Evening reporting runner.
 
-Runs during the 19:00-23:00 local window. Tries a bounded ranked list of
+Runs hourly during the 20:00-23:00 New York window. Tries a bounded ranked list of
 unpublished candidates (default five, configurable up to ten with
 NEWSROOM_MAX_CANDIDATE_ATTEMPTS). Candidate-quality rejections advance to the
 next candidate; quota deferral stops successfully; system and

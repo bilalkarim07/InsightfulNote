@@ -42,17 +42,17 @@ def main() -> int:
     try:
         quota._is_supabase = lambda: False
         quota._local_store_read = lambda: {}
-        os.environ["NEWSROOM_ACTIVE_START"] = "8"
+        os.environ["NEWSROOM_ACTIVE_START"] = "20"
         os.environ["NEWSROOM_ACTIVE_END"] = "24"
         os.environ["NEWSROOM_MAX_PER_DAY"] = "5"
         os.environ["NEWSROOM_MIN_HOURS_BETWEEN"] = "1"
 
-        quota._local_now = lambda: datetime(2026, 9, 29, 12, tzinfo=timezone.utc)
+        quota._local_now = lambda: datetime(2026, 9, 29, 20, tzinfo=timezone.utc)
         os.environ.pop("NEWSROOM_BYPASS_ACTIVE_HOURS", None)
         allowed, reason, state = quota.can_publish()
         _assert(allowed, "active-hours reporting is allowed")
 
-        quota._local_now = lambda: datetime(2026, 9, 29, 1, tzinfo=timezone.utc)
+        quota._local_now = lambda: datetime(2026, 9, 29, 7, tzinfo=timezone.utc)
         os.environ["NEWSROOM_BYPASS_ACTIVE_HOURS"] = "true"
         allowed, reason, _ = quota.can_publish()
         _assert(
@@ -70,7 +70,7 @@ def main() -> int:
             "dry-run quota gate reports the out-of-hours deferral",
         )
 
-        quota._local_now = lambda: datetime(2026, 9, 29, 12, tzinfo=timezone.utc)
+        quota._local_now = lambda: datetime(2026, 9, 29, 20, tzinfo=timezone.utc)
         quota._local_store_read = lambda: {
             "date": quota._local_date(),
             "published": 5,

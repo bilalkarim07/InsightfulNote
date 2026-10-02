@@ -6,8 +6,8 @@ Local dev fallback: `data/quota.json` (only used if backend is LOCAL).
 Config (env-overridable):
   NEWSROOM_MAX_PER_DAY        maximum confirmed publications per local publishing day
   NEWSROOM_MIN_HOURS_BETWEEN  minimum spacing between normal scheduled publications
-  NEWSROOM_ACTIVE_START       default 8    (local hour)
-  NEWSROOM_ACTIVE_END         default 23   (local hour, exclusive)
+  NEWSROOM_ACTIVE_START       default 20   (local hour)
+  NEWSROOM_ACTIVE_END         default 24   (local hour, exclusive)
   NEWSROOM_TZ_OFFSET          default 5    (hours from UTC)
 
 Breaking publications share the daily cap but use their own eligibility path
@@ -91,7 +91,7 @@ def can_publish(
     """
     max_per_day = _env_int("NEWSROOM_MAX_PER_DAY", 5)
     min_hours = _env_int("NEWSROOM_MIN_HOURS_BETWEEN", 1)
-    active_start = _env_int("NEWSROOM_ACTIVE_START", 8)
+    active_start = _env_int("NEWSROOM_ACTIVE_START", 20)
     active_end = _env_int("NEWSROOM_ACTIVE_END", 24)
 
     state: dict[str, Any] = {

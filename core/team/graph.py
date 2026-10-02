@@ -1460,10 +1460,42 @@ def node_writer(state: TeamState) -> TeamState:
         + "No other fields. No markdown. JSON only."
     )
 
-    result, _ = _structured(
-        client, WriterDraft, prompt, state["provider"],
-        context={"run_id": run_id, "story_id": story_id},
-    )
+    exact_claim_fallback = None
+    if failed_sentences and _it["writer"] > 1:
+        max_chars = int(os.environ.get("THREADS_MAX_CHARS", "280"))
+        fallback_claims = [
+            claim for claim in approved
+            if verification_statuses[claim.claim_id] == VerificationStatus.SUPPORTED
+            and not claim.is_forecast
+            and not claim.is_allegation
+            and not claim.is_opinion
+            and 0 < len(claim.text.strip()) <= max_chars
+            and len(_split_post_sentences(claim.text.strip())) == 1
+        ]
+        if fallback_claims:
+            exact_claim_fallback = min(
+                fallback_claims,
+                key=lambda claim: len(claim.text.strip()),
+            )
+
+    if exact_claim_fallback is not None:
+        result = WriterDraft(
+            run_id=run_id,
+            story_id=story_id,
+            body=exact_claim_fallback.text.strip(),
+            claim_ids=[exact_claim_fallback.claim_id],
+            tone=tone_decision.tone,
+            warnings=["Used exact verified-claim wording after grounding retry."],
+        )
+        print(
+            "[writer] using exact verified-claim fallback after "
+            "grounding feedback"
+        )
+    else:
+        result, _ = _structured(
+            client, WriterDraft, prompt, state["provider"],
+            context={"run_id": run_id, "story_id": story_id},
+        )
 
     # Deterministic fallback: if the LLM omitted headline, derive it from the
     # first sentence of the body. Never crash the pipeline over a missing field.
