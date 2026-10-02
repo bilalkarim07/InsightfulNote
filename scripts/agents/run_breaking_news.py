@@ -14,6 +14,7 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -39,10 +40,6 @@ def _route_model(task: AgentTask) -> tuple[str, str]:
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
-
-
-def _is_live() -> bool:
-    return os.environ.get("NEWSROOM_LIVE", "").strip().lower() in ("1", "true", "yes")
 
 
 from schemas.taxonomy import (
@@ -179,7 +176,6 @@ def main() -> int:
     model_id = os.environ.get("NEWSROOM_MODEL", "").strip()
     if not provider or not model_id:
         provider, model_id = _route_model(AgentTask.RESEARCH)
-    live = _is_live()
     try:
         if not db.is_production():
             print("  ERROR: breaking workflow requires the real Supabase backend.")
@@ -189,7 +185,7 @@ def main() -> int:
         return 2
 
     print("=" * 70)
-    print(f"Breaking News Runner — live={live}")
+    print("Breaking News Runner — publishing=automatic")
     print("=" * 70)
     print(f"  provider={provider}  model={model_id}")
     print(f"  backend={db.backend_status()}")
@@ -198,8 +194,6 @@ def main() -> int:
     candidate = select_candidate()
     if candidate is None:
         print("  No qualified unpublished candidate in the freshness window.")
-        if not live:
-            print("  [diagnostic] would_publish=false; no eligible candidate.")
         print("  Exiting with no publication (valid outcome).")
         return 0
 
@@ -221,16 +215,42 @@ def main() -> int:
     memory = db.build_editorial_memory(story_id=story_id, query_title=title)
 
     # Run the team graph in breaking mode. The topic is the real story title.
+    result: dict[str, Any] = {}
     rc = run_team(
         provider, model_id,
         story_id=story_id,
         mode="breaking",
         topic=title,
-        dry_run=not live,
+        dry_run=False,
         editorial_memory=memory,
+        result_out=result,
     )
 
-    return rc
+    outcome = result.get("outcome")
+    if outcome == "PUBLISHED":
+        external_id = result.get("external_post_id")
+        publication_status = str(
+            result.get("publication_status") or ""
+        ).strip().lower()
+        if not external_id or publication_status != "published":
+            print(
+                "  [run] RECOVERY_REQUIRED: publication was not confirmed "
+                "with a persisted status and Threads ID."
+            )
+            return 1
+        print("  [publisher] PUBLISHED")
+        print(f"  External ID: {external_id}")
+        return 0
+    if outcome in ("CANDIDATE_REJECTED", "DEFERRED_QUOTA"):
+        print(f"  [run] {outcome}; no post published.")
+        return 0
+    if outcome == "RECOVERY_REQUIRED":
+        print("  [publisher] RECOVERY_REQUIRED; automatic retry disabled.")
+        if result.get("publication_error"):
+            print("  [publisher] " + str(result["publication_error"]))
+        return 1
+    print(f"  [run] SYSTEM_ERROR ({outcome or 'UNKNOWN'}); no confirmed publication.")
+    return rc or 1
 
 
 if __name__ == "__main__":

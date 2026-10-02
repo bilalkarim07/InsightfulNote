@@ -3,8 +3,12 @@ from __future__ import annotations
 
 import os
 import sys
+import tempfile
+from contextlib import redirect_stdout
 from datetime import datetime, timedelta, timezone
+from io import StringIO
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -25,24 +29,23 @@ def _check_workflow_configuration() -> None:
     assert 'cron: "0 19,20,21,22,23 * * *"' in evening
     assert 'timezone: "America/New_York"' in evening
     assert 'cron: "*/30 * * * *"' in breaking
+    assert "live:" not in evening + breaking
+    assert "NEWSROOM_LIVE" not in evening + breaking
+    assert "bypass_active_hours:" in evening
+    assert "workflow_dispatch:" in evening and "workflow_dispatch:" in breaking
     for workflow in (evening, breaking):
         assert "THREADS_APP_ID: ${{ secrets.THREADS_APP_ID }}" in workflow
         assert "THREADS_APP_SECRET: ${{ secrets.THREADS_APP_SECRET }}" in workflow
         assert "THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}" in workflow
         assert "THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}" in workflow
-        assert "github.event_name == 'schedule' && 'true'" in workflow
-        assert "github.event.inputs.live == 'true'" in workflow
-    assert "github.event.inputs.live == 'false'" not in evening
     assert "TAVILY_API_KEY" not in evening + breaking
 
-    def expected_live(event_name: str, manual_live: bool = False) -> str:
-        if event_name == "schedule":
-            return "true"
-        return "true" if event_name == "workflow_dispatch" and manual_live else "false"
-
-    assert expected_live("schedule") == "true"
-    assert expected_live("workflow_dispatch", False) == "false"
-    assert expected_live("workflow_dispatch", True) == "true"
+    evening_runner = (ROOT / "scripts" / "agents" / "run_evening_reporting.py").read_text(encoding="utf-8")
+    breaking_runner = (ROOT / "scripts" / "agents" / "run_breaking_news.py").read_text(encoding="utf-8")
+    for runner in (evening_runner, breaking_runner):
+        assert "NEWSROOM_LIVE" not in runner
+        assert "def _is_live" not in runner
+        assert "dry_run=False" in runner
 
 
 def _check_ingestion_defaults() -> None:
@@ -225,6 +228,133 @@ def _check_dry_run_does_not_call_threads() -> None:
     assert calls == []
 
 
+def _check_breaking_runner_always_publishes() -> None:
+    previous_provider = os.environ.get("NEWSROOM_PROVIDER")
+    previous_model = os.environ.get("NEWSROOM_MODEL")
+    os.environ["NEWSROOM_PROVIDER"] = "test-provider"
+    os.environ["NEWSROOM_MODEL"] = "test-model"
+    original_production = db.is_production
+    original_backend = db.backend_status
+    original_memory = db.build_editorial_memory
+    original_select = run_breaking_news.select_candidate
+    original_runner = run_breaking_news.run_team
+    calls: list[dict[str, object]] = []
+    output = StringIO()
+
+    def fake_runner(*_args, result_out, **kwargs) -> int:
+        calls.append(kwargs)
+        result_out.update({
+            "outcome": "PUBLISHED",
+            "publication_status": "published",
+            "external_post_id": "test-post-id",
+        })
+        return 0
+
+    try:
+        db.is_production = lambda: True
+        db.backend_status = lambda: "SUPABASE"
+        db.build_editorial_memory = lambda **_kwargs: {}
+        run_breaking_news.select_candidate = lambda: {
+            "id": "story-1",
+            "title": "Verified test story",
+            "source_ids": ["source-1"],
+        }
+        run_breaking_news.run_team = fake_runner
+        with redirect_stdout(output):
+            assert run_breaking_news.main() == 0
+        run_breaking_news.run_team = lambda *_args, result_out, **kwargs: (
+            result_out.update({
+                "outcome": "PUBLISHED",
+                "publication_status": "published",
+            }) or 0
+        )
+        with redirect_stdout(output):
+            assert run_breaking_news.main() == 1
+    finally:
+        db.is_production = original_production
+        db.backend_status = original_backend
+        db.build_editorial_memory = original_memory
+        run_breaking_news.select_candidate = original_select
+        run_breaking_news.run_team = original_runner
+        if previous_provider is None:
+            os.environ.pop("NEWSROOM_PROVIDER", None)
+        else:
+            os.environ["NEWSROOM_PROVIDER"] = previous_provider
+        if previous_model is None:
+            os.environ.pop("NEWSROOM_MODEL", None)
+        else:
+            os.environ["NEWSROOM_MODEL"] = previous_model
+    assert len(calls) == 1 and calls[0]["dry_run"] is False
+    assert "External ID: test-post-id" in output.getvalue()
+    assert "RECOVERY_REQUIRED" in output.getvalue()
+
+
+def _check_team_allows_explicit_production_publish_without_live_env() -> None:
+    previous_live = os.environ.get("NEWSROOM_LIVE")
+    os.environ["NEWSROOM_LIVE"] = "false"
+    original_production = db.is_production
+    original_story = db.get_story
+    original_sources = db.get_story_sources
+    original_memory = db.build_editorial_memory
+    original_cwd = os.getcwd()
+
+    class CompletedGraph:
+        def invoke(self, state: dict[str, object]) -> dict[str, object]:
+            assert state["dry_run"] is False
+            return {
+                "outcome": "PUBLISHED",
+                "publication": {
+                    "status": "PUBLISHED",
+                    "external_id": "confirmed-post-id",
+                },
+                "messages": [],
+            }
+
+    try:
+        db.is_production = lambda: True
+        db.get_story = lambda _story_id: {
+            "id": "story-1",
+            "title": "Verified test story",
+            "summary": "A verified production story.",
+            "metadata": {},
+        }
+        db.get_story_sources = lambda _story_id: [{"source_id": "source-1"}]
+        db.build_editorial_memory = lambda **_kwargs: {}
+        with tempfile.TemporaryDirectory() as working_directory:
+            os.chdir(working_directory)
+            try:
+                with (
+                    patch("core.team.state.new_state", return_value={}),
+                    patch.object(graph, "compile_graph", return_value=CompletedGraph()),
+                    redirect_stdout(StringIO()),
+                ):
+                    result: dict[str, str] = {}
+                    assert graph.run_team(
+                        "test-provider",
+                        "test-model",
+                        story_id="story-1",
+                        mode="breaking",
+                        dry_run=False,
+                        editorial_memory={"similar_stories": []},
+                        result_out=result,
+                    ) == 0
+            finally:
+                os.chdir(original_cwd)
+    finally:
+        os.chdir(original_cwd)
+        db.is_production = original_production
+        db.get_story = original_story
+        db.get_story_sources = original_sources
+        db.build_editorial_memory = original_memory
+        if previous_live is None:
+            os.environ.pop("NEWSROOM_LIVE", None)
+        else:
+            os.environ["NEWSROOM_LIVE"] = previous_live
+    assert result["outcome"] == "PUBLISHED"
+    assert result["external_post_id"] == "confirmed-post-id"
+    assert result["publication_status"] == "PUBLISHED"
+
+
 def main() -> int:
     checks = (
         _check_workflow_configuration,
@@ -235,6 +365,8 @@ def main() -> int:
         _check_publication_recovery,
         _check_verified_evidence_domains,
         _check_dry_run_does_not_call_threads,
+        _check_breaking_runner_always_publishes,
+        _check_team_allows_explicit_production_publish_without_live_env,
     )
     for check in checks:
         check()

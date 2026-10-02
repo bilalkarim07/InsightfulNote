@@ -5,11 +5,6 @@ on:
   schedule:
     - cron: "*/30 * * * *"
   workflow_dispatch:
-    inputs:
-      live:
-        description: "Set to true to publish for real"
-        type: boolean
-        default: false
 
 concurrency:
   group: newsroom-production
@@ -46,7 +41,6 @@ jobs:
           THREADS_APP_SECRET: ${{ secrets.THREADS_APP_SECRET }}
           THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
           THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
-          NEWSROOM_LIVE: ${{ github.event_name == 'schedule' && 'true' || github.event_name == 'workflow_dispatch' && github.event.inputs.live == 'true' && 'true' || 'false' }}
           NEWSROOM_MAX_PER_DAY: ${{ vars.NEWSROOM_MAX_PER_DAY || '5' }}
           NEWSROOM_PUBLISH_TIMEZONE: ${{ vars.NEWSROOM_PUBLISH_TIMEZONE || 'America/New_York' }}
           NEWSROOM_PROVIDER: ${{ vars.NEWSROOM_PROVIDER || '' }}

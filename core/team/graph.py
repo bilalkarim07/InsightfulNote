@@ -1624,6 +1624,8 @@ def _validation_retry_target(
         for marker in (
             "attribution", "seed subject", "empty post", "not grounded",
             "repetitive", "without claim-bearing content",
+            "exceeds Threads limit", "more than one source URL",
+            "internal instructions", "null control character",
         )
     )
     if needs_editorial and editorial_fixes < MAX_EDITORIAL_FIXES:
@@ -2467,8 +2469,8 @@ def run_team(
     if live_enabled and mode == "synthetic":
         print("  [run] ERROR: live configuration cannot run synthetic stories")
         return 2
-    if not dry_run and (mode == "synthetic" or not live_enabled):
-        print("  [run] ERROR: live publishing requires NEWSROOM_LIVE=true and a production mode")
+    if not dry_run and mode == "synthetic":
+        print("  [run] ERROR: live publishing is prohibited for synthetic stories")
         return 2
     if mode == "synthetic":
         try:

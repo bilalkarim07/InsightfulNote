@@ -41,10 +41,12 @@ def _test_candidate_fallback() -> None:
     candidates = [_candidate(index) for index in range(1, 4)]
 
     calls: list[str] = []
+    dry_run_values: list[bool] = []
 
     def reject_then_pass(*_args, result_out, **kwargs) -> int:
         del _args
         calls.append(kwargs["story_id"])
+        dry_run_values.append(kwargs["dry_run"])
         if len(calls) == 1:
             result_out.update({
                 "outcome": "CANDIDATE_REJECTED",
@@ -54,6 +56,7 @@ def _test_candidate_fallback() -> None:
         result_out.update({
             "outcome": "PUBLISHED",
             "external_post_id": "confirmed-post-id",
+            "publication_status": "published",
         })
         return 0
 
@@ -61,12 +64,33 @@ def _test_candidate_fallback() -> None:
         candidates,
         "provider",
         "model",
-        False,
         max_attempts=5,
         team_runner=reject_then_pass,
         memory_builder=memory_builder,
     )
     assert rc == 0 and calls == ["story-1", "story-2"]
+    assert dry_run_values == [False, False]
+
+    calls.clear()
+
+    def missing_publication_id(*_args, result_out, **kwargs) -> int:
+        del _args
+        calls.append(kwargs["story_id"])
+        result_out.update({
+            "outcome": "PUBLISHED",
+            "publication_status": "published",
+        })
+        return 0
+
+    rc = _attempt_candidates(
+        candidates,
+        "provider",
+        "model",
+        max_attempts=5,
+        team_runner=missing_publication_id,
+        memory_builder=memory_builder,
+    )
+    assert rc == 1 and calls == ["story-1"]
 
     calls.clear()
 
@@ -83,7 +107,6 @@ def _test_candidate_fallback() -> None:
         candidates,
         "provider",
         "model",
-        False,
         max_attempts=2,
         team_runner=always_reject,
         memory_builder=memory_builder,
@@ -102,7 +125,6 @@ def _test_candidate_fallback() -> None:
         candidates,
         "provider",
         "model",
-        False,
         max_attempts=5,
         team_runner=system_failure,
         memory_builder=memory_builder,
@@ -124,7 +146,6 @@ def _test_candidate_fallback() -> None:
         candidates,
         "provider",
         "model",
-        True,
         max_attempts=5,
         team_runner=uncertain_publication,
         memory_builder=memory_builder,
@@ -143,7 +164,6 @@ def _test_candidate_fallback() -> None:
         candidates,
         "provider",
         "model",
-        True,
         max_attempts=5,
         team_runner=deferred_quota,
         memory_builder=memory_builder,
@@ -160,7 +180,6 @@ def _test_candidate_fallback() -> None:
         candidates,
         "provider",
         "model",
-        True,
         max_attempts=5,
         team_runner=actual_exception,
         memory_builder=memory_builder,
@@ -172,7 +191,6 @@ def _test_candidate_fallback() -> None:
         [],
         "provider",
         "model",
-        False,
         max_attempts=5,
         team_runner=system_failure,
         memory_builder=memory_builder,
@@ -182,6 +200,15 @@ def _test_candidate_fallback() -> None:
     assert _validation_retry_target(
         {"iteration": {"writer": 1}}, ["empty post text"],
     ) == "writer"
+    assert _validation_retry_target(
+        {"iteration": {"writer": 1}}, ["post exceeds Threads limit: 510 > 500"],
+    ) == "writer"
+    assert _validation_retry_target(
+        {"iteration": {"writer": 1}}, ["post contains a sentence without claim-bearing content"],
+    ) == "writer"
+    assert _validation_retry_target(
+        {"iteration": {"writer": 1}}, ["post contains an unverified URL"],
+    ) is None
     assert _validation_retry_target(
         {"iteration": {"writer": 2}}, ["empty post text"],
     ) is None
@@ -336,7 +363,6 @@ def _test_candidate_source_count_display() -> None:
             [{"id": "story-with-source", "title": "Candidate", "_source_count": 1}],
             provider="test",
             model_id="test-model",
-            live=False,
             max_attempts=1,
             team_runner=reject_candidate,
             memory_builder=lambda **_: {},

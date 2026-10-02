@@ -42,10 +42,6 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _is_live() -> bool:
-    return os.environ.get("NEWSROOM_LIVE", "").strip().lower() in ("1", "true", "yes")
-
-
 def _topic_of(r: dict) -> str:
     t = (r.get("topic") or "").strip().lower()
     if t and t != "news" and t != "general":
@@ -237,7 +233,6 @@ def _attempt_candidates(
     candidates: list[dict],
     provider: str,
     model_id: str,
-    live: bool,
     *,
     max_attempts: int,
     target_posts: int = 1,
@@ -248,8 +243,6 @@ def _attempt_candidates(
     build_memory = memory_builder or db.build_editorial_memory
     if not candidates:
         print("  NO_PUBLISHABLE_STORY")
-        if not live:
-            print("  [diagnostic] would_publish=false; no eligible candidates.")
         print("  Candidates attempted: 0")
         print("  Posts published: 0")
         return 0
@@ -318,7 +311,7 @@ def _attempt_candidates(
                 story_id=story_id,
                 mode="reporting",
                 topic=title,
-                dry_run=not live,
+                dry_run=False,
                 editorial_memory=memory,
                 result_out=result,
             )
@@ -336,8 +329,14 @@ def _attempt_candidates(
             continue
         if outcome == "PUBLISHED":
             external_id = result.get("external_post_id") or ""
-            if not external_id:
-                print("  [run] RECOVERY_REQUIRED: confirmed status lacks a post ID.")
+            publication_status = str(
+                result.get("publication_status") or ""
+            ).strip().lower()
+            if not external_id or publication_status != "published":
+                print(
+                    "  [run] RECOVERY_REQUIRED: publication lacks a confirmed "
+                    "Threads ID or persisted published status."
+                )
                 print("  [run] Automatic retry disabled to prevent duplicate publication.")
                 return 1
             successful_posts += 1
@@ -352,11 +351,6 @@ def _attempt_candidates(
                 print(f"  Candidates attempted: {attempted}")
                 return 0
             continue
-        if outcome == "DRY_RUN":
-            print("  [publisher] SKIPPED_DRY_RUN; no Threads post was made.")
-            print("  [diagnostic] would_publish=true; no Threads post was made.")
-            print("  [run] Dry-run completed; minimum live-post target was not applied.")
-            return rc
         if outcome == "RECOVERY_REQUIRED":
             print("  [publisher] RECOVERY_REQUIRED")
             print("  Threads outcome could not be confirmed.")
@@ -406,7 +400,6 @@ def main() -> int:
                 + ")."
             )
             return 1
-    live = _is_live()
     try:
         if not db.is_production():
             print("  ERROR: reporting workflow requires the real Supabase backend.")
@@ -440,7 +433,7 @@ def main() -> int:
     print("=" * 70)
     print("NewsRoom Reporting Run")
     print("=" * 70)
-    print(f"  live={live}  provider={provider}  model={model_id}")
+    print(f"  publishing=automatic  provider={provider}  model={model_id}")
     print(f"  backend={db.backend_status()}")
     print(f"  Target posts: {target_posts}")
     print(f"  Maximum candidate attempts: {max_attempts}")
@@ -449,7 +442,6 @@ def main() -> int:
         candidates,
         provider,
         model_id,
-        live,
         max_attempts=max_attempts,
         target_posts=target_posts,
     )

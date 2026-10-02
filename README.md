@@ -39,16 +39,13 @@ Capability-aware per-agent model routing is a future improvement.
 - `hourly-breaking-news.yml` evaluates breaking candidates every 30 minutes.
 - `evening-reporting.yml` runs at 7–11 PM America/New_York.
 
-Scheduled breaking and evening runs publish live subject to the daily quota,
-spacing, QA, duplicate protection, and publication safeguards. Manual dispatch
-defaults to dry-run; choose `live=true` only for an authorized real publication.
-An Evening Reporting dispatch can also enable `bypass_active_hours` to test
-outside the normal quota hours. This only bypasses the clock check; the daily
-quota and the other safety checks still apply.
-Keep `NEWSROOM_BYPASS_ACTIVE_HOURS=false` except for controlled manual tests.
-Dry-run mode reports candidate quality, research evidence, verification,
-validation, quota, and whether a post would have been published; it never calls
-the Threads API.
+Scheduled and manually dispatched breaking and evening runs use the same
+production behavior: qualified, validated posts are sent to Threads, subject
+to the daily quota, spacing, duplicate protection, and publication safeguards.
+An Evening Reporting dispatch can enable `bypass_active_hours` to run outside
+normal publication hours; this only bypasses the clock check, never the daily
+quota or other safeguards. Shared local/development runs may still use
+`dry_run=True`; the two production runners always publish.
 
 Breaking posts bypass the normal reporting-hour and spacing checks, but share
 the configured daily maximum and retain evidence, duplicate, and publication
@@ -89,9 +86,10 @@ running them. Never run synthetic/demo data against the production database.
 See `.env.example` for supported variable names. Production execution requires
 Supabase URL/key, a verified configured LLM, non-Tavily search providers needed
 by the research path, and a valid `THREADS_ACCESS_TOKEN`. Threads account/application
-settings are also listed there. Set `NEWSROOM_LIVE=true` only for an explicitly
-authorized live run. If credentials or database connectivity are absent, the
-production workflow must stop rather than use local or synthetic data.
+settings are also listed there. Production workflows require these credentials
+and publish automatically when a post passes the existing safeguards. If
+credentials or database connectivity are absent, the production workflow must
+stop rather than use local or synthetic data.
 
 ## Editorial and publication safeguards
 
