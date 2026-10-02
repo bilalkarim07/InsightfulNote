@@ -69,28 +69,92 @@ def extract_article(
             content_type=ctype,
         )
 
-    try:
-        parsed = parse_html(result.text, url=result.final_url)
-    except Exception as exc:
-        raise SourceParseError(
-            f"Failed to parse HTML: {exc}",
-            source="extraction",
-            operation="extract",
-            url=result.final_url,
-            payload_size=len(result.text or ""),
-            cause=exc,
-        ) from exc
+    text = ""
+    title: Optional[str] = None
+    author: Optional[str] = None
+    published_at: Optional[str] = None
+    canonical_url: Optional[str] = None
+    language: Optional[str] = None
+    extraction_method = "empty"
+    fallback_errors: list[str] = []
 
-    canonical = canonicalize_url(parsed.canonical_url or result.final_url or resolved_url)
+    try:
+        import trafilatura
+        from trafilatura import metadata as trafilatura_metadata
+
+        extracted_text = trafilatura.extract(
+            result.text,
+            url=result.final_url,
+            include_comments=False,
+            include_tables=False,
+            favor_precision=True,
+        )
+        extracted_metadata = trafilatura_metadata.extract_metadata(
+            result.text,
+            url=result.final_url,
+        )
+        if extracted_text:
+            text = clean_text(extracted_text)
+            if text:
+                extraction_method = "trafilatura"
+        if extracted_metadata:
+            title = extracted_metadata.title
+            author = extracted_metadata.author
+            published_at = extracted_metadata.date
+            canonical_url = extracted_metadata.url
+    except ImportError as exc:
+        fallback_errors.append(f"trafilatura unavailable: {exc}")
+    except Exception as exc:
+        fallback_errors.append(f"trafilatura failed: {type(exc).__name__}: {exc}")
+
+    if len(text) < 200:
+        try:
+            from newspaper import Article
+
+            article = Article(result.final_url, language="en")
+            article.set_html(result.text)
+            article.parse()
+            newspaper_text = clean_text(article.text or "")
+            if len(newspaper_text) > len(text):
+                text = newspaper_text
+                extraction_method = "newspaper4k"
+            title = title or article.title or None
+            author = author or ", ".join(article.authors) or None
+            published_at = published_at or (
+                article.publish_date.isoformat() if article.publish_date else None
+            )
+        except ImportError as exc:
+            fallback_errors.append(f"newspaper4k unavailable: {exc}")
+        except Exception as exc:
+            fallback_errors.append(f"newspaper4k failed: {type(exc).__name__}: {exc}")
+
+    if len(text) < 200:
+        try:
+            parsed = parse_html(result.text, url=result.final_url)
+            parser_text = clean_text(parsed.text)
+            if len(parser_text) > len(text):
+                text = parser_text
+                extraction_method = "html_parser"
+            title = title or parsed.title
+            author = author or parsed.author
+            published_at = published_at or parsed.published_at
+            canonical_url = canonical_url or parsed.canonical_url
+            language = parsed.language
+        except Exception as exc:
+            fallback_errors.append(
+                f"HTML parser failed: {type(exc).__name__}: {exc}"
+            )
+
+    canonical = canonicalize_url(canonical_url or result.final_url or resolved_url)
 
     return NewsItem(
-        title=parsed.title or resolved_url,
+        title=title or resolved_url,
         url=result.final_url or resolved_url,
         canonical_url=canonical,
-        content=clean_text(parsed.text),
-        author=parsed.author,
-        published_at=_parse_iso_date(parsed.published_at),
-        language=parsed.language,
+        content=text,
+        author=author,
+        published_at=_parse_iso_date(published_at),
+        language=language,
         discovered_at=datetime.now(timezone.utc),
         metadata={
             "original_url": original_url,
@@ -98,7 +162,9 @@ def extract_article(
             "resolver_error": resolver_error,
             "http_status": result.status_code,
             "content_type": result.content_type,
-            "raw_title": parsed.title,
-            "canonical_from_html": parsed.canonical_url,
+            "raw_title": title,
+            "canonical_from_html": canonical_url,
+            "extraction_method": extraction_method,
+            "fallback_errors": fallback_errors,
         },
     )

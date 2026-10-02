@@ -48,6 +48,7 @@ def _is_live() -> bool:
 from schemas.taxonomy import (
     classify_article, is_rejected_category, normalize_category,
     is_publication_current, primary_category_for_text,
+    PRODUCTION_CATEGORY_ALLOWLIST,
 )
 
 
@@ -56,13 +57,13 @@ def select_candidate() -> dict | None:
 
     Evaluates:
       - freshness (<= 180 mins)
-      - at least two linked source records as a minimum corroboration signal
+      - at least one linked source so verification can assess fresh stories
       - non-duplicate / novelty
       - eligible category taxonomy
     """
     candidates = db.find_unpublished_candidates(
         max_age_minutes=180,   # strict 3-hour freshness window for breaking events
-        min_source_count=2,
+        min_source_count=1,
         limit=15,
     )
     if not candidates:
@@ -109,6 +110,7 @@ def select_candidate() -> dict | None:
             for raw in cats
             if isinstance(raw, str)
             and (category := normalize_category(raw, allow_partial=False)) is not None
+            and category.value in PRODUCTION_CATEGORY_ALLOWLIST
         }
         if not categories:
             continue
@@ -130,7 +132,10 @@ def select_candidate() -> dict | None:
         c["metadata"] = metadata
 
         sid = c.get("id", "")
-        if sid and db.find_duplicate_publication(sid):
+        if sid and db.find_duplicate_publication(
+            sid,
+            include_stale_publishing=False,
+        ):
             continue
 
         # Calculate freshness age in minutes
@@ -193,15 +198,22 @@ def main() -> int:
     candidate = select_candidate()
     if candidate is None:
         print("  No qualified unpublished candidate in the freshness window.")
+        if not live:
+            print("  [diagnostic] would_publish=false; no eligible candidate.")
         print("  Exiting with no publication (valid outcome).")
         return 0
 
     story_id = candidate.get("id", "") or candidate.get("story_id", "")
     title = candidate.get("title", "")
-    sources = candidate.get("source_ids") or []
+    sources = candidate.get("_source_count")
+    if not isinstance(sources, int):
+        sources = len(candidate.get("source_ids") or [])
+    categories = candidate.get("categories") or []
     print(f"  Selected: {story_id}")
     print(f"    title:    {title[:80]}")
-    print(f"    sources:  {sources}")
+    print(f"    sources:  {sources} linked")
+    print(f"    category: {', '.join(map(str, categories)) or 'unknown'}")
+    print(f"    freshness: {candidate.get('_age_mins', 'unknown')} minutes")
     print(f"    seen_at:  {candidate.get('first_seen_at')}")
     print()
 

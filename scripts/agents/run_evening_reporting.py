@@ -78,6 +78,7 @@ def _most_recent_publication_topic() -> str:
 from schemas.taxonomy import (
     classify_article, is_rejected_category, normalize_category,
     is_publication_current, primary_category_for_text,
+    PRODUCTION_CATEGORY_ALLOWLIST,
 )
 
 
@@ -132,6 +133,7 @@ def select_candidates(limit: int = 5) -> list[dict]:
                     allow_partial=False,
                 )
             ) is not None
+            and category.value in PRODUCTION_CATEGORY_ALLOWLIST
         }
         source_count = c.get("_source_count")
         if type(source_count) is int:
@@ -246,6 +248,8 @@ def _attempt_candidates(
     build_memory = memory_builder or db.build_editorial_memory
     if not candidates:
         print("  NO_PUBLISHABLE_STORY")
+        if not live:
+            print("  [diagnostic] would_publish=false; no eligible candidates.")
         print("  Candidates attempted: 0")
         print("  Posts published: 0")
         return 0
@@ -272,6 +276,30 @@ def _attempt_candidates(
         print(f"  Title: {title[:100]}")
         print(f"  Story ID: {story_id}")
         print(f"  Sources: {source_count} linked")
+        categories = candidate.get("categories") or []
+        metadata = candidate.get("metadata") or {}
+        published_at = (
+            metadata.get("published_at")
+            if isinstance(metadata, dict)
+            else None
+        )
+        first_seen_at = candidate.get("first_seen_at") or candidate.get("last_seen_at")
+        freshness = "unknown"
+        if isinstance(published_at or first_seen_at, str):
+            try:
+                timestamp = datetime.fromisoformat(
+                    str(published_at or first_seen_at).replace("Z", "+00:00")
+                )
+                if timestamp.tzinfo is None:
+                    timestamp = timestamp.replace(tzinfo=timezone.utc)
+                age_minutes = (
+                    datetime.now(timezone.utc) - timestamp.astimezone(timezone.utc)
+                ).total_seconds() / 60
+                freshness = f"{max(0, age_minutes):.0f} minutes"
+            except ValueError:
+                pass
+        print(f"  Category: {', '.join(map(str, categories)) or 'unknown'}")
+        print(f"  Freshness: {freshness}")
 
         try:
             memory = build_memory(story_id=story_id, query_title=title)
@@ -326,6 +354,7 @@ def _attempt_candidates(
             continue
         if outcome == "DRY_RUN":
             print("  [publisher] SKIPPED_DRY_RUN; no Threads post was made.")
+            print("  [diagnostic] would_publish=true; no Threads post was made.")
             print("  [run] Dry-run completed; minimum live-post target was not applied.")
             return rc
         if outcome == "RECOVERY_REQUIRED":

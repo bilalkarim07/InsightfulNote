@@ -39,6 +39,11 @@ class Category(str, Enum):
     SPORTS = "SPORTS"
 
 
+PRODUCTION_CATEGORY_ALLOWLIST = frozenset(
+    category.value for category in Category if category is not Category.SPORTS
+)
+
+
 class ArticleQuality(TypedDict):
     categories: list[str]
     primary_category: Optional[str]

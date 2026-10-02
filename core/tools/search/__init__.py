@@ -4,10 +4,12 @@ Per spec §50, we DO NOT rebuild search tools. The existing repository
 already exposes LangChain StructuredTools in `tools.search`. We re-export
 them and provide a single `search_web` facade for agent convenience.
 
-Fallback order for the facade: tavily -> ddgs_news -> google_news -> gdelt.
+Fallback order for the facade: ddgs_news -> google_news -> gdelt.
+Tavily is available only when NEWSROOM_ENABLE_TAVILY=true.
 """
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from langchain_core.tools import tool
@@ -41,6 +43,12 @@ def real_tools_status() -> str:
     return f"UNAVAILABLE ({_IMPORT_ERROR})"
 
 
+def _tavily_enabled() -> bool:
+    return os.environ.get("NEWSROOM_ENABLE_TAVILY", "").strip().lower() in {
+        "1", "true", "yes",
+    }
+
+
 def _invoke_tool(tool_obj: Any, query: str) -> str:
     """Invoke a StructuredTool with a query, trying common argument names."""
     if tool_obj is None:
@@ -57,18 +65,19 @@ def _invoke_tool(tool_obj: Any, query: str) -> str:
 def search_web(query: str) -> str:
     """Search the web for a query.
 
-    Routes through the existing repo tools in fallback order:
-    tavily -> ddgs_news -> google_news -> gdelt.
+    Tavily is an explicit opt-in. The default fallback order is:
+    ddgs_news -> google_news -> gdelt.
     """
     if not _REAL_TOOLS_AVAILABLE:
         return f"[search unavailable: {_IMPORT_ERROR}]"
 
     candidates = [
-        ("tavily", tavily_search),
         ("ddgs_news", ddgs_news_search),
         ("google_news", google_news_search),
         ("gdelt", gdelt_search),
     ]
+    if _tavily_enabled():
+        candidates.insert(0, ("tavily", tavily_search))
     errors: list[str] = []
     for name, t in candidates:
         if t is None:
@@ -88,7 +97,11 @@ def search_primary_source(query: str) -> str:
 
 ALL_SEARCH_TOOLS = [
     t for t in (
-        tavily_search, tavily_extract,
+        *(
+            (tavily_search, tavily_extract)
+            if _tavily_enabled()
+            else ()
+        ),
         ddgs_news_search, ddgs_text_search,
         google_news_search, gdelt_search,
         search_web, search_primary_source,

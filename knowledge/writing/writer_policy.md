@@ -72,6 +72,9 @@ The Writer may only make factual claims supported by the approved input.
 The Writer must:
 
 - Preserve the meaning of verified claims.
+- Do not invent or manually add URLs. The publishing adapter may append one
+  source URL already cited by a verified claim used in the final post, when it
+  fits the platform character limit.
 - Attribute claims when evidence requires attribution.
 - Preserve conflicting reports when they remain unresolved.
 - Avoid converting allegations into facts.

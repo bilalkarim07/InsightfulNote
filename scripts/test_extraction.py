@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import sys
+from datetime import datetime, timezone
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import httpx
@@ -69,6 +71,69 @@ def test_extract_article_rejects_non_html():
             assert "Unsupported content type" in str(exc)
             return
     raise AssertionError("expected SourceParseError")
+
+
+def test_extract_article_prefers_trafilatura():
+    url = "https://example.com/article"
+    response = SimpleNamespace(
+        text="<html><body><article>Article</article></body></html>",
+        final_url=url,
+        status_code=200,
+        content_type="text/html",
+    )
+    fetcher = SimpleNamespace(fetch=lambda _url: response)
+    extracted_text = "A verified article paragraph with useful details. " * 8
+    metadata = SimpleNamespace(
+        title="Example article",
+        author="Reporter",
+        date=None,
+        url=url,
+    )
+    with (
+        patch("trafilatura.extract", return_value=extracted_text),
+        patch("trafilatura.metadata.extract_metadata", return_value=metadata),
+        patch("newspaper.Article") as newspaper_article,
+    ):
+        item = extract_article(url, fetcher=fetcher)
+    assert item.content == clean_text(extracted_text)
+    assert item.metadata["extraction_method"] == "trafilatura"
+    newspaper_article.assert_not_called()
+
+
+def test_extract_article_uses_newspaper_before_html_parser():
+    url = "https://example.com/article"
+    response = SimpleNamespace(
+        text="<html><body><article>Article</article></body></html>",
+        final_url=url,
+        status_code=200,
+        content_type="text/html",
+    )
+    fetcher = SimpleNamespace(fetch=lambda _url: response)
+    newspaper_text = "A longer publisher article body with reported details. " * 8
+
+    class FakeArticle:
+        def __init__(self, *_args, **_kwargs):
+            self.text = ""
+            self.title = "Example article"
+            self.authors = ["Reporter"]
+            self.publish_date = datetime.now(timezone.utc)
+
+        def set_html(self, _html):
+            pass
+
+        def parse(self):
+            self.text = newspaper_text
+
+    with (
+        patch("trafilatura.extract", return_value="short"),
+        patch("trafilatura.metadata.extract_metadata", return_value=None),
+        patch("newspaper.Article", FakeArticle),
+        patch("extraction.normalizers.article.parse_html") as html_parser,
+    ):
+        item = extract_article(url, fetcher=fetcher)
+    assert item.content == clean_text(newspaper_text)
+    assert item.metadata["extraction_method"] == "newspaper4k"
+    html_parser.assert_not_called()
 
 
 def test_live_extract_wikipedia():

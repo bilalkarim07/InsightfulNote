@@ -400,6 +400,125 @@ def _test_writer_preserves_attribution_status() -> None:
     print("[PASS] writer receives explicit attribution preservation instructions")
 
 
+def _test_verified_source_link() -> None:
+    claim = Claim(
+        claim_id="claim_link",
+        text="The agency announced a new public program.",
+        evidence_ids=["evidence-secondary", "evidence-official"],
+    )
+    evidence = [
+        Evidence(
+            evidence_id="evidence-secondary",
+            source_id="source-secondary",
+            url="https://news.example.org/program",
+            quote=claim.text,
+        ),
+        Evidence(
+            evidence_id="evidence-official",
+            source_id="source-official",
+            url="https://agency.gov/program",
+            quote=claim.text,
+        ),
+    ]
+    state = _story_state(
+        [claim],
+        {"claim_link": VerificationStatus.SUPPORTED},
+        evidence=evidence,
+    )
+    state["editorial"] = EditorialDecision(
+        run_id=state["run_id"],
+        story_id=state["story_id"],
+        central_event=claim.text,
+        allowed_claim_ids=[claim.claim_id],
+    ).model_dump(mode="json")
+    state["source_intel"] = {
+        "assessments": [
+            {"source_id": "source-secondary", "source_type": "SECONDARY"},
+            {"source_id": "source-official", "source_type": "OFFICIAL"},
+        ],
+    }
+
+    source_url = graph._verified_source_reference(state, [claim.claim_id])
+    assert source_url == "https://agency.gov/program"
+    linked_text = graph._append_source_reference(
+        claim.text, source_url, limit=200,
+    )
+    assert linked_text.endswith("\nSource: https://agency.gov/program")
+    assert len(linked_text) <= 200
+    assert graph._append_source_reference(claim.text, source_url, limit=30) == claim.text
+
+    adapter_state = dict(state)
+    adapter_state.update({
+        "iteration": {"writer": 2},
+        "validation_feedback": ["retry"],
+        "draft": WriterDraft(
+            run_id=state["run_id"],
+            story_id=state["story_id"],
+            body=claim.text,
+            claim_ids=[claim.claim_id],
+        ).model_dump(mode="json"),
+    })
+    adapted = graph.node_platform_adapter(adapter_state)["post"]
+    assert adapted["text"].endswith("\nSource: https://agency.gov/program")
+    assert adapted["source_reference"] == source_url
+    assert adapted["char_count"] == len(adapted["text"])
+
+    validation_state = {
+        "run_id": state["run_id"],
+        "story_id": state["story_id"],
+        "seed": {"title": "agency program", "summary": claim.text},
+        "research": ResearchResult(
+            run_id=state["run_id"],
+            story_id=state["story_id"],
+            claims=[claim],
+            evidence=evidence,
+        ).model_dump(mode="json"),
+        "verification": VerificationResult(
+            run_id=state["run_id"],
+            story_id=state["story_id"],
+            verifications=[
+                ClaimVerification(
+                    claim_id=claim.claim_id,
+                    status=VerificationStatus.SUPPORTED,
+                    evidence_ids=list(claim.evidence_ids),
+                ),
+            ],
+        ).model_dump(mode="json"),
+        "editorial": state["editorial"],
+        "draft": WriterDraft(
+            run_id=state["run_id"],
+            story_id=state["story_id"],
+            body=claim.text,
+            claim_ids=[claim.claim_id],
+        ).model_dump(mode="json"),
+        "post": {
+            "run_id": "run_source_link",
+            "story_id": "story_source_link",
+            "platform": "threads",
+            **adapted,
+        },
+        "tone": ToneDecision(
+            run_id="run_source_link",
+            story_id="story_source_link",
+            tone=ToneType.INFORMATIVE,
+            rationale="Factual report.",
+        ).model_dump(mode="json"),
+        "outcome": "RUNNING",
+        "iteration": {},
+    }
+    valid_link = graph.node_validation(validation_state)
+    assert valid_link["validation"]["state"] == "PASS"
+
+    validation_state["post"] = {
+        **validation_state["post"],
+        "text": linked_text.replace("https://agency.gov/program", "https://unverified.invalid"),
+    }
+    invalid_link = graph.node_validation(validation_state)
+    assert invalid_link["validation"]["state"] == "BLOCK"
+    assert "post contains an unverified URL" in invalid_link["validation"]["errors"]
+    print("[PASS] only a cited verified source link is accepted when it fits")
+
+
 def _test_length_validation_remains_strict() -> None:
     from core.tools.compress import compress_to_limit
 
@@ -486,6 +605,7 @@ def main() -> None:
     _test_unsupported_claims_are_excluded()
     _test_duplicate_and_quality_gates()
     _test_writer_preserves_attribution_status()
+    _test_verified_source_link()
     _test_length_validation_remains_strict()
     print("\nALL EDITORIAL FALLBACK CHECKS PASSED")
 

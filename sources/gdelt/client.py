@@ -47,7 +47,7 @@ class GDELTClient:
 
     #: Number of HTTP attempts per search call (includes the first try).
     max_attempts: int = 3
-    #: Base backoff in seconds; multiplied by the attempt number on 429/5xx/network.
+    #: Base backoff in seconds; exponentially increased on 429/5xx/network errors.
     backoff_base: float = 5.0
 
     def __init__(self, timeout: float = 30.0) -> None:
@@ -142,7 +142,7 @@ class GDELTClient:
             # 5xx — retry.
             if response is not None and response.status_code >= 500:
                 if attempt < self.max_attempts:
-                    time.sleep(self.backoff_base * attempt)
+                    time.sleep(self.backoff_base * (2 ** (attempt - 1)))
                     continue
                 # Out of attempts — fall through.
 
@@ -152,7 +152,7 @@ class GDELTClient:
 
             # Network-level failure — retry.
             if response is None and attempt < self.max_attempts:
-                time.sleep(self.backoff_base * attempt)
+                time.sleep(self.backoff_base * (2 ** (attempt - 1)))
                 continue
 
             # Out of attempts.

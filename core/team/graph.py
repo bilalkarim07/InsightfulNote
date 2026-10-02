@@ -160,6 +160,109 @@ def _sentence_claim_ids(
     ]
 
 
+def _verified_source_reference(
+    state: TeamState,
+    claim_ids: list[str],
+) -> str | None:
+    """Choose one real source URL cited by a verified claim used in the post."""
+    if not claim_ids:
+        return None
+
+    research = ResearchResult.model_validate(state["research"])
+    verification = VerificationResult.model_validate(state["verification"])
+    editorial = EditorialDecision.model_validate(state["editorial"])
+    allowed_claim_ids = set(editorial.allowed_claim_ids)
+    verifications = {
+        item.claim_id: item
+        for item in verification.verifications
+        if item.status in (
+            VerificationStatus.SUPPORTED,
+            VerificationStatus.SUPPORTED_AS_ATTRIBUTED,
+        )
+    }
+    claims = {item.claim_id: item for item in research.claims}
+
+    source_ranks = {
+        "PRIMARY": 4,
+        "OFFICIAL": 4,
+        "SECONDARY": 3,
+        "AGGREGATOR": 1,
+        "UNKNOWN": 0,
+        "OPINION": -1,
+    }
+    source_intel = state.get("source_intel")
+    assessments = (
+        source_intel.get("assessments", [])
+        if isinstance(source_intel, dict)
+        else []
+    )
+    source_ranks_by_id = {
+        str(item.get("source_id") or ""): source_ranks.get(
+            str(item.get("source_type") or "UNKNOWN").upper(), 0,
+        )
+        for item in assessments
+        if isinstance(item, dict)
+    } if isinstance(assessments, list) else {}
+
+    candidates: list[tuple[int, int, str]] = []
+    for claim_id in claim_ids:
+        claim = claims.get(claim_id)
+        verified = verifications.get(claim_id)
+        if (
+            claim is None
+            or verified is None
+            or claim_id not in allowed_claim_ids
+        ):
+            continue
+        evidence_ids = set(claim.evidence_ids)
+        if verified.evidence_ids:
+            evidence_ids &= set(verified.evidence_ids)
+        for index, evidence in enumerate(research.evidence):
+            if evidence.evidence_id not in evidence_ids or not evidence.url:
+                continue
+            parsed_url = urlsplit(evidence.url)
+            if (
+                parsed_url.scheme not in ("http", "https")
+                or not parsed_url.hostname
+                or _is_placeholder_source_url(evidence.url)
+            ):
+                continue
+            candidates.append((
+                source_ranks_by_id.get(evidence.source_id, 0),
+                -index,
+                evidence.url,
+            ))
+    return max(candidates)[2] if candidates else None
+
+
+def _append_source_reference(text: str, source_url: str, limit: int) -> str:
+    """Append a verified source link when it fits without breaking the post cap."""
+    parsed_url = urlsplit(source_url)
+    if (
+        parsed_url.scheme not in ("http", "https")
+        or not parsed_url.hostname
+        or _is_placeholder_source_url(source_url)
+        or re.search(r"https?://\S+", text)
+    ):
+        return text
+
+    suffix = "\nSource: " + source_url
+    content_limit = limit - len(suffix)
+    if content_limit < 1:
+        return text
+    content = text.strip()
+    if len(content) + len(suffix) > limit:
+        return text
+    return content + suffix
+
+
+def _is_verified_source_reference(sentence: str, allowed_urls: set[str]) -> bool:
+    match = re.fullmatch(r"Source:\s*(https?://\S+)", sentence, flags=re.IGNORECASE)
+    if not match:
+        return False
+    return match.group(1).rstrip(".,;:!?)]}") in allowed_urls
+
+
 def _story_publication_date(state: TeamState):
     from datetime import date
 
@@ -1474,12 +1577,29 @@ def node_platform_adapter(state: TeamState) -> TeamState:
             from core.tools.compress import _finish_sentence
             text = _finish_sentence(text, max_chars)
 
-    result.text = text
     research = ResearchResult.model_validate(state["research"])
     claims_by_id = {claim.claim_id: claim for claim in research.claims}
     result.claim_ids = sorted({
         claim_id
         for sentence in _split_post_sentences(text)
+        for claim_id in _sentence_claim_ids(
+            sentence, draft.claim_ids, claims_by_id,
+        )
+    })
+    source_url = _verified_source_reference(state, result.claim_ids)
+    if source_url:
+        linked_text = _append_source_reference(text, source_url, max_chars)
+        if linked_text != text:
+            text = linked_text
+            result.source_reference = source_url
+    result.text = text
+    result.claim_ids = sorted({
+        claim_id
+        for sentence in _split_post_sentences(text)
+        if not _is_verified_source_reference(
+            sentence,
+            {source_url} if source_url else set(),
+        )
         for claim_id in _sentence_claim_ids(
             sentence, draft.claim_ids, claims_by_id,
         )
@@ -1545,6 +1665,16 @@ def node_validation(state: TeamState) -> TeamState:
 
     research_claims = {claim.claim_id: claim for claim in research.claims}
     evidence_by_id = {evidence.evidence_id: evidence for evidence in research.evidence}
+    allowed_urls = {
+        evidence.url.rstrip(".,;:!?)]}")
+        for evidence in research.evidence
+        if evidence.url
+    }
+    allowed_urls.update(
+        str(item.get("canonical_url") or item.get("url") or "").rstrip(".,;:!?)]}")
+        for item in ((state.get("production_context") or {}).get("sources") or [])
+        if isinstance(item, dict) and (item.get("canonical_url") or item.get("url"))
+    )
     verified_claim_ids = {
         item.claim_id for item in verification.verifications
         if item.status in (
@@ -1582,6 +1712,8 @@ def node_validation(state: TeamState) -> TeamState:
         sentences = _split_post_sentences(post.text)
         sentence_token_sets = []
         for sentence in sentences:
+            if _is_verified_source_reference(sentence, allowed_urls):
+                continue
             sentence_tokens = _claim_tokens(sentence)
             sentence_token_sets.append(sentence_tokens)
             if len(sentence_tokens) < 2:
@@ -1645,16 +1777,10 @@ def node_validation(state: TeamState) -> TeamState:
                 if errors:
                     break
 
-    allowed_urls = {
-        evidence.url.rstrip(".,;:!?)]}")
-        for evidence in research.evidence
-        if evidence.url
-    }
-    allowed_urls.update(
-        str(item.get("canonical_url") or item.get("url") or "").rstrip(".,;:!?)]}")
-        for item in ((state.get("production_context") or {}).get("sources") or [])
-    )
-    for raw_url in re.findall(r"https?://\S+", post.text):
+    post_urls = re.findall(r"https?://\S+", post.text)
+    if len(post_urls) > 1:
+        errors.append("post contains more than one source URL")
+    for raw_url in post_urls:
         if raw_url.rstrip(".,;:!?)]}") not in allowed_urls:
             errors.append("post contains an unverified URL")
             break
@@ -1713,26 +1839,55 @@ def node_validation(state: TeamState) -> TeamState:
     return result
 
 
+def _supported_research_domains(
+    research: dict[str, Any],
+    verification: VerificationResult,
+) -> set[str]:
+    supported_claim_ids = {
+        item.claim_id
+        for item in verification.verifications
+        if item.status in (
+            VerificationStatus.SUPPORTED,
+            VerificationStatus.SUPPORTED_AS_ATTRIBUTED,
+        )
+    }
+    evidence_ids = {
+        evidence_id
+        for claim in research.get("claims") or []
+        if claim.get("claim_id") in supported_claim_ids
+        for evidence_id in claim.get("evidence_ids") or []
+    }
+    aggregator_hosts = {
+        "google.com",
+        "news.google.com",
+        "news.yahoo.com",
+        "bing.com",
+        "duckduckgo.com",
+        "tavily.com",
+        "gdeltproject.org",
+    }
+    domains: set[str] = set()
+    for evidence in research.get("evidence") or []:
+        if evidence.get("evidence_id") not in evidence_ids:
+            continue
+        host = (urlsplit(evidence.get("url") or "").hostname or "")
+        host = host.lower().removeprefix("www.")
+        if not host or any(
+            host == aggregator or host.endswith("." + aggregator)
+            for aggregator in aggregator_hosts
+        ):
+            continue
+        domains.add(host)
+    return domains
+
+
 def node_quota_gate(state: TeamState) -> TeamState:
     """Apply the shared daily cap with mode-specific publication windows."""
     if _is_terminal(state):
         return state
     from core.team import quota as quota_mod
 
-    if state.get("dry_run"):
-        message = "dry-run: publication quota is not consumed or enforced"
-        publication_type = (
-            "breaking" if state.get("mode") == "breaking" else "normal"
-        )
-        if quota_mod.manual_test_bypass_enabled(publication_type):
-            message += (
-                " (manual test bypass: active hours + spacing; "
-                "daily cap remains enforced in live runs)"
-            )
-        return _trace("quota_gate", state, [
-            msg("quota_gate", "publisher", "HANDOFF", message),
-        ])
-
+    dry_run = bool(state.get("dry_run"))
     publication_type = "breaking" if state.get("mode") == "breaking" else "normal"
     if publication_type == "breaking":
         from datetime import datetime, timezone
@@ -1781,6 +1936,13 @@ def node_quota_gate(state: TeamState) -> TeamState:
         evidence = research.get("evidence") or []
         claims = research.get("claims") or []
         verified = VerificationResult.model_validate(state["verification"])
+        research_domains = _supported_research_domains(research, verified)
+        source_domains.update(research_domains)
+        independently_assessed_domains.update(research_domains)
+        independent_reporting = (
+            source_intel.get("independent_reporting") is True
+            or len(research_domains) >= 2
+        )
         all_claims_supported = bool(claims) and all(
             item.status in (
                 VerificationStatus.SUPPORTED,
@@ -1797,7 +1959,7 @@ def node_quota_gate(state: TeamState) -> TeamState:
             and eligible_category
             and len(source_domains) >= 2
             and len(independently_assessed_domains) >= 2
-            and source_intel.get("independent_reporting") is True
+            and independent_reporting
             and source_intel.get("copying_detected") is False
             and bool(evidence)
             and all_claims_supported
@@ -1805,7 +1967,8 @@ def node_quota_gate(state: TeamState) -> TeamState:
         if not breaking_eligible:
             reason = (
                 "breaking eligibility requires a reasoned significance assessment, "
-                "freshness, allowed category, two distinct linked publisher domains, "
+                "freshness, allowed category, two distinct publisher domains from "
+                "linked sources or verified research evidence, "
                 "independent corroboration, no copying signal, and verified evidence"
             )
             return _trace("quota_gate", state, [
@@ -1818,7 +1981,13 @@ def node_quota_gate(state: TeamState) -> TeamState:
     allowed, reason, quota_state = quota_mod.can_publish(
         publication_type=publication_type
     )
-    quota_message = "quota ok" if allowed else "deferred: " + reason
+    quota_message = (
+        "dry-run: quota would allow publication"
+        if dry_run and allowed
+        else "quota ok"
+        if allowed
+        else "deferred: " + reason
+    )
     if quota_state.get("manual_test_bypass"):
         quota_message += (
             " (manual test bypass: active hours + spacing; "
@@ -1830,7 +1999,8 @@ def node_quota_gate(state: TeamState) -> TeamState:
         ])
 
     # Not allowed — record deferral and return early.
-    quota_mod.record_deferral()
+    if not dry_run:
+        quota_mod.record_deferral()
     return _trace("quota_gate", state, [
         msg("quota_gate", "all", "INFO", quota_message),
     ]) | {
@@ -1884,7 +2054,7 @@ def node_publisher(state: TeamState) -> TeamState:
                     try:
                         from core.tools.publishing import reconcile_threads_publication
                         recovered = reconcile_threads_publication(
-                            post.text,
+                            str(existing.get("content") or post.text),
                             started_at=(existing.get("metadata") or {}).get("started_at"),
                         )
                         if recovered:
@@ -1921,8 +2091,33 @@ def node_publisher(state: TeamState) -> TeamState:
                             + type(exc).__name__
                             + "); manual recovery required."
                         )
+                        try:
+                            from core.tools.database import stories as _db
+                            _db.update_publication_result(existing["id"], {
+                                "status": "recovery_required",
+                                "metadata": {
+                                    **(existing.get("metadata") or {}),
+                                    "recovery_state": "required",
+                                    "recovery_error": recovery_error,
+                                },
+                            })
+                        except Exception as persist_exc:
+                            print(
+                                "  [publisher] recovery status persistence failed: "
+                                + type(persist_exc).__name__
+                            )
                     else:
                         recovery_error = "No unique matching Threads post found; refusing to republish."
+                        from core.tools.database import stories as _db
+                        _db.update_publication_result(existing["id"], {
+                            "status": "recovery_required",
+                            "metadata": {
+                                **(existing.get("metadata") or {}),
+                                "recovery_state": "required",
+                                "recovery_checked_at": _now_iso(),
+                                "recovery_error": recovery_error,
+                            },
+                        })
                     pub = PublishResult(
                         run_id=run_id, story_id=story_id, platform="threads",
                         status="RECOVERY_REQUIRED", error=recovery_error,
@@ -2013,7 +2208,7 @@ def node_publisher(state: TeamState) -> TeamState:
         print("  [publisher] Threads error: " + str(error))
     published_at = _now_iso() if status == "PUBLISHED" and external_id else None
     if status == "PUBLISHED" and not external_id:
-        status = "PUBLISHING"
+        status = "UNKNOWN"
         error = "Threads response did not contain a publication ID; recovery required."
 
     pub = PublishResult(
@@ -2032,7 +2227,9 @@ def node_publisher(state: TeamState) -> TeamState:
             payload = {
                 "platform": "threads",
                 "status": (
-                    "publishing" if live and status == "UNKNOWN" else status.lower()
+                    "recovery_required"
+                    if live and status == "UNKNOWN"
+                    else status.lower()
                 ),
                 "content": post.text,
                 "external_post_id": external_id,
@@ -2375,6 +2572,40 @@ def run_team(
 
     graph = compile_graph()
     final_state: TeamState = graph.invoke(state)
+
+    if dry_run:
+        research_result = final_state.get("research") or {}
+        verification_result = final_state.get("verification") or {}
+        validation_result = final_state.get("validation") or {}
+        post_result = final_state.get("post") or {}
+        publication_result = final_state.get("publication") or {}
+        quota_messages = [
+            str(message.get("content") or "")
+            for message in final_state.get("messages", [])
+            if message.get("from_agent") == "quota_gate"
+        ]
+        quota_result = quota_messages[-1] if quota_messages else "not reached"
+        verification_counts: dict[str, int] = {}
+        for item in verification_result.get("verifications") or []:
+            status = str(item.get("status") or "unknown")
+            verification_counts[status] = verification_counts.get(status, 0) + 1
+        post_text = str(post_result.get("text") or "")
+        print("[diagnostic] dry-run pipeline:")
+        print(
+            f"  research evidence={len(research_result.get('evidence') or [])} "
+            f"claims={len(research_result.get('claims') or [])}"
+        )
+        print(f"  verification={verification_counts or 'not reached'}")
+        print(f"  writer={'ready' if post_text else 'not reached'} chars={len(post_text)}")
+        print(
+            "  validation="
+            + str(validation_result.get("state") or "not reached")
+        )
+        print(f"  quota={quota_result}")
+        print(
+            "  would_publish="
+            + str(publication_result.get("status") == "SKIPPED_DRY_RUN").lower()
+        )
 
     # Print the conversation transcript.
     print("\n[team conversation]")

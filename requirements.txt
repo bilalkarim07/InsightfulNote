@@ -5,6 +5,8 @@ langchain-core
 langchain-openai
 beautifulsoup4
 lxml
+trafilatura==2.0.0
+newspaper4k==0.9.3
 python-dotenv
 ddgs
 feedparser

@@ -8,9 +8,9 @@ are deferred.
 ## Architecture
 
 ```text
-GDELT / Google News / DDGS / Tavily / configured RSS
+Curated direct RSS feeds (primary) / Google News / DDGS / GDELT
   -> deterministic extraction, normalization, canonicalization, deduplication,
-     clustering, and Supabase persistence
+     time-aware cross-source clustering, and Supabase persistence
   -> story selection and editorial memory
   -> candidate interpretation -> source intelligence -> research
   -> verification -> editorial -> tone -> writer -> Threads adapter
@@ -20,11 +20,15 @@ GDELT / Google News / DDGS / Tavily / configured RSS
 
 External news discovery is performed by the deterministic ETL. The graph's
 Discovery stage interprets and validates a candidate already loaded from the
-database; it does not perform GDELT, Google News, DDGS, or Tavily discovery.
+database; it does not perform discovery searches. Tavily remains available as
+an opt-in provider only when `NEWSROOM_ENABLE_TAVILY=true`.
 Supabase is the source of truth for ingested stories, source links, editorial
 memory inputs, and publication records. Per-run research, verification, and
 editorial outputs are captured in run snapshots. A production runner fails
 closed if Supabase is not available; local storage is for development only.
+Direct feed definitions live in `sources/rss/feeds.json`; feeds run once per
+ingestion, in configured priority order, and direct-RSS items are deduplicated
+before persistence.
 
 Each production run selects one verified LLM model for the newsroom graph.
 Capability-aware per-agent model routing is a future improvement.
@@ -32,19 +36,24 @@ Capability-aware per-agent model routing is a future improvement.
 ## GitHub Actions
 
 - `news-ingestion.yml` runs daily deterministic ingestion.
-- `hourly-breaking-news.yml` evaluates breaking candidates hourly, 24/7.
+- `hourly-breaking-news.yml` evaluates breaking candidates every 30 minutes.
 - `evening-reporting.yml` runs at 7–11 PM America/New_York.
 
-Scheduled evening runs remain within that reporting window. A manual
-Evening Reporting dispatch can enable `bypass_active_hours` to test outside
-the normal quota hours. This only bypasses the clock check; the daily quota,
-spacing, QA, duplicate protection, and publication safeguards still apply.
+Scheduled breaking and evening runs publish live subject to the daily quota,
+spacing, QA, duplicate protection, and publication safeguards. Manual dispatch
+defaults to dry-run; choose `live=true` only for an authorized real publication.
+An Evening Reporting dispatch can also enable `bypass_active_hours` to test
+outside the normal quota hours. This only bypasses the clock check; the daily
+quota and the other safety checks still apply.
 Keep `NEWSROOM_BYPASS_ACTIVE_HOURS=false` except for controlled manual tests.
+Dry-run mode reports candidate quality, research evidence, verification,
+validation, quota, and whether a post would have been published; it never calls
+the Threads API.
 
 Breaking posts bypass the normal reporting-hour and spacing checks, but share
 the configured daily maximum and retain evidence, duplicate, and publication
-safety checks. Workflows must remain non-live until live gates and replay
-protection have been verified.
+safety checks. A single linked source can enter research; verification still
+determines whether claims are publishable.
 
 ## Local setup
 
@@ -78,8 +87,8 @@ running them. Never run synthetic/demo data against the production database.
 ## Production configuration
 
 See `.env.example` for supported variable names. Production execution requires
-Supabase URL/key, a verified configured LLM, search credentials needed by the
-research path, and a valid `THREADS_ACCESS_TOKEN`. Threads account/application
+Supabase URL/key, a verified configured LLM, non-Tavily search providers needed
+by the research path, and a valid `THREADS_ACCESS_TOKEN`. Threads account/application
 settings are also listed there. Set `NEWSROOM_LIVE=true` only for an explicitly
 authorized live run. If credentials or database connectivity are absent, the
 production workflow must stop rather than use local or synthetic data.

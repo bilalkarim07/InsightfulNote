@@ -193,7 +193,12 @@ def _test_candidate_eligibility() -> None:
 
     original_candidates = db.find_reporting_candidates
     original_distribution = db.get_recent_category_distribution
-    valid_categories = [category.value for category in Category]
+    from schemas.taxonomy import PRODUCTION_CATEGORY_ALLOWLIST
+
+    valid_categories = [
+        category.value for category in Category
+        if category.value in PRODUCTION_CATEGORY_ALLOWLIST
+    ]
     published_at = datetime.now(timezone.utc).isoformat()
     candidates = [
         {

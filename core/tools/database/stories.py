@@ -10,6 +10,7 @@ Every function is a controlled operation. No raw SQL. No client exposure.
 from __future__ import annotations
 
 import hashlib
+import os
 import uuid as _uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
@@ -252,6 +253,90 @@ def update_story_status(story_id: str, status: str) -> None:
         raise_unavailable("update_story_status", exc)
 
 
+def find_story_by_cluster_signature(
+    signature: str,
+    *,
+    legacy_signature: Optional[str] = None,
+) -> Optional[dict[str, Any]]:
+    """Find a previously persisted story without creating a duplicate cluster."""
+    client = get_client()
+    signatures = list(dict.fromkeys(
+        value for value in (signature, legacy_signature) if value
+    ))
+    if not is_production():
+        rows = client.select(S.STORIES)
+        for row in rows:
+            metadata = row.get("metadata") or {}
+            if not isinstance(metadata, dict):
+                continue
+            if any(
+                metadata.get("cluster_signature") == value
+                or metadata.get("legacy_cluster_signature") == value
+                for value in signatures
+            ):
+                return row
+        return None
+    try:
+        for value in signatures:
+            result = (
+                client.table(S.STORIES)
+                .select("*")
+                .contains("metadata", {"cluster_signature": value})
+                .limit(1)
+                .execute()
+            )
+            if result.data:
+                return result.data[0]
+            result = (
+                client.table(S.STORIES)
+                .select("*")
+                .contains("metadata", {"legacy_cluster_signature": value})
+                .limit(1)
+                .execute()
+            )
+            if result.data:
+                return result.data[0]
+        return None
+    except Exception as exc:
+        raise_unavailable("find_story_by_cluster_signature", exc)
+
+
+def update_story_content(
+    story_id: str,
+    *,
+    title: str,
+    summary: Optional[str],
+    metadata: dict[str, Any],
+) -> None:
+    """Refresh a matched cluster while preserving its status and publication history."""
+    client = get_client()
+    payload = _sanitize_row({
+        "title": title,
+        "summary": summary,
+        "metadata": metadata,
+        "last_seen_at": _now(),
+    })
+    if not is_production():
+        rows = client.select(S.STORIES, id=story_id)
+        if not rows:
+            raise ValueError(f"Story not found: {story_id}")
+        rows[0].update(payload)
+        client._flush()
+        return
+    try:
+        result = (
+            client.table(S.STORIES)
+            .update(payload)
+            .eq("id", story_id)
+            .select("id")
+            .execute()
+        )
+        if not result.data:
+            raise RuntimeError("story update returned no data")
+    except Exception as exc:
+        raise_unavailable("update_story_content", exc)
+
+
 def link_story_source(
     story_id: str,
     news_item_id: str,
@@ -321,8 +406,14 @@ def _story_source_count(client, story_id: str) -> int:
 
 
 def _is_eligible_story(story: dict) -> bool:
-    status = story.get("status")
-    return status in (S.STORY_STATUS_CANDIDATE, S.STORY_STATUS_RESEARCHING)
+    status = str(story.get("status") or "").lower()
+    return status in {
+        S.STORY_STATUS_CANDIDATE,
+        S.STORY_STATUS_RESEARCHING,
+        S.STORY_STATUS_VERIFIED,
+        S.STORY_STATUS_EDITORIAL,
+        S.STORY_STATUS_DRAFTED,
+    }
 
 
 def _reporting_candidate_sort_key(story: dict) -> tuple[datetime, int]:
@@ -383,7 +474,10 @@ def find_unpublished_candidates(
         except Exception:
             pass
         try:
-            if find_duplicate_publication(sid):
+            if find_duplicate_publication(
+                sid,
+                include_stale_publishing=False,
+            ):
                 continue
         except DatabaseUnavailableError:
             raise
@@ -438,7 +532,10 @@ def find_reporting_candidates(
         except Exception:
             pass
         try:
-            if find_duplicate_publication(sid):
+            if find_duplicate_publication(
+                sid,
+                include_stale_publishing=False,
+            ):
                 continue
         except DatabaseUnavailableError:
             raise
@@ -579,6 +676,32 @@ def get_story_evidence(story_id: str) -> list[dict[str, Any]]:
 # publications
 # ============================================================
 
+_PUBLICATION_STATUS_ALIASES = {
+    "approved": S.PUBLICATION_STATUS_RECOVERY_REQUIRED,
+    "blocked": S.PUBLICATION_STATUS_FAILED,
+    "dry_run": S.PUBLICATION_STATUS_DRAFT,
+    "skipped_dry_run": S.PUBLICATION_STATUS_DRAFT,
+    "unknown": S.PUBLICATION_STATUS_RECOVERY_REQUIRED,
+}
+_CANONICAL_PUBLICATION_STATUSES = {
+    S.PUBLICATION_STATUS_DRAFT,
+    S.PUBLICATION_STATUS_PUBLISHING,
+    S.PUBLICATION_STATUS_PUBLISHED,
+    S.PUBLICATION_STATUS_FAILED,
+    S.PUBLICATION_STATUS_RECOVERY_REQUIRED,
+}
+
+
+def _normalize_publication_status(status: Any) -> str:
+    if not isinstance(status, str) or not status.strip():
+        raise ValueError("publication status must be a non-empty string")
+    normalized = status.strip().lower()
+    normalized = _PUBLICATION_STATUS_ALIASES.get(normalized, normalized)
+    if normalized not in _CANONICAL_PUBLICATION_STATUSES:
+        raise ValueError(f"unsupported publication status: {status!r}")
+    return normalized
+
+
 def save_publication_result(
     story_id: str,
     payload: dict[str, Any],
@@ -588,6 +711,7 @@ def save_publication_result(
     row.setdefault("story_id", story_id)
     row.setdefault("platform", S.PLATFORM_THREADS)
     row.setdefault("status", S.PUBLICATION_STATUS_DRAFT)
+    row["status"] = _normalize_publication_status(row["status"])
     row.setdefault("metadata", {})
 
     row.pop("publication_id", None)
@@ -623,6 +747,8 @@ def update_publication_result(
     row.pop("id", None)
     row.pop("run_id", None)
     row.pop("error", None)
+    if "status" in row:
+        row["status"] = _normalize_publication_status(row["status"])
     row = _sanitize_row(row)
 
     if not is_production():
@@ -646,25 +772,58 @@ def update_publication_result(
         raise_unavailable("update_publication_result", exc)
 
 
+def _stale_publishing_reservation(row: dict[str, Any]) -> bool:
+    metadata = row.get("metadata") or {}
+    if not isinstance(metadata, dict):
+        return False
+    started_at = metadata.get("started_at")
+    if not isinstance(started_at, str) or not started_at:
+        return False
+    try:
+        started = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
+        if started.tzinfo is None:
+            started = started.replace(tzinfo=timezone.utc)
+    except ValueError:
+        return False
+    stale_minutes = max(
+        5,
+        int(os.environ.get("NEWSROOM_STALE_RESERVATION_MINUTES", "30")),
+    )
+    age = datetime.now(timezone.utc) - started.astimezone(timezone.utc)
+    return age >= timedelta(minutes=stale_minutes)
+
+
 def find_duplicate_publication(
     story_id: str,
     platform: str = S.PLATFORM_THREADS,
+    *,
+    include_stale_publishing: bool = True,
 ) -> Optional[dict[str, Any]]:
     client = get_client()
     live_statuses = (
         S.PUBLICATION_STATUS_PUBLISHED,
-        S.PUBLICATION_STATUS_APPROVED,
         S.PUBLICATION_STATUS_PUBLISHING,
+        S.PUBLICATION_STATUS_RECOVERY_REQUIRED,
+        S.PUBLICATION_STATUS_APPROVED,
         "PUBLISHED",
         "APPROVED",
         "PUBLISHING",
+        "RECOVERY_REQUIRED",
     )
     if not is_production():
         rows = client.select(S.PUBLICATIONS, story_id=story_id, platform=platform)
-        return next(
+        match = next(
             (r for status in live_statuses for r in rows if r.get("status") == status),
             None,
         )
+        if (
+            match
+            and not include_stale_publishing
+            and str(match.get("status") or "").lower() == S.PUBLICATION_STATUS_PUBLISHING
+            and _stale_publishing_reservation(match)
+        ):
+            return None
+        return match
     try:
         r = (
             client.table(S.PUBLICATIONS)
@@ -676,10 +835,18 @@ def find_duplicate_publication(
             .execute()
         )
         rows = r.data or []
-        return next(
+        match = next(
             (row for status in live_statuses for row in rows if row.get("status") == status),
             None,
         )
+        if (
+            match
+            and not include_stale_publishing
+            and str(match.get("status") or "").lower() == S.PUBLICATION_STATUS_PUBLISHING
+            and _stale_publishing_reservation(match)
+        ):
+            return None
+        return match
     except Exception as exc:
         raise_unavailable("find_duplicate_publication", exc)
 
@@ -691,7 +858,7 @@ def count_published_today(platform: str = S.PLATFORM_THREADS) -> int:
     if not is_production():
         count = 0
         for r in client.select(S.PUBLICATIONS, platform=platform):
-            if r.get("status") != S.PUBLICATION_STATUS_PUBLISHED:
+            if str(r.get("status") or "").lower() != S.PUBLICATION_STATUS_PUBLISHED:
                 continue
             pa = r.get("published_at") or ""
             try:
@@ -708,7 +875,7 @@ def count_published_today(platform: str = S.PLATFORM_THREADS) -> int:
             client.table(S.PUBLICATIONS)
             .select("id", count="exact")
             .eq("platform", platform)
-            .eq("status", S.PUBLICATION_STATUS_PUBLISHED)
+            .in_("status", [S.PUBLICATION_STATUS_PUBLISHED, "PUBLISHED"])
             .gte("published_at", start.isoformat())
             .execute()
         )
@@ -722,7 +889,7 @@ def last_published_at(platform: str = S.PLATFORM_THREADS) -> Optional[str]:
     if not is_production():
         pubs = [
             r for r in client.select(S.PUBLICATIONS, platform=platform)
-            if r.get("status") == S.PUBLICATION_STATUS_PUBLISHED
+            if str(r.get("status") or "").lower() == S.PUBLICATION_STATUS_PUBLISHED
         ]
         pubs.sort(key=lambda r: r.get("published_at") or "", reverse=True)
         return pubs[0].get("published_at") if pubs else None
@@ -731,7 +898,7 @@ def last_published_at(platform: str = S.PLATFORM_THREADS) -> Optional[str]:
             client.table(S.PUBLICATIONS)
             .select("published_at")
             .eq("platform", platform)
-            .eq("status", S.PUBLICATION_STATUS_PUBLISHED)
+            .in_("status", [S.PUBLICATION_STATUS_PUBLISHED, "PUBLISHED"])
             .order("published_at", desc=True)
             .limit(1)
             .execute()

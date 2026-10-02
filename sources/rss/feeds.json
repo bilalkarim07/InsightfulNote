@@ -1,0 +1,137 @@
+[
+  {
+    "id": "rss_bbc_world",
+    "name": "BBC News",
+    "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+    "category": "WORLD_EVENTS",
+    "publisher_domain": "bbc.co.uk",
+    "priority": 1,
+    "active": true
+  },
+  {
+    "id": "rss_guardian_world",
+    "name": "The Guardian",
+    "url": "https://www.theguardian.com/world/rss",
+    "category": "WORLD_EVENTS",
+    "publisher_domain": "theguardian.com",
+    "priority": 2,
+    "active": true
+  },
+  {
+    "id": "rss_aljazeera_world",
+    "name": "Al Jazeera",
+    "url": "https://www.aljazeera.com/xml/rss/all.xml",
+    "category": "WORLD_EVENTS",
+    "publisher_domain": "aljazeera.com",
+    "priority": 3,
+    "active": true
+  },
+  {
+    "id": "rss_cnn_world",
+    "name": "CNN",
+    "url": "https://rss.cnn.com/rss/edition_world.rss",
+    "category": "WORLD_EVENTS",
+    "publisher_domain": "cnn.com",
+    "priority": 4,
+    "active": true
+  },
+  {
+    "id": "rss_npr_news",
+    "name": "NPR",
+    "url": "https://feeds.npr.org/1001/rss.xml",
+    "category": "WORLD_EVENTS",
+    "publisher_domain": "npr.org",
+    "priority": 5,
+    "active": true
+  },
+  {
+    "id": "rss_abc_top_stories",
+    "name": "ABC News",
+    "url": "https://abcnews.go.com/abcnews/topstories",
+    "category": "WORLD_EVENTS",
+    "publisher_domain": "abcnews.go.com",
+    "priority": 6,
+    "active": true
+  },
+  {
+    "id": "rss_cbs_latest",
+    "name": "CBS News",
+    "url": "https://www.cbsnews.com/latest/rss/main",
+    "category": "WORLD_EVENTS",
+    "publisher_domain": "cbsnews.com",
+    "priority": 7,
+    "active": true
+  },
+  {
+    "id": "rss_dw_world",
+    "name": "DW",
+    "url": "https://rss.dw.com/rdf/rss-en-all",
+    "category": "WORLD_EVENTS",
+    "publisher_domain": "dw.com",
+    "priority": 8,
+    "active": true
+  },
+  {
+    "id": "rss_france24_world",
+    "name": "France 24",
+    "url": "https://www.france24.com/en/rss",
+    "category": "WORLD_EVENTS",
+    "publisher_domain": "france24.com",
+    "priority": 9,
+    "active": true
+  },
+  {
+    "id": "rss_ars_technica",
+    "name": "Ars Technica",
+    "url": "https://feeds.arstechnica.com/arstechnica/index",
+    "category": "TECHNOLOGY",
+    "publisher_domain": "arstechnica.com",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "id": "rss_techcrunch_ai",
+    "name": "TechCrunch AI",
+    "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+    "category": "ARTIFICIAL_INTELLIGENCE",
+    "publisher_domain": "techcrunch.com",
+    "priority": 11,
+    "active": true
+  },
+  {
+    "id": "rss_nature",
+    "name": "Nature",
+    "url": "https://www.nature.com/nature.rss",
+    "category": "SCIENCE",
+    "publisher_domain": "nature.com",
+    "priority": 12,
+    "active": true
+  },
+  {
+    "id": "rss_sciencedaily",
+    "name": "ScienceDaily",
+    "url": "https://www.sciencedaily.com/rss/all.xml",
+    "category": "SCIENCE",
+    "publisher_domain": "sciencedaily.com",
+    "priority": 13,
+    "active": true
+  },
+  {
+    "id": "rss_cnbc_economy",
+    "name": "CNBC",
+    "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+    "category": "FINANCE",
+    "publisher_domain": "cnbc.com",
+    "priority": 14,
+    "active": true
+  },
+  {
+    "id": "rss_ft_world",
+    "name": "Financial Times",
+    "url": "https://www.ft.com/rss/home",
+    "category": "BUSINESS",
+    "publisher_domain": "ft.com",
+    "priority": 15,
+    "active": true
+  }
+]
