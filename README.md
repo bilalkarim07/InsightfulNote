@@ -42,10 +42,9 @@ Capability-aware per-agent model routing is a future improvement.
 Scheduled and manually dispatched breaking and evening runs use the same
 production behavior: qualified, validated posts are sent to Threads, subject
 to the daily quota, spacing, duplicate protection, and publication safeguards.
-An Evening Reporting dispatch can enable `bypass_active_hours` to run outside
-normal publication hours; this only bypasses the clock check, never the daily
-quota or other safeguards. Shared local/development runs may still use
-`dry_run=True`; the two production runners always publish.
+Evening dispatch follows the same active-hour and spacing restrictions as
+scheduled runs. Shared local/development runs may still use `dry_run=True`;
+the two production runners always publish.
 
 Breaking posts bypass the normal reporting-hour and spacing checks, but share
 the configured daily maximum and retain evidence, duplicate, and publication

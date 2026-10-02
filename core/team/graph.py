@@ -1990,11 +1990,6 @@ def node_quota_gate(state: TeamState) -> TeamState:
         if allowed
         else "deferred: " + reason
     )
-    if quota_state.get("manual_test_bypass"):
-        quota_message += (
-            " (manual test bypass: active hours + spacing; "
-            "daily cap remains enforced)"
-        )
     if allowed:
         return _trace("quota_gate", state, [
             msg("quota_gate", "publisher", "HANDOFF", quota_message),

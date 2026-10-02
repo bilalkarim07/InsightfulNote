@@ -18,6 +18,7 @@ from core.team.state import MAX_WRITER_ATTEMPTS  # noqa: E402
 from core.tools import publishing as threads_publishing  # noqa: E402
 from sources.threads.exceptions import (  # noqa: E402
     ThreadsAuthenticationError,
+    ThreadsAPIError,
     ThreadsPublishingError,
 )
 from scripts.agents.run_evening_reporting import (  # noqa: E402
@@ -458,6 +459,24 @@ def _test_threads_result_classification() -> None:
         uncertain = threads_publishing.publish_threads("safe test text", dry_run=False)
         assert uncertain["status"] == "UNKNOWN"
         assert "reconciliation required" in uncertain["error"]
+
+        meta_error = ThreadsAPIError(
+            "non-secret Meta publish rejection",
+            status_code=400,
+            error_code=24,
+            error_subcode=4279009,
+            error_type="OAuthException",
+            fbtrace_id="test-trace-id",
+        )
+        publish_error = ThreadsPublishingError(
+            "non-secret simulated publish failure",
+            container_id="test-container-id",
+        )
+        publish_error.__cause__ = meta_error
+        threads_publishing.build_threads_api = lambda: FakeAPI(publish_error)
+        detailed = threads_publishing.publish_threads("safe test text", dry_run=False)
+        assert detailed["diagnostic"]["cause_message"] == "non-secret Meta publish rejection"
+        assert "non-secret Meta publish rejection" in detailed["error"]
 
         auth_failure = ThreadsPublishingError("non-secret simulated publish failure")
         auth_failure.__cause__ = ThreadsAuthenticationError(

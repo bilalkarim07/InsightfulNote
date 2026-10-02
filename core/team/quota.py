@@ -9,10 +9,9 @@ Config (env-overridable):
   NEWSROOM_ACTIVE_START       default 8    (local hour)
   NEWSROOM_ACTIVE_END         default 23   (local hour, exclusive)
   NEWSROOM_TZ_OFFSET          default 5    (hours from UTC)
-  NEWSROOM_BYPASS_ACTIVE_HOURS manual reporting-test bypass for active hours and spacing
 
-The manual bypass never disables the daily publication cap. Breaking
-publications use their own eligibility path and are not affected by it.
+Breaking publications share the daily cap but use their own eligibility path
+without normal reporting-hour or spacing restrictions.
 """
 from __future__ import annotations
 
@@ -30,26 +29,6 @@ def _env_int(name: str, default: int) -> int:
         return int(os.environ.get(name, str(default)))
     except (ValueError, TypeError):
         return default
-
-
-def _env_bool(name: str, default: bool = False) -> bool:
-    value = os.environ.get(name)
-    if value is None:
-        return default
-    return value.strip().lower() in ("1", "true", "yes")
-
-
-def manual_test_bypass_enabled(publication_type: str = "normal") -> bool:
-    """Return whether the manual reporting bypass is active for normal runs."""
-    return (
-        publication_type != "breaking"
-        and _env_bool("NEWSROOM_BYPASS_ACTIVE_HOURS")
-    )
-
-
-def active_hours_bypass_enabled(publication_type: str = "normal") -> bool:
-    """Compatibility alias for the manual reporting bypass."""
-    return manual_test_bypass_enabled(publication_type)
 
 
 def _get_publish_timezone() -> timezone | Any:
@@ -122,13 +101,7 @@ def can_publish(
         "publication_type": publication_type,
     }
 
-    manual_test_bypass = manual_test_bypass_enabled(publication_type)
-    if manual_test_bypass:
-        state["active_hours_bypassed"] = True
-        state["spacing_bypassed"] = True
-        state["manual_test_bypass"] = True
-
-    if publication_type != "breaking" and not manual_test_bypass:
+    if publication_type != "breaking":
         hour = _local_now().hour
         if not (active_start <= hour < active_end):
             state["published"] = 0
@@ -173,7 +146,6 @@ def can_publish(
     if (
         last_published
         and publication_type != "breaking"
-        and not manual_test_bypass
     ):
         try:
             last = datetime.fromisoformat(str(last_published).replace("Z", "+00:00"))

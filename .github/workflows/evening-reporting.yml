@@ -5,11 +5,6 @@ on:
     - cron: "0 19,20,21,22,23 * * *"
       timezone: "America/New_York"
   workflow_dispatch:
-    inputs:
-      bypass_active_hours:
-        description: "Bypass reporting hours and spacing for manual tests; daily cap remains enforced"
-        type: boolean
-        default: false
 
 concurrency:
   group: newsroom-production
@@ -46,7 +41,6 @@ jobs:
           THREADS_APP_SECRET: ${{ secrets.THREADS_APP_SECRET }}
           THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
           THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
-          NEWSROOM_BYPASS_ACTIVE_HOURS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.bypass_active_hours == 'true' && 'true' || 'false' }}
           NEWSROOM_MAX_PER_DAY: ${{ vars.NEWSROOM_MAX_PER_DAY || '5' }}
           NEWSROOM_PUBLISH_TIMEZONE: ${{ vars.NEWSROOM_PUBLISH_TIMEZONE || 'America/New_York' }}
           NEWSROOM_PROVIDER: ${{ vars.NEWSROOM_PROVIDER || '' }}

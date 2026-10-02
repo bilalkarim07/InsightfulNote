@@ -76,6 +76,9 @@ def _error_details(exc: Exception) -> tuple[str, dict[str, Any]]:
     for prefix, source in (("", exc), ("cause_", cause)):
         if source is None:
             continue
+        message = getattr(source, "message", None) or str(source)
+        if message:
+            details[prefix + "message"] = str(message)[:500]
         for attribute in (
             "status_code", "error_code", "error_subcode", "error_type", "fbtrace_id",
         ):
@@ -87,6 +90,7 @@ def _error_details(exc: Exception) -> tuple[str, dict[str, Any]]:
         for key in (
             "status_code", "error_code", "error_subcode", "fbtrace_id",
             "cause_type", "cause_status_code", "cause_error_code",
+            "cause_message",
         )
         if key in details
     ]

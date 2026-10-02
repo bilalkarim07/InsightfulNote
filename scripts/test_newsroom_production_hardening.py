@@ -31,7 +31,8 @@ def _check_workflow_configuration() -> None:
     assert 'cron: "*/30 * * * *"' in breaking
     assert "live:" not in evening + breaking
     assert "NEWSROOM_LIVE" not in evening + breaking
-    assert "bypass_active_hours:" in evening
+    assert "bypass_active_hours" not in evening
+    assert "NEWSROOM_BYPASS_ACTIVE_HOURS" not in evening
     assert "workflow_dispatch:" in evening and "workflow_dispatch:" in breaking
     for workflow in (evening, breaking):
         assert "THREADS_APP_ID: ${{ secrets.THREADS_APP_ID }}" in workflow
