@@ -27,6 +27,22 @@ def _parse_iso_date(value: Optional[str]) -> Optional[datetime]:
         return None
 
 
+def _metadata_value(value: object) -> object:
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, dict):
+        return {
+            str(key): _metadata_value(item)
+            for key, item in value.items()
+            if isinstance(key, (str, int, float, bool))
+        }
+    if isinstance(value, (list, tuple, set)):
+        return [_metadata_value(item) for item in value]
+    return str(value)
+
+
 def extract_article(
     url: str,
     *,
@@ -77,6 +93,7 @@ def extract_article(
     language: Optional[str] = None
     extraction_method = "empty"
     fallback_errors: list[str] = []
+    newspaper_metadata: dict[str, object] = {}
 
     try:
         import trafilatura
@@ -114,15 +131,32 @@ def extract_article(
             article = Article(result.final_url, language="en")
             article.set_html(result.text)
             article.parse()
+            trafilatura_sufficient = len(text) >= 200
             newspaper_text = clean_text(article.text or "")
             if len(newspaper_text) > len(text):
                 text = newspaper_text
                 extraction_method = "newspaper4k"
-            title = title or article.title or None
+            newspaper_title = (article.title or "").strip()
+            if newspaper_title and (
+                not trafilatura_sufficient
+                or not title
+                or title == resolved_url
+                or len(title.strip()) < 10
+            ):
+                title = newspaper_title
             author = author or ", ".join(article.authors) or None
             published_at = published_at or (
                 article.publish_date.isoformat() if article.publish_date else None
             )
+            newspaper_metadata = {
+                "meta_data": _metadata_value(
+                    getattr(article, "meta_data", {}) or {}
+                ),
+                "meta_description": getattr(article, "meta_description", "") or "",
+                "meta_keywords": getattr(article, "meta_keywords", []) or [],
+                "keywords": sorted(getattr(article, "keywords", []) or []),
+                "tags": sorted(getattr(article, "tags", []) or []),
+            }
         except ImportError as exc:
             fallback_errors.append(f"newspaper4k unavailable: {exc}")
         except Exception as exc:
@@ -166,5 +200,6 @@ def extract_article(
             "canonical_from_html": canonical_url,
             "extraction_method": extraction_method,
             "fallback_errors": fallback_errors,
+            "newspaper4k": newspaper_metadata,
         },
     )

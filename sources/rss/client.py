@@ -1,5 +1,6 @@
 """Generic HTTP client for RSS/Atom feeds."""
 
+import time
 from typing import Optional
 
 import httpx
@@ -25,6 +26,7 @@ class RSSClient:
         self.user_agent = user_agent or "InsightfullNote/0.1 RSS Client"
         self._client = httpx.Client(
             timeout=timeout,
+            follow_redirects=True,
             headers={"User-Agent": self.user_agent},
         )
 
@@ -33,21 +35,31 @@ class RSSClient:
         if not feed_url or not feed_url.startswith(("http://", "https://")):
             raise SourceValidationError(f"Invalid feed URL: {feed_url}")
 
-        try:
-            response = self._client.get(feed_url)
-            response.raise_for_status()
-        except httpx.TimeoutException as exc:
-            raise SourceConnectionError(
-                f"Timeout fetching {feed_url}"
-            ) from exc
-        except httpx.HTTPStatusError as exc:
-            raise SourceConnectionError(
-                f"HTTP {exc.response.status_code} fetching {feed_url}"
-            ) from exc
-        except httpx.RequestError as exc:
-            raise SourceConnectionError(
-                f"Network error fetching {feed_url}: {exc}"
-            ) from exc
+        response = None
+        for attempt in range(3):
+            try:
+                response = self._client.get(feed_url)
+                response.raise_for_status()
+                break
+            except httpx.HTTPStatusError as exc:
+                raise SourceConnectionError(
+                    f"HTTP {exc.response.status_code} fetching {feed_url}"
+                ) from exc
+            except httpx.TimeoutException as exc:
+                if attempt == 2:
+                    raise SourceConnectionError(
+                        f"Timeout fetching {feed_url}"
+                    ) from exc
+                time.sleep(0.25 * (attempt + 1))
+            except httpx.RequestError as exc:
+                if attempt == 2:
+                    raise SourceConnectionError(
+                        f"Network error fetching {feed_url}: {exc}"
+                    ) from exc
+                time.sleep(0.25 * (attempt + 1))
+
+        if response is None:
+            raise SourceConnectionError(f"Failed to fetch {feed_url}")
 
         try:
             items = parse_feed(response.content, source_name=feed_url)

@@ -43,6 +43,11 @@ def _check_workflow_configuration() -> None:
         assert "THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}" in workflow
         assert "THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}" in workflow
     assert "TAVILY_API_KEY" not in evening + breaking
+    ingestion_workflow = (
+        workflow_dir / "news-ingestion.yml"
+    ).read_text(encoding="utf-8")
+    assert "Verify Newspaper4k installation" in ingestion_workflow
+    assert "version('newspaper4k')" in ingestion_workflow
 
     evening_runner = (ROOT / "scripts" / "agents" / "run_evening_reporting.py").read_text(encoding="utf-8")
     breaking_runner = (ROOT / "scripts" / "agents" / "run_breaking_news.py").read_text(encoding="utf-8")

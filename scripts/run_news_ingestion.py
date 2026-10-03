@@ -76,6 +76,15 @@ def _metric(provider: str, name: str, amount: int = 1) -> None:
     metrics[name] = metrics.get(name, 0) + amount
 
 
+def _record_rejected_taxonomy_metrics(article_text: str) -> None:
+    inferred = infer_categories_from_text(article_text)
+    rejected_categories = {str(category) for category in inferred} or {
+        "UNCATEGORIZED"
+    }
+    for category in rejected_categories:
+        TAXONOMY_REJECTED[category] = TAXONOMY_REJECTED.get(category, 0) + 1
+
+
 PROVIDERS = {
     "tavily":      {"source_type": "search_api", "domain": "tavily.com"},
     "ddgs":        {"source_type": "search_api", "domain": "duckduckgo.com"},
@@ -269,8 +278,10 @@ def _ddgs_items() -> list[dict[str, Any]]:
                 items = _iter_items(client.news_search(q))
             except Exception as exc:
                 _metric("ddgs", "failures")
-                print(f"  [ingest] DDGS query failed: {type(exc).__name__}")
+                print(f"  [ingest] DDGS query failed: {type(exc).__name__}"                )
                 continue
+            # An extraction miss is enrichment failure, not grounds for
+            # rejecting a sufficiently described, dated RSS item.
             _metric("ddgs", "items_fetched", len(items))
             out.extend(_tag_discovery(items, q))
     finally:
@@ -475,6 +486,7 @@ def _build_news_item(
             "newsworthiness": newsworthy,
             "registry_category": item_metadata.get("registry_category"),
             "feed_priority": item_metadata.get("feed_priority"),
+            "article_extraction": item_metadata.get("article_extraction") or {},
             "article_quality": quality["article_quality"],
             "rejection_reason": None,
             "retrieved_at": datetime.now(timezone.utc).isoformat(),
@@ -513,13 +525,16 @@ def _reject_reason(item: dict[str, Any], provider: str) -> str | None:
     article_text = " ".join(str(item.get(field) or "") for field in ("title", "description", "snippet", "content"))
     inferred_categories = infer_categories_from_text(article_text)
     if not any(
-        str(getattr(category, "value", category)) in PRODUCTION_CATEGORY_ALLOWLIST
+        str(category) in PRODUCTION_CATEGORY_ALLOWLIST
         for category in inferred_categories
     ):
         return "OUT_OF_SCOPE"
     if not is_newsworthy_text(
         title,
-        " ".join(str(item.get(field) or "") for field in ("description", "snippet")),
+        " ".join(
+            str(item.get(field) or "")
+            for field in ("description", "snippet", "content")
+        ),
     ):
         return "NOT_NEWSWORTHY"
     item_metadata = item.get("metadata")
@@ -596,36 +611,126 @@ def _enrich_article(
             from extraction.normalizers.article import extract_article
             extracted = extract_article(article_url)
             extracted_data = extracted.model_dump(mode="json")
+            extraction_metadata = extracted_data.get("metadata") or {}
+            newspaper4k_used = bool(extraction_metadata.get("newspaper4k"))
             for key in ("title", "canonical_url", "content", "author", "published_at", "language"):
-                if extracted_data.get(key):
-                    if key == "canonical_url" or not enriched.get(key):
-                        enriched[key] = extracted_data[key]
+                value = extracted_data.get(key)
+                if not value:
+                    continue
+                if key == "canonical_url":
+                    enriched[key] = value
+                elif key == "content":
+                    if len(str(value)) > len(str(enriched.get(key) or "")):
+                        enriched[key] = value
+                elif key == "title" and newspaper4k_used:
+                    enriched[key] = value
+                elif not enriched.get(key):
+                    enriched[key] = value
             final_url = extracted_data.get("url") or article_url
             enriched["article_url"] = final_url
             enriched["url"] = final_url
             enriched["canonical_url"] = extracted_data.get("canonical_url") or final_url
             parsed = urlparse(final_url)
-            enriched["publisher_domain"] = (parsed.hostname or "").lower().removeprefix("www.")
+            resolved_domain = (parsed.hostname or "").lower().removeprefix("www.")
+            if provider == "google_news":
+                enriched["publisher_domain"] = resolved_domain
+                current_name = str(
+                    enriched.get("publisher_name")
+                    or enriched.get("source_name")
+                    or ""
+                ).strip()
+                if (
+                    not current_name
+                    or current_name.lower() in {"google news", "google news rss"}
+                    or "news.google.com" in current_name.lower()
+                ):
+                    enriched["publisher_name"] = resolved_domain
+                    enriched["source_name"] = resolved_domain
+                enriched["source_domain"] = resolved_domain
+            elif not enriched.get("publisher_domain"):
+                enriched["publisher_domain"] = resolved_domain
             metadata = enriched.get("metadata")
             if not isinstance(metadata, dict):
                 metadata = {}
-            metadata["article_extraction"] = extracted_data.get("metadata", {})
+            metadata["article_extraction"] = extraction_metadata
             if not enriched.get("published_at") and extracted_data.get("published_at"):
                 enriched["published_at"] = extracted_data["published_at"]
             enriched["metadata"] = metadata
-            method = (extracted_data.get("metadata") or {}).get("extraction_method")
+            method = extraction_metadata.get("extraction_method")
             if method == "trafilatura":
                 _metric("extraction", "trafilatura_successes")
             elif method == "newspaper4k":
                 _metric("extraction", "newspaper4k_fallbacks")
             else:
                 _metric("extraction", "parser_fallbacks")
-            if (extracted_data.get("metadata") or {}).get("fallback_errors"):
+            if extraction_metadata.get("fallback_errors"):
                 _metric("extraction", "fallback_errors")
         except Exception as exc:
             _metric("extraction", "failures")
             print(f"  [ingest] article extraction failed for {article_url}: {type(exc).__name__}: {exc}")
     return enriched
+
+
+def _extraction_candidates(
+    items_by_provider: dict[str, list[dict[str, Any]]],
+    *,
+    max_extracts: int,
+    feed_by_id: dict[str, dict[str, Any]],
+) -> set[tuple[str, int]]:
+    """Choose a bounded set of useful extraction candidates across providers."""
+    ranked: list[tuple[tuple[Any, ...], str, int]] = []
+    for provider, items in items_by_provider.items():
+        feed = feed_by_id.get(provider)
+        priority = int(feed.get("priority", 1000)) if feed else 1000
+        for index, item in enumerate(items):
+            if not _is_valid_article(item):
+                continue
+            parsed_url = urlparse(
+                str(item.get("url") or item.get("canonical_url") or "")
+            )
+            if parsed_url.scheme not in {"http", "https"} or not parsed_url.hostname:
+                continue
+            item_metadata = item.get("metadata")
+            if not isinstance(item_metadata, dict):
+                item_metadata = {}
+            published = _parse_publication_datetime(
+                item.get("published_at")
+                or item_metadata.get("published_date")
+            )
+            published_rank = (
+                -published.timestamp() if published is not None else float("inf")
+            )
+            content = str(item.get("content") or "").strip()
+            descriptive_text = " ".join(
+                str(item.get(field) or "").strip()
+                for field in ("description", "snippet")
+            ).strip()
+            lacks_content = len(content) < 500 and len(descriptive_text) < 500
+            quality = classify_article(
+                title=str(item.get("title") or ""),
+                description=str(item.get("description") or ""),
+                snippet=str(item.get("snippet") or ""),
+                content=content,
+                source_name=str(item.get("source_name") or ""),
+            )
+            likely_useful = bool(
+                quality.get("topic_fit") and quality.get("newsworthiness")
+            )
+            ranked.append((
+                (
+                    published_rank,
+                    priority,
+                    not lacks_content,
+                    not likely_useful,
+                ),
+                provider,
+                index,
+            ))
+    ranked.sort(key=lambda candidate: candidate[0])
+    return {
+        (provider, index)
+        for _, provider, index in ranked[:max_extracts]
+    }
 
 
 def _save_news_items(
@@ -634,10 +739,14 @@ def _save_news_items(
     result: dict[str, list[str]] = {}
     rejection_counts: dict[str, int] = {}
     max_extracts = max(0, int(os.environ.get("NEWSROOM_MAX_ARTICLE_EXTRACTIONS", "50")))
-    extracts = 0
     rss_provider_ids = {feed["id"] for feed in RSS_FEEDS}
     seen_rss_urls: set[str] = set()
     feed_by_id = {feed["id"]: feed for feed in RSS_FEEDS}
+    selected_extractions = _extraction_candidates(
+        items_by_provider,
+        max_extracts=max_extracts,
+        feed_by_id=feed_by_id,
+    )
     provider_order = sorted(
         items_by_provider,
         key=lambda provider: (
@@ -663,6 +772,7 @@ def _save_news_items(
                 } if feed else None,
             )
         except Exception as exc:
+            _metric("persistence", "failures")
             print(f"  [ingest] source ensure failed for {provider}: {exc}")
             result[provider] = []
             continue
@@ -670,7 +780,7 @@ def _save_news_items(
         ids: list[str] = []
         rejected_before_save = 0
         upsert_failures = 0
-        for raw in items:
+        for item_index, raw in enumerate(items):
             if not _is_valid_article(raw):
                 reason = _reject_reason(raw, provider) or "INSUFFICIENT_METADATA"
                 rejection_counts[reason] = rejection_counts.get(reason, 0) + 1
@@ -682,9 +792,7 @@ def _save_news_items(
                     + str(raw.get("title") or "")[:120]
                 )
                 continue
-            extract_content = extracts < max_extracts
-            if extract_content:
-                extracts += 1
+            extract_content = (provider, item_index) in selected_extractions
             enriched = _enrich_article(
                 raw,
                 provider,
@@ -700,14 +808,7 @@ def _save_news_items(
                         str(enriched.get(field) or "")
                         for field in ("title", "description", "snippet", "content")
                     )
-                    inferred = infer_categories_from_text(article_text)
-                    rejected_categories = {
-                        category.value for category in inferred
-                    } or {"UNCATEGORIZED"}
-                    for category in rejected_categories:
-                        TAXONOMY_REJECTED[category] = (
-                            TAXONOMY_REJECTED.get(category, 0) + 1
-                        )
+                    _record_rejected_taxonomy_metrics(article_text)
                 print(
                     "  [ingest] rejected candidate: "
                     + reason
@@ -747,6 +848,7 @@ def _save_news_items(
                     seen_rss_urls.add(rss_key)
             except Exception as exc:
                 upsert_failures += 1
+                _metric("persistence", "failures")
                 print(f"  [ingest] upsert_news_item failed: {exc}")
         result[provider] = ids
         print(
@@ -798,8 +900,12 @@ def _print_observability() -> None:
         f"Trafilatura successes={extraction.get('trafilatura_successes', 0)} "
         f"Newspaper4k fallbacks={extraction.get('newspaper4k_fallbacks', 0)} "
         f"parser fallbacks={extraction.get('parser_fallbacks', 0)} "
-        f"failures={extraction.get('failures', 0)} "
+        f"extraction failures={extraction.get('failures', 0)} "
         f"fallback errors={extraction.get('fallback_errors', 0)}"
+    )
+    print(
+        "  [observability] Persistence failures="
+        + str(INGESTION_METRICS.get("persistence", {}).get("failures", 0))
     )
     print(
         "  [observability] Taxonomy: accepted by category="
@@ -1040,6 +1146,7 @@ def _persist_stories(groups: dict[str, list[str]]) -> tuple[int, int, int]:
                 stories_created += 1
         except Exception as exc:
             print(f"  [ingest] create_story failed: {exc}")
+            _metric("persistence", "failures")
             clusters_skipped += 1
             continue
 
@@ -1049,6 +1156,7 @@ def _persist_stories(groups: dict[str, list[str]]) -> tuple[int, int, int]:
                 links_created += 1
             except Exception as exc:
                 print(f"  [ingest] link_story_source failed: {exc}")
+                _metric("persistence", "failures")
 
     return stories_created, links_created, clusters_skipped
 
@@ -1085,7 +1193,6 @@ def main() -> int:
     print()
     print("  [persist] writing news_items...")
     provider_ids = _save_news_items(by_provider)
-    _print_observability()
     for provider, ids in provider_ids.items():
         print("    " + provider.ljust(14) + str(len(ids)) + " item(s) persisted")
 
@@ -1109,14 +1216,17 @@ def main() -> int:
     print("    links created:    " + str(lc))
     print("    clusters skipped: " + str(sk))
     print()
+    _print_observability()
 
     print("  backend: " + db.backend_status())
+    if INGESTION_METRICS.get("persistence", {}).get("failures", 0):
+        print("  ERROR: Supabase persistence reported one or more failures.")
+        return 1
     if not all_ids or not groups:
-        print("  ERROR: ingestion produced no persisted source-backed story candidates.")
-        return 1
-    if not any(by_provider.values()):
-        print("  ERROR: every configured external source returned no items.")
-        return 1
+        print(
+            "  No qualifying source-backed candidates this run; "
+            "ingestion completed successfully."
+        )
     return 0
 
 

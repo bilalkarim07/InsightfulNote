@@ -570,7 +570,7 @@ def classify_article(
         "topic_fit": bool(categories),
         "newsworthiness": is_newsworthy_text(
             title,
-            " ".join((description, snippet)),
+            " ".join((description, snippet, content)),
         ),
         "article_quality": "article" if len(content.strip()) >= 500 else "snippet",
     }
