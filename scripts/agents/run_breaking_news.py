@@ -241,7 +241,7 @@ def main() -> int:
         print("  [publisher] PUBLISHED")
         print(f"  External ID: {external_id}")
         return 0
-    if outcome in ("CANDIDATE_REJECTED", "DEFERRED_QUOTA"):
+    if outcome == "CANDIDATE_REJECTED":
         print(f"  [run] {outcome}; no post published.")
         return 0
     if outcome == "RECOVERY_REQUIRED":

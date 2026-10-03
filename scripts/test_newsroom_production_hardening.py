@@ -28,14 +28,15 @@ def _check_workflow_configuration() -> None:
     breaking = (workflow_dir / "hourly-breaking-news.yml").read_text(encoding="utf-8")
     assert 'cron: "0 20,21,22,23 * * *"' in evening
     assert 'timezone: "America/New_York"' in evening
-    assert "NEWSROOM_PUBLISH_TIMEZONE: America/New_York" in evening
-    assert 'NEWSROOM_ACTIVE_START: "20"' in evening
-    assert 'NEWSROOM_ACTIVE_END: "24"' in evening
     assert 'cron: "*/30 * * * *"' in breaking
     assert "live:" not in evening + breaking
     assert "NEWSROOM_LIVE" not in evening + breaking
     assert "bypass_active_hours" not in evening
     assert "NEWSROOM_BYPASS_ACTIVE_HOURS" not in evening
+    assert "NEWSROOM_MAX_PER_DAY" not in evening + breaking
+    assert "NEWSROOM_MIN_HOURS_BETWEEN" not in evening + breaking
+    assert "NEWSROOM_ACTIVE_START" not in evening + breaking
+    assert "NEWSROOM_ACTIVE_END" not in evening + breaking
     assert "workflow_dispatch:" in evening and "workflow_dispatch:" in breaking
     for workflow in (evening, breaking):
         assert "THREADS_APP_ID: ${{ secrets.THREADS_APP_ID }}" in workflow

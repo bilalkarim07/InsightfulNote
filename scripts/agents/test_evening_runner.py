@@ -155,24 +155,6 @@ def _test_candidate_fallback() -> None:
 
     calls.clear()
 
-    def deferred_quota(*_args, result_out, **kwargs) -> int:
-        del _args
-        calls.append(kwargs["story_id"])
-        result_out["outcome"] = "DEFERRED_QUOTA"
-        return 1
-
-    rc = _attempt_candidates(
-        candidates,
-        "provider",
-        "model",
-        max_attempts=5,
-        team_runner=deferred_quota,
-        memory_builder=memory_builder,
-    )
-    assert rc == 0 and calls == ["story-1"]
-
-    calls.clear()
-
     def actual_exception(*_args, **kwargs) -> int:
         del _args, kwargs
         raise RuntimeError("simulated provider failure")

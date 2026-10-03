@@ -59,19 +59,7 @@ def main() -> None:
         print("No pending topics in data/topic_queue.json")
         sys.exit(0)
     print(f"Running team graph on: {topic!r}")
-    result: dict[str, str] = {}
-    rc = run_team(provider, model_id, topic=topic, result_out=result)
-    # If quota deferred the run, put the topic back at the front of the queue.
-    if result.get("outcome") == "DEFERRED_QUOTA":
-        try:
-            data = json.loads(QUEUE.read_text(encoding="utf-8"))
-            data["pending"].insert(0, topic)
-            if data["consumed"] and data["consumed"][-1] == topic:
-                data["consumed"].pop()
-            QUEUE.write_text(json.dumps(data, indent=2), encoding="utf-8")
-            print(f"Requeued {topic!r} (quota deferred)")
-        except Exception as exc:
-            print(f"Requeue check failed: {exc}")
+    rc = run_team(provider, model_id, topic=topic)
     sys.exit(rc)
 
 

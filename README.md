@@ -14,7 +14,7 @@ Curated direct RSS feeds (primary) / Google News / DDGS / GDELT
   -> story selection and editorial memory
   -> candidate interpretation -> source intelligence -> research
   -> verification -> editorial -> tone -> writer -> Threads adapter
-  -> deterministic QA -> duplicate and quota guards -> Threads
+  -> deterministic QA -> duplicate protection -> Threads
   -> Supabase publication record
 ```
 
@@ -40,16 +40,14 @@ Capability-aware per-agent model routing is a future improvement.
 - `evening-reporting.yml` runs hourly from 8–11 PM America/New_York.
 
 Scheduled and manually dispatched breaking and evening runs use the same
-production behavior: qualified, validated posts are sent to Threads, subject
-to the daily quota, spacing, duplicate protection, and publication safeguards.
-Evening dispatch follows the same 8 PM–midnight active-hour window and spacing
-restrictions as scheduled runs. Shared local/development runs may still use
-`dry_run=True`; the two production runners always publish.
+production behavior: qualified, validated posts are sent to Threads without
+daily caps, spacing limits, or active-hour restrictions. Duplicate protection
+and publication safeguards remain in place. Shared local/development runs may
+still use `dry_run=True`; the two production runners always publish.
 
-Breaking posts bypass the normal reporting-hour and spacing checks, but share
-the configured daily maximum and retain evidence, duplicate, and publication
-safety checks. A single linked source can enter research; verification still
-determines whether claims are publishable.
+Breaking posts retain evidence and independent-source eligibility checks. A
+single linked source can enter research; verification still determines whether
+claims are publishable.
 
 ## Local setup
 
@@ -95,7 +93,7 @@ stop rather than use local or synthetic data.
 Every factual claim must be evidence-backed; source references and uncertainty
 must be preserved. Allegations and forecasts remain attributed, political
 content is descriptive rather than persuasive, and the Writer may use only
-approved claims. Deterministic QA and duplicate/quota checks run before the
+approved claims. Deterministic QA and duplicate checks run before the
 Threads API call. The publication record is reserved before sending; uncertain
 outcomes block automatic republishing and require reconciliation with the
 Threads account.

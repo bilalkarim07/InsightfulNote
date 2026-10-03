@@ -182,13 +182,20 @@ def check_team_graph_compiles() -> tuple[bool, str]:
         return False, f"{type(exc).__name__}: {str(exc)[:150]}"
 
 
-def check_quota() -> tuple[bool, str]:
+def check_publication_eligibility() -> tuple[bool, str]:
     try:
-        from core.team import quota
-        allowed, reason, state = quota.can_publish()
-        s = quota.status()
-        assert "published" in s and "max_per_day" in s
-        return True, f"published={s['published']}/{s['max_per_day']}, allowed={allowed}"
+        from core.team.graph import compile_graph, node_eligibility_gate
+        graph = compile_graph()
+        nodes = graph.get_graph().nodes
+        assert "eligibility_gate" in nodes
+        assert "quota_gate" not in nodes
+        result = node_eligibility_gate({
+            "outcome": "RUNNING",
+            "mode": "reporting",
+            "messages": [],
+        })
+        assert result.get("outcome") == "RUNNING"
+        return True, "graph has no quota gate and reporting eligibility passes"
     except Exception as exc:
         return False, f"{type(exc).__name__}: {str(exc)[:150]}"
 
@@ -217,7 +224,7 @@ CHECKS = [
     ("prompts load correctly", check_prompts),
     ("middleware works", check_middleware),
     ("team graph compiles", check_team_graph_compiles),
-    ("quota gate works", check_quota),
+    ("publication eligibility works without quota gates", check_publication_eligibility),
     ("tone bank works", check_tone_bank),
 ]
 

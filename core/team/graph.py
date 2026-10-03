@@ -1915,15 +1915,12 @@ def _supported_research_domains(
     return domains
 
 
-def node_quota_gate(state: TeamState) -> TeamState:
-    """Apply the shared daily cap with mode-specific publication windows."""
+def node_eligibility_gate(state: TeamState) -> TeamState:
+    """Apply breaking-news eligibility checks before publication."""
     if _is_terminal(state):
         return state
-    from core.team import quota as quota_mod
 
-    dry_run = bool(state.get("dry_run"))
-    publication_type = "breaking" if state.get("mode") == "breaking" else "normal"
-    if publication_type == "breaking":
+    if state.get("mode") == "breaking":
         from datetime import datetime, timezone
 
         discovery = state.get("discovery") or {}
@@ -2005,37 +2002,16 @@ def node_quota_gate(state: TeamState) -> TeamState:
                 "linked sources or verified research evidence, "
                 "independent corroboration, no copying signal, and verified evidence"
             )
-            return _trace("quota_gate", state, [
-                msg("quota_gate", "all", "BLOCKER", reason),
+            return _trace("eligibility_gate", state, [
+                msg("eligibility_gate", "all", "BLOCKER", reason),
             ]) | {
                 "outcome": "BLOCKED_BREAKING_ELIGIBILITY",
                 "blockers": (state.get("blockers") or []) + [reason],
             }
 
-    allowed, reason, quota_state = quota_mod.can_publish(
-        publication_type=publication_type
-    )
-    quota_message = (
-        "dry-run: quota would allow publication"
-        if dry_run and allowed
-        else "quota ok"
-        if allowed
-        else "deferred: " + reason
-    )
-    if allowed:
-        return _trace("quota_gate", state, [
-            msg("quota_gate", "publisher", "HANDOFF", quota_message),
-        ])
-
-    # Not allowed — record deferral and return early.
-    if not dry_run:
-        quota_mod.record_deferral()
-    return _trace("quota_gate", state, [
-        msg("quota_gate", "all", "INFO", quota_message),
-    ]) | {
-        "outcome": "DEFERRED_QUOTA",
-        "blockers": (state.get("blockers") or []) + ["quota: " + reason],
-    }
+    return _trace("eligibility_gate", state, [
+        msg("eligibility_gate", "publisher", "HANDOFF", "publication eligibility passed"),
+    ])
 
 def node_publisher(state: TeamState) -> TeamState:
     """Publish to Threads via ThreadsAPI. Never refreshes tokens."""
@@ -2305,14 +2281,6 @@ def node_publisher(state: TeamState) -> TeamState:
                     ),
                 }
 
-    # ── Update local quota (no-op in production) ──
-    if status == "PUBLISHED":
-        try:
-            from core.team import quota as quota_mod
-            quota_mod.record_publication()
-        except Exception:
-            pass
-
     if live and status != "PUBLISHED":
         if status == "UNKNOWN":
             pub.status = "RECOVERY_REQUIRED"
@@ -2415,7 +2383,7 @@ def build_graph() -> StateGraph:
 
     g.add_node("platform_adapter", _safe_node(node_platform_adapter))
     g.add_node("validation", _safe_node(node_validation))
-    g.add_node("quota_gate", _safe_node(node_quota_gate))
+    g.add_node("eligibility_gate", _safe_node(node_eligibility_gate))
     g.add_node("publisher", _safe_node(node_publisher))
     g.add_node("escalate", _safe_node(node_escalate))
 
@@ -2446,14 +2414,14 @@ def build_graph() -> StateGraph:
     g.add_edge("platform_adapter", "validation")
 
     g.add_conditional_edges("validation", route_after_validation, {
-        "publisher": "quota_gate",
+        "publisher": "eligibility_gate",
         "writer": "writer",
         "editorial": "editorial",
         "escalate": "escalate",
         "__end__": END,
     })
 
-    g.add_edge("quota_gate", "publisher")
+    g.add_edge("eligibility_gate", "publisher")
     g.add_edge("publisher", END)
     g.add_edge("escalate", END)
 
@@ -2608,12 +2576,6 @@ def run_team(
         validation_result = final_state.get("validation") or {}
         post_result = final_state.get("post") or {}
         publication_result = final_state.get("publication") or {}
-        quota_messages = [
-            str(message.get("content") or "")
-            for message in final_state.get("messages", [])
-            if message.get("from_agent") == "quota_gate"
-        ]
-        quota_result = quota_messages[-1] if quota_messages else "not reached"
         verification_counts: dict[str, int] = {}
         for item in verification_result.get("verifications") or []:
             status = str(item.get("status") or "unknown")
@@ -2630,7 +2592,6 @@ def run_team(
             "  validation="
             + str(validation_result.get("state") or "not reached")
         )
-        print(f"  quota={quota_result}")
         print(
             "  would_publish="
             + str(publication_result.get("status") == "SKIPPED_DRY_RUN").lower()
@@ -2654,7 +2615,6 @@ def run_team(
         publication = final_state.get("publication") or {}
         if outcome in (
             "CANDIDATE_REJECTED",
-            "DEFERRED_QUOTA",
             "PUBLISHED",
         ):
             runner_outcome = str(outcome)
@@ -2707,5 +2667,4 @@ def run_team(
         "PASS",
         "PUBLISHED",
         "DRY_RUN",
-        "DEFERRED_QUOTA",
     ) else 1
