@@ -246,7 +246,7 @@ def _append_source_reference(text: str, source_url: str, limit: int) -> str:
     ):
         return text
 
-    suffix = "\nSource: " + source_url
+    suffix = "\n" + source_url
     content_limit = limit - len(suffix)
     if content_limit < 1:
         return text
@@ -257,7 +257,7 @@ def _append_source_reference(text: str, source_url: str, limit: int) -> str:
 
 
 def _is_verified_source_reference(sentence: str, allowed_urls: set[str]) -> bool:
-    match = re.fullmatch(r"Source:\s*(https?://\S+)", sentence, flags=re.IGNORECASE)
+    match = re.fullmatch(r"(https?://\S+)", sentence)
     if not match:
         return False
     return match.group(1).rstrip(".,;:!?)]}") in allowed_urls
@@ -1114,6 +1114,50 @@ def _select_strongest_verified_claim(
     return claim, status
 
 
+def _select_writer_fallback_claim(
+    research: ResearchResult,
+    verification: VerificationResult,
+    editorial: EditorialDecision,
+    source_intel: dict[str, Any] | None,
+    max_chars: int,
+) -> Claim | None:
+    """Select an approved, central verified claim for exact-wording fallback."""
+    approved_ids = set(editorial.allowed_claim_ids)
+    eligible = [
+        claim for claim in research.claims
+        if claim.claim_id in approved_ids
+        and not claim.is_forecast
+        and not claim.is_allegation
+        and not claim.is_opinion
+        and 0 < len(claim.text.strip()) <= max_chars
+        and re.search(r"[.!?][\"'”’)\]]*$", claim.text.strip())
+        and len(_split_post_sentences(claim.text.strip())) == 1
+    ]
+    if not eligible:
+        return None
+
+    central_tokens = _claim_tokens(editorial.central_event)
+    if central_tokens:
+        centrality = {
+            claim.claim_id: len(_claim_tokens(claim.text) & central_tokens)
+            for claim in eligible
+        }
+        strongest_centrality = max(centrality.values(), default=0)
+        if strongest_centrality:
+            eligible = [
+                claim for claim in eligible
+                if centrality[claim.claim_id] == strongest_centrality
+            ]
+
+    approved_research = research.model_copy(update={"claims": eligible})
+    selected = _select_strongest_verified_claim(
+        approved_research,
+        verification,
+        source_intel,
+    )
+    return selected[0] if selected else None
+
+
 def _has_unresolved_duplicate(editorial_memory: dict[str, Any] | None) -> bool:
     if not isinstance(editorial_memory, dict):
         return False
@@ -1439,12 +1483,15 @@ def node_writer(state: TeamState) -> TeamState:
         "a sentence incomplete." + chr(10)
         + "Rules:" + chr(10)
         + "- Every factual sentence must be directly grounded in one or more approved claims." + chr(10)
+        + "- Lead with the central event, not a secondary detail. When multiple approved claims are available, prioritize the claim that explains what happened and why the story matters; do not choose a minor fact merely because it is shorter." + chr(10)
+        + "- A person's age, arrest status, location detail, or other secondary fact should not replace the central event unless that detail is itself the main news." + chr(10)
         + "- Prefer exact approved-claim wording; do not substitute near-synonyms or add descriptive wording." + chr(10)
         + "- Do not add context, causal links, motivation, comparisons, names, dates, numbers, quotes, URLs, or conclusions not stated in those claims." + chr(10)
         + "- Preserve attribution, allegation status, forecast status, and uncertainty." + chr(10)
         + "- For SUPPORTED_AS_ATTRIBUTED claims, keep the claim's attribution in the post; never state the attributed fact as independently confirmed." + chr(10)
         + "- claim_ids must list only approved claim IDs directly used in the post." + chr(10)
         + "- If a supported post cannot be written, return an empty body; do not improvise." + chr(10)
+        + "- Do not add a source label or URL; verified source links are attached separately." + chr(10)
         + "- Do NOT use the field name 'text'. Use 'body'." + chr(10) + chr(10)
         + "Return JSON EXACTLY matching this shape:" + chr(10)
         + "{" + chr(10)
@@ -1463,20 +1510,13 @@ def node_writer(state: TeamState) -> TeamState:
     exact_claim_fallback = None
     if failed_sentences and _it["writer"] > 1:
         max_chars = int(os.environ.get("THREADS_MAX_CHARS", "280"))
-        fallback_claims = [
-            claim for claim in approved
-            if verification_statuses[claim.claim_id] == VerificationStatus.SUPPORTED
-            and not claim.is_forecast
-            and not claim.is_allegation
-            and not claim.is_opinion
-            and 0 < len(claim.text.strip()) <= max_chars
-            and len(_split_post_sentences(claim.text.strip())) == 1
-        ]
-        if fallback_claims:
-            exact_claim_fallback = min(
-                fallback_claims,
-                key=lambda claim: len(claim.text.strip()),
-            )
+        exact_claim_fallback = _select_writer_fallback_claim(
+            research,
+            verification,
+            editorial,
+            state.get("source_intel"),
+            max_chars,
+        )
 
     if exact_claim_fallback is not None:
         result = WriterDraft(
@@ -1573,6 +1613,7 @@ def node_platform_adapter(state: TeamState) -> TeamState:
         + "- Lead with the most newsworthy fact." + chr(10)
         + "- Preserve every number, date, name, and attribution exactly." + chr(10)
         + "- Preserve uncertainty and material caveats exactly." + chr(10)
+        + "- Never add a 'Source:' label or invent or rewrite a source URL; verified URLs are appended deterministically." + chr(10)
         + "- NEVER change \"analysts expect\" to \"will\"." + chr(10)
         + "- Drop context that is not essential to the central fact." + chr(10)
         + "- Do NOT invent facts. Do NOT add hashtags unless the draft had them."
@@ -1620,9 +1661,23 @@ def node_platform_adapter(state: TeamState) -> TeamState:
     })
     source_url = _verified_source_reference(state, result.claim_ids)
     if source_url:
+        text = re.sub(
+            r"(?im)^Source:\s*(https?://\S+)\s*$",
+            lambda match: (
+                match.group(1)
+                if match.group(1).rstrip(".,;:!?)]}") == source_url.rstrip(".,;:!?)]}")
+                else match.group(0)
+            ),
+            text,
+        )
         linked_text = _append_source_reference(text, source_url, max_chars)
         if linked_text != text:
             text = linked_text
+            result.source_reference = source_url
+        elif any(
+            _is_verified_source_reference(sentence, {source_url})
+            for sentence in _split_post_sentences(text)
+        ):
             result.source_reference = source_url
     result.text = text
     result.claim_ids = sorted({
@@ -1657,7 +1712,7 @@ def _validation_retry_target(
             "attribution", "seed subject", "empty post", "not grounded",
             "repetitive", "without claim-bearing content",
             "exceeds Threads limit", "more than one source URL",
-            "internal instructions", "null control character",
+            "source label", "internal instructions", "null control character",
         )
     )
     if needs_editorial and editorial_fixes < MAX_EDITORIAL_FIXES:
@@ -1689,6 +1744,8 @@ def node_validation(state: TeamState) -> TeamState:
         errors.append("post text is not valid UTF-8")
     if "\x00" in post.text:
         errors.append("post contains a null control character")
+    if re.search(r"\bSource\s*[:-]", post.text, flags=re.IGNORECASE):
+        errors.append("post contains a source label")
     if re.search(
         r"(?:return\s+json|you are the (?:writer|platform adaptor)|"
         r"approved claims\s*\(|system prompt|do not include this instruction)",

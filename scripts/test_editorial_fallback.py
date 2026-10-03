@@ -13,6 +13,7 @@ from core.team import graph  # noqa: E402
 from schemas.editorial import EditorialDecision  # noqa: E402
 from schemas.research import Claim, Evidence, ResearchResult  # noqa: E402
 from schemas.tone import ToneDecision, ToneType  # noqa: E402
+from schemas.platform import PlatformPost  # noqa: E402
 from schemas.verification import (  # noqa: E402
     ClaimVerification,
     VerificationResult,
@@ -388,15 +389,15 @@ def _test_writer_preserves_attribution_status() -> None:
             "validation": {"failed_sentences": ["A paraphrased unsupported sentence."]},
             "validation_feedback": ["post contains a sentence not grounded in an approved claim"],
         })
-        graph.node_writer(retry_state)
+        retried = graph.node_writer(retry_state)
     finally:
         graph._model = original_model
         graph._structured = original_structured
     assert "[SUPPORTED_AS_ATTRIBUTED]" in captured["prompt"]
     assert "never state the attributed fact as independently confirmed" in captured["prompt"]
     assert claim.text in captured["prompt"]
-    assert "copy the text of one approved claim" in captured["prompt"]
-    assert "list only that claim ID" in captured["prompt"]
+    assert retried["draft"]["body"] == claim.text
+    assert retried["draft"]["claim_ids"] == [claim.claim_id]
     print("[PASS] writer receives explicit attribution preservation instructions")
 
 
@@ -424,13 +425,15 @@ def _test_writer_uses_exact_claim_after_grounding_failure() -> None:
         ).model_dump(mode="json"),
     })
     calls = 0
+    captured_prompt = ""
     original_model = graph._model
     original_structured = graph._structured
     graph._model = lambda _state: object()
 
     def structured(_client, _schema, *_args, **_kwargs):
-        nonlocal calls
+        nonlocal calls, captured_prompt
         calls += 1
+        captured_prompt = _args[0] if _args else ""
         return (
             WriterDraft(
                 run_id=state["run_id"],
@@ -464,8 +467,118 @@ def _test_writer_uses_exact_claim_after_grounding_failure() -> None:
     assert first["draft"]["body"] == "It helps understand and assess climate change impacts."
     assert retried["draft"]["body"] == claim.text
     assert retried["draft"]["claim_ids"] == [claim.claim_id]
+    assert "Lead with the central event, not a secondary detail" in captured_prompt
+    assert "Do not add a source label or URL" in captured_prompt
     assert calls == 1
     print("[PASS] grounding retry uses exact verified claim without another LLM rewrite")
+
+
+def _test_writer_fallback_prefers_approved_central_claim() -> None:
+    central = Claim(
+        claim_id="claim_central",
+        text="A car crashed into a crowd of rugby supporters in Newcastle, injuring ten people.",
+        evidence_ids=["evidence-central"],
+    )
+    secondary = Claim(
+        claim_id="claim_secondary",
+        text="The driver was an 18-year-old man who was arrested at the scene.",
+        evidence_ids=["evidence-secondary"],
+    )
+    excluded = Claim(
+        claim_id="claim_excluded",
+        text="Police identified the driver as an 18-year-old man.",
+        evidence_ids=["evidence-excluded"],
+    )
+    claims = [excluded, secondary, central]
+    state = _story_state(
+        claims,
+        {claim.claim_id: VerificationStatus.SUPPORTED for claim in claims},
+    )
+    state.update({
+        "seed": {
+            "title": "Car crashes into Newcastle rugby supporters",
+            "summary": central.text,
+        },
+        "editorial": EditorialDecision(
+            run_id=state["run_id"],
+            story_id=state["story_id"],
+            central_event=central.text,
+            allowed_claim_ids=[central.claim_id, secondary.claim_id],
+            blocked_claim_ids=[excluded.claim_id],
+        ).model_dump(mode="json"),
+        "tone": ToneDecision(
+            run_id=state["run_id"],
+            story_id=state["story_id"],
+            tone=ToneType.INFORMATIVE,
+        ).model_dump(mode="json"),
+    })
+
+    exclusion_probe = graph._select_writer_fallback_claim(
+        ResearchResult.model_validate(state["research"]),
+        VerificationResult.model_validate(state["verification"]),
+        EditorialDecision(
+            run_id=state["run_id"],
+            story_id=state["story_id"],
+            central_event=excluded.text,
+            allowed_claim_ids=[central.claim_id, secondary.claim_id],
+            blocked_claim_ids=[excluded.claim_id],
+        ),
+        state["source_intel"],
+        max_chars=500,
+    )
+    assert exclusion_probe is not None
+    assert exclusion_probe.claim_id == secondary.claim_id
+
+    original_model = graph._model
+    original_structured = graph._structured
+    graph._model = lambda _state: object()
+
+    def structured(_client, schema, *_args, **_kwargs):
+        if schema is WriterDraft:
+            result = WriterDraft(
+                run_id=state["run_id"],
+                story_id=state["story_id"],
+                body="Officials announced a new city transport plan.",
+                claim_ids=[central.claim_id],
+            )
+        else:
+            result = PlatformPost(
+                run_id=state["run_id"],
+                story_id=state["story_id"],
+                text="Officials announced a new city transport plan.",
+                claim_ids=[central.claim_id],
+            )
+        return result, {}
+
+    graph._structured = structured
+    try:
+        first_draft = graph.node_writer(state)
+        first_adapter = graph.node_platform_adapter(first_draft)
+        failed_validation = graph.node_validation(first_adapter)
+        assert failed_validation["validation"]["state"] == "BLOCK"
+        assert failed_validation["validation"]["failed_sentences"]
+
+        retry_draft = graph.node_writer(failed_validation)
+        assert retry_draft["draft"]["body"] == central.text
+        assert retry_draft["draft"]["claim_ids"] == [central.claim_id]
+
+        retry_adapter = graph.node_platform_adapter(retry_draft)
+        final_validation = graph.node_validation(retry_adapter)
+    finally:
+        graph._model = original_model
+        graph._structured = original_structured
+
+    assert final_validation["validation"]["state"] == "PASS"
+    assert retry_adapter["post"]["text"].startswith(central.text)
+    assert secondary.text not in retry_adapter["post"]["text"]
+    assert excluded.text not in retry_adapter["post"]["text"]
+    assert retry_adapter["post"]["text"].endswith(
+        "\nhttps://example-3.org/report"
+    )
+    print(
+        "[PASS] grounding retry selects the approved central claim, appends "
+        "a bare verified URL, and passes validation"
+    )
 
 
 def _test_verified_source_link() -> None:
@@ -511,9 +624,20 @@ def _test_verified_source_link() -> None:
     linked_text = graph._append_source_reference(
         claim.text, source_url, limit=200,
     )
-    assert linked_text.endswith("\nSource: https://agency.gov/program")
+    assert linked_text.endswith("\nhttps://agency.gov/program")
+    assert "Source:" not in linked_text
     assert len(linked_text) <= 200
     assert graph._append_source_reference(claim.text, source_url, limit=30) == claim.text
+    assert graph._append_source_reference("Post.", source_url, limit=15) == "Post."
+    assert graph._is_verified_source_reference(
+        source_url, {source_url},
+    )
+    assert not graph._is_verified_source_reference(
+        "https://unverified.invalid/article", {source_url},
+    )
+    assert not graph._is_verified_source_reference(
+        "Source: " + source_url, {source_url},
+    )
 
     adapter_state = dict(state)
     adapter_state.update({
@@ -522,12 +646,13 @@ def _test_verified_source_link() -> None:
         "draft": WriterDraft(
             run_id=state["run_id"],
             story_id=state["story_id"],
-            body=claim.text,
+            body=claim.text + "\nSource: " + source_url,
             claim_ids=[claim.claim_id],
         ).model_dump(mode="json"),
     })
     adapted = graph.node_platform_adapter(adapter_state)["post"]
-    assert adapted["text"].endswith("\nSource: https://agency.gov/program")
+    assert adapted["text"].endswith("\nhttps://agency.gov/program")
+    assert "Source:" not in adapted["text"]
     assert adapted["source_reference"] == source_url
     assert adapted["char_count"] == len(adapted["text"])
 
@@ -576,6 +701,8 @@ def _test_verified_source_link() -> None:
     }
     valid_link = graph.node_validation(validation_state)
     assert valid_link["validation"]["state"] == "PASS"
+    assert len(valid_link["validation"]["sentence_claims"]) == 1
+    assert valid_link["validation"]["sentence_claims"][0]["sentence"] == claim.text
 
     validation_state["post"] = {
         **validation_state["post"],
@@ -584,7 +711,36 @@ def _test_verified_source_link() -> None:
     invalid_link = graph.node_validation(validation_state)
     assert invalid_link["validation"]["state"] == "BLOCK"
     assert "post contains an unverified URL" in invalid_link["validation"]["errors"]
-    print("[PASS] only a cited verified source link is accepted when it fits")
+
+    validation_state["post"] = {
+        **validation_state["post"],
+        "text": claim.text + "\nSource: https://agency.gov/program",
+        "char_count": len(claim.text + "\nSource: https://agency.gov/program"),
+    }
+    labeled_link = graph.node_validation(validation_state)
+    assert labeled_link["validation"]["state"] == "BLOCK"
+    assert "post contains a source label" in labeled_link["validation"]["errors"]
+
+    validation_state["post"] = {
+        **validation_state["post"],
+        "text": claim.text + "\nSource - https://agency.gov/program",
+        "char_count": len(claim.text + "\nSource - https://agency.gov/program"),
+    }
+    dashed_label = graph.node_validation(validation_state)
+    assert dashed_label["validation"]["state"] == "BLOCK"
+    assert "post contains a source label" in dashed_label["validation"]["errors"]
+
+    validation_state["post"] = {
+        **validation_state["post"],
+        "text": claim.text + "\nhttps://agency.gov/program\nhttps://news.example.org/program",
+        "char_count": len(
+            claim.text + "\nhttps://agency.gov/program\nhttps://news.example.org/program"
+        ),
+    }
+    multiple_links = graph.node_validation(validation_state)
+    assert multiple_links["validation"]["state"] == "BLOCK"
+    assert "post contains more than one source URL" in multiple_links["validation"]["errors"]
+    print("[PASS] only one verified bare source link is accepted when it fits")
 
 
 def _test_length_validation_remains_strict() -> None:
@@ -674,6 +830,7 @@ def main() -> None:
     _test_duplicate_and_quality_gates()
     _test_writer_preserves_attribution_status()
     _test_writer_uses_exact_claim_after_grounding_failure()
+    _test_writer_fallback_prefers_approved_central_claim()
     _test_verified_source_link()
     _test_length_validation_remains_strict()
     print("\nALL EDITORIAL FALLBACK CHECKS PASSED")
